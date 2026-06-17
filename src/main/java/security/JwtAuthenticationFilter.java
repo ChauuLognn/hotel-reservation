@@ -20,17 +20,8 @@ import modules.account.service.CustomUserDetailsService;
 /**
  * JWT Authentication Filter
  *
- * Filter này chạy TRƯỚC MỌI REQUEST để:
- * 1. Lấy JWT token từ Authorization header
- * 2. Validate token
- * 3. Set authentication vào SecurityContext
- *
- * Flow:
- * Request → JwtAuthenticationFilter → Controller
- *   ↓
- *   Kiểm tra token → Nếu hợp lệ → Set authentication
- *
- * Authorization header format: "Bearer eyJhbGciOiJIUzI1NiJ9..."
+ * Runs before controllers to validate JWT tokens on protected routes.
+ * Public auth endpoints and OPTIONS preflight requests bypass token validation.
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -42,12 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private CustomUserDetailsService userDetailsService;
 
     @Override
-    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        String path = request.getServletPath();
-        return path.startsWith("/api/auth/");
-    }
-
-    @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
@@ -55,6 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+        String servletPath = request.getServletPath();
+        if (servletPath.startsWith("/api/auth/")) {
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -76,12 +67,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
-                UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        userDetails.getAuthorities()
-                    );
+                        userDetails.getAuthorities());
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
