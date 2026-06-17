@@ -42,28 +42,27 @@ import security.JwtAuthenticationFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final List<String> CORS_ALLOWED_ORIGINS = List.of("http://localhost:5173");
+    private static final List<String> CORS_ALLOWED_ORIGINS = List.of(
+            "http://localhost:5173",
+            "http://localhost:5174");
 
     private static final List<String> CORS_ALLOWED_METHODS = List.of(
-        "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"
-    );
+            "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD");
 
     private static final List<String> CORS_ALLOWED_HEADERS = List.of(
-        "Authorization",
-        "Content-Type",
-        "X-User-Id",
-        "X-User_id",
-        "Accept",
-        "Origin",
-        "X-Requested-With"
-    );
+            "Authorization",
+            "Content-Type",
+            "X-User-Id",
+            "X-User_id",
+            "Accept",
+            "Origin",
+            "X-Requested-With");
 
     private static final List<String> CORS_EXPOSED_HEADERS = List.of(
-        "Authorization",
-        "Content-Type",
-        "X-User-Id",
-        "X-User_id"
-    );
+            "Authorization",
+            "Content-Type",
+            "X-User-Id",
+            "X-User_id");
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
@@ -110,24 +109,22 @@ public class SecurityConfig {
             HttpSecurity http,
             CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers(
-                    "/api/auth/**",
-                    "/api/rooms/available",
-                    "/api/rooms/roomTypes",
-                    "/api/services",
-                    "/api/services/**"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/rooms/available",
+                                "/api/rooms/roomTypes",
+                                "/api/services",
+                                "/api/services/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
