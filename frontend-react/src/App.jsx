@@ -2,19 +2,19 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Pages
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Guests from './pages/Guests';
-import Rooms from './pages/Rooms';
-import Bookings from './pages/Bookings';
-import Reservations from './pages/Reservations';
-import Services from './pages/Services';
-import Bills from './pages/Bills';
-import Users from './pages/Users';
-import Admin from './pages/Admin';
-import Settings from './pages/Settings';
-import BookingDetail from './pages/BookingDetail';
-import UserHome from './pages/UserHome';
+import Login from './features/auth/Login';
+import Dashboard from './features/dashboard/Dashboard';
+import Guests from './features/users/Guests';
+import Rooms from './features/rooms/Rooms';
+import Bookings from './features/reservations/Bookings';
+import Reservations from './features/reservations/Reservations';
+import Services from './features/services/Services';
+import Bills from './features/billing/Bills';
+import Users from './features/users/Users';
+import Admin from './features/dashboard/Admin';
+import Settings from './features/settings/Settings';
+import BookingDetail from './features/reservations/BookingDetail';
+import UserHome from './features/dashboard/UserHome';
 
 // Protected Route - yêu cầu đăng nhập
 function ProtectedRoute({ children }) {
