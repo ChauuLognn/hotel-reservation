@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khách Sạn Paradise - Đặt Phòng Online</title>
+    <link rel="stylesheet" href="assets/css/user-home.css">
+</head>
+        
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo" onclick="showSection('home')">🏨 Paradise Hotel</div>
+            <ul class="nav-links">
+                <li><a href="#home" onclick="showSection('home')">Trang Chủ</a></li>
+                <li><a href="#rooms" onclick="showSection('rooms')">Phòng</a></li>
+                
+                <!-- Login Button (shown when not logged in) -->
+                <li id="loginBtnContainer">
+                    <a href="login.html" class="btn-login">Đăng nhập</a>
+                </li>
+                
+                <!-- User Dropdown (shown when logged in) -->
+                <li class="user-dropdown hidden" id="userDropdown">
+                    <div class="user-button" onclick="toggleDropdown()">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <span class="user-name" id="userName">User</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-info">
+                                <div class="dropdown-user-avatar" id="dropdownAvatar">U</div>
+                                <div class="dropdown-user-details">
+                                    <h4 id="dropdownUserName">Username</h4>
+                                    <p id="dropdownUserEmail">user@email.com</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="#" class="dropdown-item" onclick="showSection('profile'); closeDropdown(); return false;">
+                                <i>👤</i>
+                                <span>Thông tin cá nhân</span>
+                            </a>
+                            <a href="#" class="dropdown-item" onclick="showSection('bookings'); closeDropdown(); return false;">
+                                <i>📋</i>
+                                <span>Đặt phòng của tôi</span>
+                            </a>
+                            <a href="#" class="dropdown-item" onclick="showSection('bills'); closeDropdown(); return false;">
+                                <i>🧾</i>
+                                <span>Bills</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item logout" onclick="handleLogout(); return false;">
+                                <i>🚪</i>
+                                <span>Đăng xuất</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <h1>Chào Mừng Đến Paradise Hotel</h1>
+        <p>Trải nghiệm nghỉ dưỡng đẳng cấp với dịch vụ hoàn hảo</p>
+        <a href="#rooms" class="btn" onclick="showSection('rooms')">Đặt Phòng Ngay</a>
+    </section>
+
+    <!-- Rooms Section -->
+    <section id="rooms" class="container">
+        <h2 class="section-title">Danh Sách Phòng</h2>
+        <div class="room-grid" id="roomList">
+            <!-- Rooms will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile" class="container hidden">
+        <h2 class="section-title">Thông Tin Cá Nhân</h2>
+        <div style="max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <p style="text-align: center; color: #666;">Trang thông tin cá nhân đang được phát triển...</p>
+        </div>
+    </section>
+
+    <!-- My Bookings Section -->
+    <section id="bookings" class="container hidden">
+        <h2 class="section-title">Đặt Phòng Của Tôi</h2>
+        <div class="booking-list" id="bookingList">
+            <!-- Bookings will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Bills Section -->
+    <section id="bills" class="container hidden">
+        <h2 class="section-title">Bills</h2>
+        <div style="max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <p style="text-align: center; color: #666;">Bills page is under development...</p>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Paradise Hotel. All rights reserved.</p>
+    </footer>
+
+    <script src="assets/js/user-home.js"></script>
+</body>
+</html>

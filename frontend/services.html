@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khách Sạn Hotel Haven - Dịch Vụ</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar bg-indigo-800 text-white w-64 flex-shrink-0">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <div class="sidebar-logo">
+                        <i data-feather="home"></i>
+                    </div>
+                    <h1 class="sidebar-title">Hotel Haven</h1>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="layout"></i>
+                    <span>Trang Chủ</span>
+                </a>
+                <a href="guests.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="users"></i>
+                    <span>Khách Hàng</span>
+                </a>
+                <a href="rooms.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="home"></i>
+                    <span>Phòng</span>
+                </a>
+                <a href="bookings.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="calendar"></i>
+                    <span>Đặt Phòng</span>
+                </a>
+                <a href="reservations.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg ">
+                    <i data-feather="clipboard"></i>
+                    <span>Đặt Chỗ</span>
+                </a>
+                <a href="services.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg bg-indigo-700">
+                    <i data-feather="coffee"></i>
+                    <span>Dịch Vụ</span>
+                </a>
+                <a href="bills.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="dollar-sign"></i>
+                    <span>Hóa Đơn</span>
+                </a>
+                <a href="users.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="user-plus"></i>
+                    <span>Người Dùng</span>
+                </a>
+                <a href="admin.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="shield"></i>
+                    <span>Quản Trị</span>
+                </a>
+                <a href="settings.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="settings"></i>
+                    <span>Cài Đặt</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <h2 class="header-title">Dịch Vụ Khách Sạn</h2>
+                <div class="header-actions">
+                    <button id="addServiceBtn" class="btn btn-primary text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-300 transform hover:scale-105">
+                        <i data-feather="plus"></i>
+                        <span>Thêm Dịch Vụ</span>
+                    </button>
+                    <div class="notification-badge">
+                        <i data-feather="bell" style="color: #6b7280;"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i data-feather="user"></i>
+                        </div>
+                        <span class="user-name">Quản Trị</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="page-content">
+                <!-- Stats Grid -->
+                <div class="stats-grid mb-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p>Active Services</p>
+                                <h3>18</h3>
+                            </div>
+                            <i data-feather="activity" class="stat-icon"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p>Service Requests</p>
+                                <h3>24</h3>
+                            </div>
+                            <i data-feather="bell" class="stat-icon"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p>Service Revenue</p>
+                                <h3>$3,450</h3>
+                            </div>
+                            <i data-feather="dollar-sign" class="stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Available Services</h3>
+                        <div class="search-box">
+                            <input type="text" placeholder="Search services..." class="search-input">
+                            <i data-feather="search" class="search-icon"></i>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Status</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="service-card">
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: #f59e0b; display: flex; align-items: center; justify-content: center;">
+                                                <i data-feather="coffee" style="color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium">Breakfast Buffet</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Dining</td>
+                                    <td>International breakfast buffet with fresh juices</td>
+                                    <td class="font-medium">$25/person</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">
+                                                <i data-feather="edit" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn view">
+                                                <i data-feather="eye" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn delete">
+                                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="service-card">
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: #ec4899; display: flex; align-items: center; justify-content: center;">
+                                                <i data-feather="activity" style="color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium">Spa Package</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Wellness</td>
+                                    <td>Full body massage, facial treatment, and sauna</td>
+                                    <td class="font-medium">$120/session</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">
+                                                <i data-feather="edit" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn view">
+                                                <i data-feather="eye" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn delete">
+                                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="service-card">
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: #4f46e5; display: flex; align-items: center; justify-content: center;">
+                                                <i data-feather="map-pin" style="color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium">Airport Transfer</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Transport</td>
+                                    <td>Private car transfer to/from airport</td>
+                                    <td class="font-medium">$60/trip</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">
+                                                <i data-feather="edit" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn view">
+                                                <i data-feather="eye" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn delete">
+                                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="service-card">
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: #10b981; display: flex; align-items: center; justify-content: center;">
+                                                <i data-feather="wind" style="color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium">Laundry Service</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Housekeeping</td>
+                                    <td>Same-day laundry and dry cleaning service</td>
+                                    <td class="font-medium">$15/item</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">
+                                                <i data-feather="edit" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn view">
+                                                <i data-feather="eye" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn delete">
+                                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="service-card">
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: #8b5cf6; display: flex; align-items: center; justify-content: center;">
+                                                <i data-feather="music" style="color: white;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium">Entertainment</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Recreation</td>
+                                    <td>Live music, pool party, and game room access</td>
+                                    <td class="font-medium">$35/day</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">
+                                                <i data-feather="edit" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn view">
+                                                <i data-feather="eye" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                            <button class="action-btn delete">
+                                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+
+            
+            <script>
+                // Currency formatter for VNĐ
+                function formatVND(n) { try { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(n||0)); } catch { return n; } }
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    const modal = document.getElementById('serviceModal');
+                    const openBtn = document.getElementById('addServiceBtn');
+                    const form = document.getElementById('serviceForm');
+
+                    function openModal() { modal.classList.remove('hidden'); modal.style.display = 'flex'; }
+                    function closeModal() { modal.classList.add('hidden'); modal.style.display = 'none'; if (form) { form.reset(); form.onsubmit = null; } }
+
+                    openBtn?.addEventListener('click', openModal);
+                    document.querySelectorAll('#closeServiceModal').forEach(btn => btn.addEventListener('click', closeModal));
+                    document.querySelectorAll('#cancelService').forEach(btn => btn.addEventListener('click', closeModal));
+                    modal?.addEventListener('mousedown', (e) => { if (e.target === modal) closeModal(); });
+                    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+                    form?.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const data = Object.fromEntries(new FormData(form).entries());
+                        data.serviceName = (data.serviceName||'').trim();
+                        data.category = (data.category||'').trim();
+                        data.price = Number(data.price||0);
+                        if (!data.serviceName || !data.category || !(data.price >= 0)) {
+                            window.hotelApp?.showNotification('Vui lòng nhập đầy đủ và hợp lệ', 'error');
+                            return;
+                        }
+                        const key = 'services:list';
+                        const list = JSON.parse(localStorage.getItem(key) || '[]');
+                        const id = 'S' + Date.now();
+                        const record = { id, createdAt: new Date().toISOString(), ...data };
+                        list.push(record);
+                        localStorage.setItem(key, JSON.stringify(list));
+                        window.hotelApp?.showNotification('Đã lưu dịch vụ', 'success');
+                        closeModal();
+                        renderServices();
+                    });
+
+                    function renderServices() {
+                        const tbody = document.querySelector('.table tbody');
+                        if (!tbody) return;
+                        const key = 'services:list';
+                        const list = JSON.parse(localStorage.getItem(key) || '[]');
+                        if (list.length === 0) return; // keep sample rows
+                        tbody.innerHTML = list.map(s => `
+                            <tr class="service-card">
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                                        <div style="width:2.5rem;height:2.5rem;border-radius:50%;background-color:#4f46e5;display:flex;align-items:center;justify-content:center;">
+                                            <i data-feather="coffee" style="color:white;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">${s.serviceName}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>${s.category}</td>
+                                <td>${s.description || ''}</td>
+                                <td class="font-medium">${formatVND(s.price)}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn edit" data-id="${s.id}"><i data-feather="edit" style="width:16px;height:16px;"></i></button>
+                                        <button class="action-btn delete" data-id="${s.id}"><i data-feather="trash-2" style="width:16px;height:16px;"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('');
+                        if (typeof feather !== 'undefined') feather.replace();
+                        tbody.querySelectorAll('.action-btn.delete').forEach(btn => {
+                            btn.addEventListener('click', () => {
+                                const id = btn.getAttribute('data-id');
+                                window.hotelApp?.confirm('Xóa dịch vụ này?', () => {
+                                    const key = 'services:list';
+                                    const list = JSON.parse(localStorage.getItem(key) || '[]').filter(x => x.id !== id);
+                                    localStorage.setItem(key, JSON.stringify(list));
+                                    renderServices();
+                                    window.hotelApp?.showNotification('Đã xóa', 'success');
+                                });
+                            });
+                        });
+                        tbody.querySelectorAll('.action-btn.edit').forEach(btn => {
+                            btn.addEventListener('click', () => {
+                                const id = btn.getAttribute('data-id');
+                                const key = 'services:list';
+                                const list = JSON.parse(localStorage.getItem(key) || '[]');
+                                const found = list.find(x => x.id === id);
+                                if (!found) return;
+                                openModal();
+                                form.serviceName.value = found.serviceName || '';
+                                form.category.value = found.category || '';
+                                form.price.value = found.price || 0;
+                                form.description.value = found.description || '';
+                                form.onsubmit = function(ev) {
+                                    ev.preventDefault();
+                                    const data = Object.fromEntries(new FormData(form).entries());
+                                    const updated = list.map(x => x.id === id ? { ...x, ...data, price: Number(data.price||0), updatedAt: new Date().toISOString() } : x);
+                                    localStorage.setItem(key, JSON.stringify(updated));
+                                    window.hotelApp?.showNotification('Đã cập nhật dịch vụ', 'success');
+                                    closeModal();
+                                    form.reset();
+                                    form.onsubmit = null;
+                                    renderServices();
+                                };
+                            });
+                        });
+                    }
+
+                    renderServices();
+                });
+            </script>
+
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/services.js"></script>
+</body>
+</html>

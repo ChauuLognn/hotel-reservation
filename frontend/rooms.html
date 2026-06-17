@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khách Sạn Hotel Haven - Phòng</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar bg-indigo-800 text-white w-64 flex-shrink-0">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <div class="sidebar-logo">
+                        <i data-feather="home"></i>
+                    </div>
+                    <h1 class="sidebar-title">Hotel Haven</h1>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="layout"></i>
+                    <span>Trang Chủ</span>
+                </a>
+                <a href="guests.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="users"></i>
+                    <span>Khách Hàng</span>
+                </a>
+                <a href="rooms.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg bg-indigo-700">
+                    <i data-feather="home"></i>
+                    <span>Phòng</span>
+                </a>
+                <a href="bookings.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="calendar"></i>
+                    <span>Đặt Phòng</span>
+                </a>
+                <a href="reservations.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg ">
+                    <i data-feather="clipboard"></i>
+                    <span>Đặt Chỗ</span>
+                </a>
+                <a href="services.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="coffee"></i>
+                    <span>Dịch Vụ</span>
+                </a>
+                <a href="bills.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="dollar-sign"></i>
+                    <span>Hóa Đơn</span>
+                </a>
+                <a href="users.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="user-plus"></i>
+                    <span>Người Dùng</span>
+                </a>
+                <a href="admin.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="shield"></i>
+                    <span>Quản Trị</span>
+                </a>
+                <a href="settings.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="settings"></i>
+                    <span>Cài Đặt</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <h2 class="header-title">Quản Lý Phòng</h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-300 transform hover:scale-105">
+                        <i data-feather="plus"></i>
+                        <span>Thêm Phòng</span>
+                    </button>
+                    <div class="notification-badge">
+                        <i data-feather="bell" style="color: #6b7280;"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i data-feather="user"></i>
+                        </div>
+                        <span class="user-name">Quản Trị</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="page-content">
+                <!-- Stats Grid -->
+                <div class="stats-grid mb-6">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p>Tổng Số Phòng</p>
+                                <h3>125</h3>
+                            </div>
+                            <i data-feather="home" class="stat-icon"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p>Còn Trống</p>
+                                <h3>41</h3>
+                            </div>
+                            <i data-feather="key" class="stat-icon"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p>Đã Thuê</p>
+                                <h3>84</h3>
+                            </div>
+                            <i data-feather="user-check" class="stat-icon"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p>Bảo Trì</p>
+                                <h3>3</h3>
+                            </div>
+                            <i data-feather="tool" class="stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs for Rooms/Room Types -->
+                <div style="margin-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
+                    <div style="display: flex; gap: 1rem;">
+                        <button id="roomsTabBtn" class="tab-btn active" style="padding: 0.75rem 1.5rem; border-bottom: 3px solid #6366f1; font-weight: 600; background: none; border: none; cursor: pointer;">Phòng</button>
+                        <button id="roomTypesTabBtn" class="tab-btn" style="padding: 0.75rem 1.5rem; border-bottom: 3px solid transparent; background: none; border: none; cursor: pointer;">Loại Phòng</button>
+                        <button id="availableTabBtn" class="tab-btn" style="padding: 0.75rem 1.5rem; border-bottom: 3px solid transparent; background: none; border: none; cursor: pointer;">Tìm Phòng Trống</button>
+                    </div>
+                </div>
+
+                <!-- Rooms Table -->
+                <div id="roomsTab" class="table-container">
+                    <div class="table-header">
+                        <h3>Tất Cả Phòng</h3>
+                        <div class="search-box">
+                            <input type="text" placeholder="Tìm kiếm phòng..." class="search-input">
+                            <i data-feather="search" class="search-icon"></i>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Số Phòng</th>
+                                    <th>Loại</th>
+                                    <th>Sức Chứa</th>
+                                    <th>Giá/Đêm</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="6" class="text-center text-gray-500 py-4">Đang tải phòng...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Room Types Tab -->
+                <div id="roomTypesTab" class="table-container hidden" style="display:none;">
+                    <div class="table-header">
+                        <h3>Room Types</h3>
+                        <button id="addRoomTypeBtn" class="btn btn-primary text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                            <i data-feather="plus"></i>
+                            <span>Add Room Type</span>
+                        </button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Capacity</th>
+                                    <th>Base Price</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roomTypesTbody">
+                                <tr><td colspan="5" class="text-center text-gray-500 py-4">Loading room types...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Available Rooms Tab -->
+                <div id="availableTab" class="table-container hidden" style="display:none;">
+                    <div class="table-header">
+                        <h3>Find Available Rooms</h3>
+                    </div>
+                    <form id="availableSearchForm" style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 1rem; margin-bottom: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.5rem;">
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label" for="availableRoomType">Loại Phòng (Tùy chọn)</label>
+                            <select id="availableRoomType" class="form-input">
+                                <option value="">-- Tất cả loại phòng --</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label" for="availableCheckIn">Ngày Check-in (Tùy chọn)</label>
+                            <input type="date" id="availableCheckIn" class="form-input">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label" for="availableCheckOut">Ngày Check-out (Tùy chọn)</label>
+                            <input type="date" id="availableCheckOut" class="form-input">
+                        </div>
+                        <div style="display: flex; align-items: flex-end;">
+                            <button type="submit" class="btn btn-primary text-white px-4 py-2 rounded-lg">Tìm Kiếm</button>
+                        </div>
+                    </form>
+                    <div style="overflow-x: auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Room No</th>
+                                    <th>Type</th>
+                                    <th>Capacity</th>
+                                    <th>Price/Night</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="availableRoomsTbody">
+                                <tr><td colspan="5" class="text-center text-gray-500 py-4">Use search to find available rooms</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            <!-- Room Details Modal -->
+            <div id="roomDetailsModal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); display:none; align-items:center; justify-content:center; z-index: 1000;">
+                <div class="card" style="width:100%; max-width: 900px;">
+                    <div class="card-header" style="display:flex; align-items:center; justify-content:space-between;">
+                        <h3 class="card-title" id="roomDetailsTitle">Chi tiết phòng</h3>
+                        <button id="closeRoomDetails" class="action-btn" aria-label="Close"><i data-feather="x"></i></button>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap;">
+                            <div id="roomMeta" style="color:#6b7280"></div>
+                            <button id="openAddRoomService" class="btn btn-primary" type="button">
+                                <i data-feather="plus"></i>
+                                <span>Thêm dịch vụ</span>
+                            </button>
+                        </div>
+
+                        <!-- Add Service Inline Form (toggle) -->
+                        <div id="addRoomServiceFormWrap" class="hidden" style="border:1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+                            <form id="addRoomServiceForm" class="grid" style="grid-template-columns: 2fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label" for="roomServiceSelect">Chọn dịch vụ</label>
+                                    <select id="roomServiceSelect" class="form-input" required></select>
+                                    <small class="text-gray-500">Nạp từ danh sách dịch vụ chung</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="roomServiceQty">Số lượng</label>
+                                    <input type="number" id="roomServiceQty" class="form-input" placeholder="1" min="1" step="1" required>
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label class="form-label" for="roomServiceNote">Ghi chú (tuỳ chọn)</label>
+                                    <input id="roomServiceNote" class="form-input" placeholder="Ví dụ: 2 áo sơ mi, 1 lon nước...">
+                                </div>
+                                <div style="grid-column: span 2; display:flex; justify-content:flex-end; gap:0.5rem;">
+                                    <button type="button" id="cancelAddRoomService" class="btn">Hủy</button>
+                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Current Services/Charges Table -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3>Dịch vụ hiện tại</h3>
+                            </div>
+                            <div style="overflow-x:auto;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Dịch vụ</th>
+                                            <th>Số lượng</th>
+                                            <th>Đơn giá</th>
+                                            <th>Thành tiền</th>
+                                            <th>Thời gian</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="roomChargesTbody">
+                                        <tr><td colspan="5" style="color:#6b7280;">Chưa có dịch vụ</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function formatVND(n) { try { return new Intl.NumberFormat('vi-VN', { style:'currency', currency:'VND' }).format(Number(n||0)); } catch { return n; } }
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    const modal = document.getElementById('roomDetailsModal');
+                    const openBtns = document.querySelectorAll('.action-btn.view');
+                    const closeBtn = document.getElementById('closeRoomDetails');
+                    const titleEl = document.getElementById('roomDetailsTitle');
+                    const metaEl = document.getElementById('roomMeta');
+                    const tbody = document.getElementById('roomChargesTbody');
+                    const openAddBtn = document.getElementById('openAddRoomService');
+                    const formWrap = document.getElementById('addRoomServiceFormWrap');
+                    const form = document.getElementById('addRoomServiceForm');
+                    const selectEl = document.getElementById('roomServiceSelect');
+                    const qtyEl = document.getElementById('roomServiceQty');
+                    const noteEl = document.getElementById('roomServiceNote');
+                    const cancelAddBtn = document.getElementById('cancelAddRoomService');
+
+                    let currentRoom = null;
+                    let currentStatus = null;
+
+                    function openModal() { modal.classList.remove('hidden'); modal.style.display = 'flex'; }
+                    function closeModal() { modal.classList.add('hidden'); modal.style.display = 'none'; formWrap.classList.add('hidden'); form.reset(); }
+
+                    function getServiceCatalog() {
+                        const list = JSON.parse(localStorage.getItem('services:list') || '[]');
+                        if (list.length) return list.map(s => ({ id: s.id, name: s.serviceName, price: Number(s.price||0) }));
+                        // Fallback defaults
+                        return [
+                            { id:'d_giat_ui', name:'Giặt ủi', price: 30000 },
+                            { id:'d_mini_bar', name:'Mini Bar', price: 50000 },
+                            { id:'d_massage', name:'Massage', price: 300000 },
+                            { id:'d_an_toi_tai_phong', name:'Bữa tối tại phòng', price: 200000 }
+                        ];
+                    }
+
+                    function populateServiceDropdown() {
+                        const catalog = getServiceCatalog();
+                        selectEl.innerHTML = '<option value="">-- Chọn dịch vụ --</option>' + catalog.map(s => `<option value="${s.id}" data-price="${s.price}">${s.name} - ${formatVND(s.price)}</option>`).join('');
+                    }
+
+                    function keyFor(roomNo) { return `roomCharges:${roomNo}`; }
+
+                    function renderCharges(roomNo) {
+                        const list = JSON.parse(localStorage.getItem(keyFor(roomNo)) || '[]');
+                        if (!list.length) { tbody.innerHTML = '<tr><td colspan="5" style="color:#6b7280;">Chưa có dịch vụ</td></tr>'; if (typeof feather !== 'undefined') feather.replace(); return; }
+                        tbody.innerHTML = list.map(x => `
+                            <tr>
+                                <td>${x.serviceName}${x.note ? ` <span style="color:#6b7280;">(${x.note})</span>` : ''}</td>
+                                <td>${x.qty}</td>
+                                <td>${formatVND(x.unitPrice)}</td>
+                                <td>${formatVND(x.subtotal)}</td>
+                                <td>${new Date(x.timestamp).toLocaleString('vi-VN')}</td>
+                            </tr>
+                        `).join('');
+                        if (typeof feather !== 'undefined') feather.replace();
+                    }
+
+                    openBtns.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            // Find room no and status from the row
+                            const row = btn.closest('tr');
+                            const roomNo = row?.querySelector('td')?.textContent?.trim();
+                            const statusText = row?.querySelector('td:nth-child(5)')?.innerText?.trim() || '';
+                            currentRoom = roomNo;
+                            currentStatus = statusText;
+                            titleEl.textContent = `Chi tiết phòng ${roomNo}`;
+                            metaEl.innerHTML = `Trạng thái: <strong>${statusText}</strong>`;
+                            // Only allow adding service if Occupied
+                            if (/Occupied|Đang ở|badge-danger/i.test(statusText)) {
+                                openAddBtn.style.display = '';
+                            } else {
+                                openAddBtn.style.display = 'none';
+                                formWrap.classList.add('hidden');
+                            }
+                            populateServiceDropdown();
+                            renderCharges(roomNo);
+                            openModal();
+                        });
+                    });
+
+                    openAddBtn.addEventListener('click', () => { formWrap.classList.remove('hidden'); qtyEl.value = 1; selectEl.focus(); });
+                    cancelAddBtn.addEventListener('click', () => { formWrap.classList.add('hidden'); });
+
+                    form.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        if (!currentRoom) return;
+                        const serviceId = selectEl.value;
+                        const option = selectEl.options[selectEl.selectedIndex];
+                        if (!serviceId || !option) { window.hotelApp?.showNotification('Vui lòng chọn dịch vụ', 'error'); return; }
+                        const name = option.textContent.split(' - ')[0];
+                        const unitPrice = Number(option.getAttribute('data-price') || 0);
+                        const qty = Math.max(1, Number(qtyEl.value || 1));
+                        const note = noteEl.value.trim();
+                        const record = { id: 'RC' + Date.now(), serviceId, serviceName: name, unitPrice, qty, subtotal: unitPrice * qty, note, timestamp: new Date().toISOString() };
+                        const key = keyFor(currentRoom);
+                        const list = JSON.parse(localStorage.getItem(key) || '[]');
+                        list.push(record);
+                        localStorage.setItem(key, JSON.stringify(list));
+                        window.hotelApp?.showNotification('Đã thêm dịch vụ cho phòng ' + currentRoom, 'success');
+                        form.reset();
+                        formWrap.classList.add('hidden');
+                        renderCharges(currentRoom);
+                    });
+
+                    closeBtn.addEventListener('click', () => closeModal());
+                    modal.addEventListener('mousedown', (e) => { if (e.target === modal) closeModal(); });
+                    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+                });
+            </script>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/rooms.js"></script>
+</body>
+</html>

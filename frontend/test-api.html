@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Connection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4f46e5;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid #4f46e5;
+        }
+        input, button {
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        button {
+            background: #4f46e5;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #4338ca;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #1f2937;
+            color: #10b981;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        .status.success { background: #dcfce7; color: #166534; }
+        .status.error { background: #fee2e2; color: #991b1b; }
+        .status.pending { background: #fef3c7; color: #92400e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 API Connection Test Tool</h1>
+        
+        <div class="test-section">
+            <h3>Test 1: Get All Reservations</h3>
+            <button onclick="testGetAllReservations()">📋 Test GET /api/reservations/all</button>
+            <div id="status1" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: Get Reservation by ID</h3>
+            <input type="text" id="resId" placeholder="Enter Reservation ID (e.g., RES_001)" style="width: 300px;">
+            <button onclick="testGetReservationById()">🔍 Test GET /api/reservations?resId=</button>
+            <div id="status2" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Get Reservation Rooms</h3>
+            <input type="text" id="resId2" placeholder="Enter Reservation ID" style="width: 300px;">
+            <button onclick="testGetReservationRooms()">🏠 Test GET /api/reservations/{resId}</button>
+            <div id="status3" style="margin-top: 10px;"></div>
+        </div>
+
+        <h3 style="margin-top: 30px;">Response:</h3>
+        <div id="result">Click a test button to see results...</div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8080/hotel_reservation_premium/api';
+        const resultDiv = document.getElementById('result');
+
+        function log(message, data = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            let output = `[${timestamp}] ${message}\n`;
+            if (data) {
+                output += JSON.stringify(data, null, 2) + '\n';
+            }
+            resultDiv.textContent += output + '\n';
+            resultDiv.scrollTop = resultDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            resultDiv.textContent = '';
+        }
+
+        function setStatus(elementId, status, message) {
+            const el = document.getElementById(elementId);
+            const className = status === 'success' ? 'success' : status === 'error' ? 'error' : 'pending';
+            el.innerHTML = `<span class="status ${className}">${message}</span>`;
+        }
+
+        async function testGetAllReservations() {
+            clearLog();
+            setStatus('status1', 'pending', '⏳ Testing...');
+            log('🚀 Testing: GET /api/reservations/all');
+            
+            try {
+                const url = `${BASE_URL}/reservations/all`;
+                log(`📡 URL: ${url}`);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log(`📊 Status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log('❌ Error:', errorText);
+                    setStatus('status1', 'error', `❌ Failed: ${response.status}`);
+                    return;
+                }
+                
+                const data = await response.json();
+                log(`✅ Success! Found ${data.length} reservations:`, data);
+                setStatus('status1', 'success', `✅ Success: ${data.length} reservations`);
+            } catch (error) {
+                log('❌ Exception:', error.message);
+                setStatus('status1', 'error', `❌ Error: ${error.message}`);
+            }
+        }
+
+        async function testGetReservationById() {
+            clearLog();
+            const resId = document.getElementById('resId').value.trim();
+            
+            if (!resId) {
+                alert('Please enter a Reservation ID');
+                return;
+            }
+            
+            setStatus('status2', 'pending', '⏳ Testing...');
+            log(`🚀 Testing: GET /api/reservations?resId=${resId}`);
+            
+            try {
+                const url = `${BASE_URL}/reservations?resId=${resId}`;
+                log(`📡 URL: ${url}`);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log(`📊 Status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log('❌ Error:', errorText);
+                    setStatus('status2', 'error', `❌ Failed: ${response.status}`);
+                    return;
+                }
+                
+                const data = await response.json();
+                log('✅ Success! Reservation data:', data);
+                setStatus('status2', 'success', '✅ Success');
+            } catch (error) {
+                log('❌ Exception:', error.message);
+                setStatus('status2', 'error', `❌ Error: ${error.message}`);
+            }
+        }
+
+        async function testGetReservationRooms() {
+            clearLog();
+            const resId = document.getElementById('resId2').value.trim();
+            
+            if (!resId) {
+                alert('Please enter a Reservation ID');
+                return;
+            }
+            
+            setStatus('status3', 'pending', '⏳ Testing...');
+            log(`🚀 Testing: GET /api/reservations/${resId}`);
+            
+            try {
+                const url = `${BASE_URL}/reservations/${resId}`;
+                log(`📡 URL: ${url}`);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log(`📊 Status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log('❌ Error:', errorText);
+                    setStatus('status3', 'error', `❌ Failed: ${response.status}`);
+                    return;
+                }
+                
+                const data = await response.json();
+                log(`✅ Success! Found ${data.length} rooms:`, data);
+                setStatus('status3', 'success', `✅ Success: ${data.length} rooms`);
+            } catch (error) {
+                log('❌ Exception:', error.message);
+                setStatus('status3', 'error', `❌ Error: ${error.message}`);
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            log('🎯 API Test Tool Ready!');
+            log('📍 Base URL: ' + BASE_URL);
+            log('');
+            log('ℹ️ Instructions:');
+            log('1. Click "Test GET /api/reservations/all" to see all reservations');
+            log('2. Copy a reservation ID from the results');
+            log('3. Use that ID to test the other endpoints');
+            log('');
+        });
+    </script>
+</body>
+</html>

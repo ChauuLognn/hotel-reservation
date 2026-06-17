@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khách Sạn Hotel Haven - Cài Đặt</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar bg-indigo-800 text-white w-64 flex-shrink-0">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <div class="sidebar-logo">
+                        <i data-feather="home"></i>
+                    </div>
+                    <h1 class="sidebar-title">Hotel Haven</h1>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="layout"></i>
+                    <span>Trang Chủ</span>
+                </a>
+                <a href="guests.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="users"></i>
+                    <span>Khách Hàng</span>
+                </a>
+                <a href="rooms.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="home"></i>
+                    <span>Phòng</span>
+                </a>
+                <a href="bookings.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="calendar"></i>
+                    <span>Đặt Phòng</span>
+                </a>
+                <a href="reservations.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg ">
+                    <i data-feather="clipboard"></i>
+                    <span>Đặt Chỗ</span>
+                </a>
+                <a href="services.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="coffee"></i>
+                    <span>Dịch Vụ</span>
+                </a>
+                <a href="bills.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="dollar-sign"></i>
+                    <span>Hóa Đơn</span>
+                </a>
+                <a href="users.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="user-plus"></i>
+                    <span>Người Dùng</span>
+                </a>
+                <a href="admin.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg">
+                    <i data-feather="shield"></i>
+                    <span>Quản Trị</span>
+                </a>
+                <a href="settings.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-lg bg-indigo-700">
+                    <i data-feather="settings"></i>
+                    <span>Cài Đặt</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <h2 class="header-title">Cài Đặt Hệ Thống</h2>
+                <div class="header-actions">
+                    <div class="notification-badge">
+                        <i data-feather="bell" style="color: #6b7280;"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i data-feather="user"></i>
+                        </div>
+                        <span class="user-name">Quản Trị</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="page-content">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                    <!-- General Settings -->
+                    <div class="card setting-card">
+                        <div class="card-header">
+                            <h3 class="card-title">General Settings</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                <!-- Hotel Name -->
+                                <div class="form-group">
+                                    <label for="hotelName" class="form-label">Hotel Name</label>
+                                    <input type="text" id="hotelName" class="form-input" value="Hotel Haven">
+                                </div>
+                                
+                                <!-- Contact Email -->
+                                <div class="form-group">
+                                    <label for="contactEmail" class="form-label">Contact Email</label>
+                                    <input type="email" id="contactEmail" class="form-input" value="contact@hotelhaven.com">
+                                </div>
+                                
+                                <!-- Phone Number -->
+                                <div class="form-group">
+                                    <label for="phoneNumber" class="form-label">Phone Number</label>
+                                    <input type="tel" id="phoneNumber" class="form-input" value="+1 (555) 123-4567">
+                                </div>
+                                
+                                <!-- Address -->
+                                <div class="form-group">
+                                    <label for="address" class="form-label">Address</label>
+                                    <textarea id="address" rows="3" class="form-input form-textarea">123 Hotel Street, Haven City, HC 12345</textarea>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button class="btn btn-primary">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Preferences -->
+                    <div class="card setting-card">
+                        <div class="card-header">
+                            <h3 class="card-title">System Preferences</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                <!-- Maintenance Mode -->
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div>
+                                        <label for="maintenanceMode" class="form-label" style="margin-bottom: 0;">Maintenance Mode</label>
+                                        <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">Temporarily disable the system</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="maintenanceMode">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <!-- Email Notifications -->
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div>
+                                        <label for="emailNotifications" class="form-label" style="margin-bottom: 0;">Email Notifications</label>
+                                        <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">Enable system notifications</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="emailNotifications" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <!-- Dark Mode -->
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div>
+                                        <label for="darkMode" class="form-label" style="margin-bottom: 0;">Dark Mode</label>
+                                        <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">Switch to dark theme</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="darkMode">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <!-- Auto Backup -->
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div>
+                                        <label for="autoBackup" class="form-label" style="margin-bottom: 0;">Auto Backup</label>
+                                        <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">Daily database backup</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="autoBackup" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <!-- System Update -->
+                                <div style="padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+                                    <h4 class="form-label">System Update</h4>
+                                    <p style="font-size: 0.75rem; color: #6b7280; margin: 0.75rem 0;">Current Version: 2.5.1</p>
+                                    <button class="btn btn-primary w-full">
+                                        Check for Updates
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/settings.js"></script>
+</body>
+</html>

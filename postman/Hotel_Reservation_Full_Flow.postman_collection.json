@@ -1,0 +1,340 @@
+{
+  "info": {
+    "name": "Hotel Reservation - Chu trình đầy đủ",
+    "description": "API collection theo chu trình hoạt động của hệ thống Hotel Reservation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Tạo bản nháp (Hold)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"guestId\": 2,\n    \"roomIds\": [101, 102],\n    \"checkIn\": \"2025-11-25\",\n    \"checkOut\": \"2025-11-27\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/holds",
+          "host": ["{{baseUrl}}"],
+          "path": ["holds"]
+        }
+      }
+    },
+    {
+      "name": "2. Khách xác nhận bản nháp (Confirm)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "empId",
+            "value": "{{empId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"token\": \"YOUR_TOKEN_FROM_STEP_1\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservations"]
+        }
+      }
+    },
+    {
+      "name": "3. Khách thanh toán (Confirm Payment)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "empId",
+            "value": "{{empId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"newStatus\": \"CONFIRMED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/reservationStatus/:resId/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservationStatus", ":resId", "status"],
+          "variable": [
+            {
+              "key": "resId",
+              "value": "YOUR_RESERVATION_ID"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. Đăng ký lưu trú",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservation-rooms/resRoomId=:resRoomId-guestId=:guestId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservation-rooms", "resRoomId=:resRoomId-guestId=:guestId"],
+          "variable": [
+            {
+              "key": "resRoomId",
+              "value": "YOUR_RES_ROOM_ID"
+            },
+            {
+              "key": "guestId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Check-In khách",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "empId",
+            "value": "{{empId}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservation-rooms/resRoomId=:resRoomId-guestId=:guestId/checkIn",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservation-rooms", "resRoomId=:resRoomId-guestId=:guestId", "checkIn"],
+          "variable": [
+            {
+              "key": "resRoomId",
+              "value": "YOUR_RES_ROOM_ID"
+            },
+            {
+              "key": "guestId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "6. Sử dụng dịch vụ",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "empId",
+            "value": "{{empId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"serviceId\": 1,\n    \"quantity\": 2\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/reservation-rooms/:resRoomId/services",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservation-rooms", ":resRoomId", "services"],
+          "variable": [
+            {
+              "key": "resRoomId",
+              "value": "YOUR_RES_ROOM_ID"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "7. Check-Out khách",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "empId",
+            "value": "{{empId}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservation-rooms/resRoomId=:resRoomId-guestId=:guestId/checkOut",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservation-rooms", "resRoomId=:resRoomId-guestId=:guestId", "checkOut"],
+          "variable": [
+            {
+              "key": "resRoomId",
+              "value": "YOUR_RES_ROOM_ID"
+            },
+            {
+              "key": "guestId",
+              "value": "1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET - Xem các phòng trong reservation",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations/:resId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservations", ":resId"],
+          "variable": [
+            {
+              "key": "resId",
+              "value": "YOUR_RESERVATION_ID"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET - Xem đơn của khách",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations/guest/:guestId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservations", "guest", ":guestId"],
+          "variable": [
+            {
+              "key": "guestId",
+              "value": "2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET - Xem đơn gần nhất của khách",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations/guest/:guestId/latest",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservations", "guest", ":guestId", "latest"],
+          "variable": [
+            {
+              "key": "guestId",
+              "value": "2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET - Xem thông tin lưu trú trong resRoom",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservation-rooms/:resRoomId/guests",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservation-rooms", ":resRoomId", "guests"],
+          "variable": [
+            {
+              "key": "resRoomId",
+              "value": "YOUR_RES_ROOM_ID"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET - Xem dịch vụ đã dùng",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservation-rooms/:resRoomId/services",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reservation-rooms", ":resRoomId", "services"],
+          "variable": [
+            {
+              "key": "resRoomId",
+              "value": "YOUR_RES_ROOM_ID"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET - Tìm phòng trống",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/rooms/available?checkIn=2025-11-25&checkOut=2025-11-27",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "rooms", "available"],
+          "query": [
+            {
+              "key": "checkIn",
+              "value": "2025-11-25"
+            },
+            {
+              "key": "checkOut",
+              "value": "2025-11-27"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST - Thanh toán bill",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "empId",
+            "value": "{{empId}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/bills/:billId/pay",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bills", ":billId", "pay"],
+          "variable": [
+            {
+              "key": "billId",
+              "value": "YOUR_BILL_ID"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/hotel_reservation_premium",
+      "type": "string"
+    },
+    {
+      "key": "empId",
+      "value": "9",
+      "type": "string"
+    }
+  ]
+}
