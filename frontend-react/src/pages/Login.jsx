@@ -28,11 +28,17 @@ export default function Login() {
     try {
       const userData = await login(form.username, form.password);
       const userRole = userData?.role || '';
-      // Admin/Receptionist/Manager → dashboard, User/Guest → user-home
-      if (['ADMIN', 'MANAGER', 'RECEPTIONIST', 'EMPLOYEE'].includes(userRole)) {
-        navigate('/');
-      } else {
+      
+      // If Customer tab is active, redirect to customer home
+      if (role === 'user') {
         navigate('/user-home');
+      } else {
+        // Admin tab active: check if user is staff/admin
+        if (['ADMIN', 'MANAGER', 'RECEPTIONIST', 'EMPLOYEE'].includes(userRole)) {
+          navigate('/');
+        } else {
+          setError('Tài khoản này không có quyền quản trị!');
+        }
       }
     } catch (err) {
       const msg = err?.response?.data?.message || 'Sai tên đăng nhập hoặc mật khẩu!';
