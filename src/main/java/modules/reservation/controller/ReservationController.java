@@ -2,12 +2,9 @@ package modules.reservation.controller;
 import modules.reservation.entity.ReservationGuest;
 import modules.reservation.entity.ReservationRoom;
 import java.time.LocalDateTime;
-import modules.reservation.dto.ReservationGuestDto;
+import modules.reservation.dto.ReservationPayload.ReservationGuestDto;
 import modules.hotel_service.dto.ReservationServiceCreationRequest;
 import modules.hotel_service.dto.ReservationServiceDto;
-import modules.reservation.service.ReservationGuestService;
-import modules.reservation.service.ReservationRoomService;
-import modules.hotel_service.service.ReservationServiceService;
 import modules.account.entity.User;
 import modules.billing.entity.Bill;
 import modules.reservation.entity.Reservation;
@@ -19,30 +16,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import modules.reservation.dto.ChangeStatusRequest;
-import modules.reservation.dto.ReservationRoomDto;
-import modules.reservation.dto.StatusHistoryDTO;
+import modules.reservation.dto.ReservationPayload.ChangeStatusRequest;
+import modules.reservation.dto.ReservationPayload.ReservationRoomDto;
+import modules.reservation.dto.ReservationPayload.StatusHistoryDTO;
 import modules.billing.dto.ResRoomBillSummary;
 import modules.billing.dto.ReservationBillSummary;
-import modules.reservation.dto.CreateHoldRequest;
-import modules.reservation.dto.InitialReservationResponse;
-import modules.reservation.dto.ReservationDto;
+import modules.reservation.dto.ReservationPayload.CreateHoldRequest;
+import modules.reservation.dto.ReservationPayload.InitialReservationResponse;
+import modules.reservation.dto.ReservationPayload.ReservationDto;
 import modules.billing.service.BillService;
 import modules.reservation.service.ReservationService;
-import modules.reservation.service.ReservationStatusHistoryService;
 
 import jakarta.validation.Valid;
 
 @RestController
 public class ReservationController {
-    @Autowired private ReservationRoomService resRoomDomain;
-    @Autowired private ReservationServiceService rSDomain;
-    @Autowired private ReservationGuestService resGuestDomain;
 
 
     @Autowired private ReservationService resDomain;
     @Autowired private BillService billDomain;
-    @Autowired private ReservationStatusHistoryService statusHistoryDomain;
 
     // ─── Reservation ──────────────────────────────────────────────────────────
 
@@ -108,19 +100,19 @@ public class ReservationController {
 
     @GetMapping("/api/reservationStatus/{resId}")
     public List<StatusHistoryDTO> getStatusHistoryByReservation(@PathVariable String resId) {
-        return statusHistoryDomain.getHistoryByReservation(resId);
+        return resDomain.getHistoryByReservation(resId);
     }
 
     @GetMapping("/api/reservationStatus/{resId}/resRooms/{resRoomId}")
     public List<StatusHistoryDTO> getStatusHistoryByResRoom(@PathVariable String resRoomId) {
-        return statusHistoryDomain.getHistoryByReservationRoom(resRoomId);
+        return resDomain.getHistoryByReservationRoom(resRoomId);
     }
 
     @PostMapping("/api/reservationStatus/{resId}/status")
     public ResponseEntity<Void> updateReservationStatus(@PathVariable String resId,
                                                         @RequestBody ChangeStatusRequest req,
                                                         @RequestHeader("X-User-Id") Integer userId) {
-        statusHistoryDomain.updateReservationStatus(resId, req, userId);
+        resDomain.updateReservationStatus(resId, req, userId);
         return ResponseEntity.noContent().build();
     }
 
@@ -128,36 +120,36 @@ public class ReservationController {
 
     @GetMapping("/api/reservation-rooms/{resRoomId}")
     public ReservationRoomDto getById(@PathVariable String resRoomId) {
-        return resRoomDomain.getResRoomById(resRoomId);
+        return resDomain.getResRoomById(resRoomId);
     }
 
     @GetMapping("/api/reservation-rooms/{resRoomId}/guestStays")
     public List<ReservationGuestDto> getResGuestsByResRoom(@PathVariable String resRoomId) {
-        return resRoomDomain.getResGuestByResRoom(resRoomId);
+        return resDomain.getResGuestByResRoom(resRoomId);
     }
 
     @DeleteMapping("/api/reservation-rooms/{resRoomId}")
     public String deleteResRoom(@PathVariable String resRoomId) {
-        resRoomDomain.delete(resRoomId);
+        resDomain.deleteResRoom(resRoomId);
         return "ReservationRoom deleted successfully";
     }
 
     @GetMapping("/api/reservation-rooms/{resRoomId}/services")
     public List<ReservationServiceDto> getServicesOfResRoom(@PathVariable String resRoomId) {
-        return rSDomain.getAllOfResRoom(resRoomId);
+        return resDomain.getAllServicesOfResRoom(resRoomId);
     }
 
     @PostMapping("/api/reservation-rooms/{resRoomId}/services")
     public String createResService(@PathVariable String resRoomId,
                                    @RequestBody @Valid ReservationServiceCreationRequest rq,
                                    @RequestHeader("X-User_id") Integer userId) {
-        rSDomain.create(resRoomId, rq, userId);
+        resDomain.createReservationService(resRoomId, rq, userId);
         return "ok";
     }
 
     @DeleteMapping("/api/reservation-rooms/{resRoomId}/services/{serId}")
     public String deleteResService(@PathVariable String serId) {
-        rSDomain.delete(serId);
+        resDomain.deleteReservationService(serId);
         return "ReservationService deleted successfully";
     }
 
@@ -165,33 +157,33 @@ public class ReservationController {
 
     @GetMapping("/api/reservation-guests/reservation-room/{resRoomId}")
     public List<ReservationGuestDto> getGuestsByResRoom(@PathVariable String resRoomId) {
-        return resGuestDomain.getGuestsByResRoomId(resRoomId);
+        return resDomain.getGuestsByResRoomId(resRoomId);
     }
 
     @PostMapping("/api/reservation-guests/register")
     public ReservationGuestDto registerGuest(@RequestParam String resRoomId,
                                              @RequestParam Integer guestId) {
-        return resGuestDomain.createReservationGuest(resRoomId, guestId);
+        return resDomain.createReservationGuest(resRoomId, guestId);
     }
 
     @PostMapping("/api/reservation-guests/resRoomId={resRoomId}-guestId={guestId}")
     public void createReservationGuestLegacy(@PathVariable String resRoomId,
                                              @PathVariable Integer guestId) {
-        resGuestDomain.createReservationGuest(resRoomId, guestId);
+        resDomain.createReservationGuest(resRoomId, guestId);
     }
 
     @PostMapping("/api/reservation-guests/resRoomId={resRoomId}-guestId={guestId}/checkIn")
     public ReservationGuestDto checkIn(@PathVariable String resRoomId,
                                        @PathVariable Integer guestId,
                                        @RequestBody(required = false) LocalDateTime checkInAt) {
-        return resGuestDomain.setCheckIn(resRoomId, guestId, checkInAt);
+        return resDomain.setCheckIn(resRoomId, guestId, checkInAt);
     }
 
     @PostMapping("/api/reservation-guests/resRoomId={resRoomId}-guestId={guestId}/checkOut")
     public ReservationGuestDto checkOut(@PathVariable String resRoomId,
                                         @PathVariable Integer guestId,
                                         @RequestBody(required = false) LocalDateTime checkOutAt) {
-        return resGuestDomain.setCheckOut(resRoomId, guestId, checkOutAt);
+        return resDomain.setCheckOut(resRoomId, guestId, checkOutAt);
     }
 
 }

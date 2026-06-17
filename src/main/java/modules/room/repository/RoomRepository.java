@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import modules.reservation.dto.AvailableRoom;
+import modules.reservation.dto.ReservationPayload.AvailableRoom;
 import modules.room.entity.Room;
 
 @Repository

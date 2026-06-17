@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
-import modules.reservation.dto.ReservationGuestDto;
+import modules.reservation.dto.ReservationPayload.ReservationGuestDto;
 import modules.billing.dto.BillDTO;
 import modules.billing.dto.ResRoomBillSummary;
 import modules.billing.dto.ReservationBillSummary;

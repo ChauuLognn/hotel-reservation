@@ -13,7 +13,7 @@ import modules.reservation.entity.ReservationGuest;
 import modules.reservation.repository.ReservationGuestRepository;
 import modules.reservation.repository.ReservationRoomRepository;
 import modules.reservation.repository.ReservationStatusHistoryRepository;
-import modules.reservation.service.ReservationGuestService;
+import modules.reservation.service.ReservationService;
 
 
 // task tự động checkOut cho khách khi đến giờ resId.checkOutTime 
@@ -22,7 +22,7 @@ public class AutoCheckoutJob {
     @Autowired private ReservationGuestRepository rgRepo;
     @Autowired private ReservationStatusHistoryRepository rshRepo;
     @Autowired private ReservationRoomRepository rrRepo;
-    @Autowired private ReservationGuestService rgDomain;
+    @Autowired private ReservationService resDomain;
 
     @Scheduled(
         fixedDelayString = "${app.hold.cleanup.fixed-delay-ms:600000}",
@@ -44,7 +44,7 @@ public class AutoCheckoutJob {
             for (ReservationGuest x : lst) {
                 try {
                     // checkOut cho khách nếu hợp lệ
-                    rgDomain.setCheckOut(resRoomId,x.getGuest().getId(),
+                    resDomain.setCheckOut(resRoomId,x.getGuest().getId(),
                         LocalDateTime.of(rr.getCheckOutTime(), LocalTime.of(14, 0))
                     );
                 } catch (Exception e) {

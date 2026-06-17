@@ -11,10 +11,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import modules.reservation.entity.ReservationStatusHistory;
-import modules.reservation.entity.ReservationStatusHistoryId;
 
 @Repository
-public interface ReservationStatusHistoryRepository extends JpaRepository<ReservationStatusHistory, ReservationStatusHistoryId>{
+public interface ReservationStatusHistoryRepository extends JpaRepository<ReservationStatusHistory, Long>{
     @Query(value="""
         select *
         from reservationStatusHistory rsh
@@ -51,7 +50,7 @@ public interface ReservationStatusHistoryRepository extends JpaRepository<Reserv
             :oldStatus, :newStatus, :updatedAt, :updatedBy, :reason
         FROM reservationStatusHistory h
         WHERE h.reservationRoomId = :resRoomId
-        """, nativeQuery = true)
+    """, nativeQuery = true)
     void insertResStatusHistory(
         @Param("resRoomId") String resRoomId,
         @Param("oldStatus") String oldStatus,

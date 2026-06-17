@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import modules.reservation.dto.ReservationGuestDto;
+import modules.reservation.dto.ReservationPayload.ReservationGuestDto;
 
 // không cần để ý
 

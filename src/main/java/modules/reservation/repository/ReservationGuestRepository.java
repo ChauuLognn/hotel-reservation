@@ -11,10 +11,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import modules.reservation.entity.ReservationGuest;
-import modules.reservation.entity.ReservationGuestId;
 
 @Repository
-public interface ReservationGuestRepository extends JpaRepository<ReservationGuest, ReservationGuestId>{
+public interface ReservationGuestRepository extends JpaRepository<ReservationGuest, Long>{
     @Query(value="""
         select *
         from reservationGuest rg
@@ -45,7 +44,7 @@ public interface ReservationGuestRepository extends JpaRepository<ReservationGue
         INSERT INTO reservationGuest (reservationRoomId, guestId,
                          checkInAt, checkOutAt)
         VALUES (:reservationRoomId, :guestId, null, null)
-        """, nativeQuery = true)
+    """, nativeQuery = true)
     void insertResGuest(
         @Param("reservationRoomId") String reservationRoomId,
         @Param("guestId") Integer guestId
@@ -60,8 +59,7 @@ public interface ReservationGuestRepository extends JpaRepository<ReservationGue
             and rg.checkInAt is null
             and now() >= timestamp(rr.checkInTime, '12:00:00')
             and now() < timestamp(rr.checkOutTime, '14:00:00')
-        """,
-        nativeQuery = true)
+    """, nativeQuery = true)
     void setCheckIn(
         @Param("resRoomId") String resRoomId,
         @Param("guestId") Integer guestId,
@@ -77,8 +75,7 @@ public interface ReservationGuestRepository extends JpaRepository<ReservationGue
             and checkInAt is not null
             and checkOutAt is null
             and :checkOutAt >= checkInAt
-        """,
-        nativeQuery = true)
+    """, nativeQuery = true)
     void setCheckOut(
         @Param("resRoomId") String resRoomId,
         @Param("guestId") Integer guestId,
@@ -114,5 +111,4 @@ public interface ReservationGuestRepository extends JpaRepository<ReservationGue
         @Param("from") LocalDateTime from,
         @Param("to") LocalDateTime to
     );    
-
 }

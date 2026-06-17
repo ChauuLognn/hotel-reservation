@@ -6,24 +6,25 @@ import common.enums.ReservationStatus;
 import modules.account.entity.User;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "reservationStatusHistory")
 public class ReservationStatusHistory {
 
-    @EmbeddedId
-    private ReservationStatusHistoryId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @MapsId("reservationRoomId")
     @ManyToOne
     @JoinColumn(
         name = "reservationRoomId",
@@ -31,6 +32,9 @@ public class ReservationStatusHistory {
         foreignKey = @ForeignKey(name = "FK_reshistory_resroom")
     )
     private ReservationRoom reservationRoom;
+
+    @Column(name = "historySeq", nullable = false)
+    private Integer historySeq;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "oldStatus", nullable = false, length = 50)
@@ -54,10 +58,12 @@ public class ReservationStatusHistory {
     @Column(name = "reason", length = 255)
     private String reason;
 
-    public ReservationStatusHistoryId getId(){return id;}
-    public void setId(ReservationStatusHistoryId id){this.id = id;}
+    public Long getId(){return id;}
+    public void setId(Long id){this.id = id;}
     public ReservationRoom getReservationRoom(){return reservationRoom;}
     public void setReservationRoom(ReservationRoom reservationRoom){this.reservationRoom = reservationRoom;}
+    public Integer getHistorySeq(){return historySeq;}
+    public void setHistorySeq(Integer historySeq){this.historySeq = historySeq;}
     public ReservationStatus getOldStatus(){return oldStatus;}
     public void setOldStatus(ReservationStatus oldStatus){this.oldStatus = oldStatus;}
     public ReservationStatus getNewStatus(){return newStatus;}

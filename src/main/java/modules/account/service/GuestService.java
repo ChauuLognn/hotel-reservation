@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import modules.account.dto.GuestCreationRequest;
-import modules.account.dto.GuestDto;
+import modules.account.dto.GuestPayload.GuestCreationRequest;
+import modules.account.dto.GuestPayload.GuestDto;
 import modules.account.entity.Guest;
 import modules.account.repository.GuestRepository;
 

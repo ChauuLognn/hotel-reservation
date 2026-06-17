@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import modules.account.dto.UserCreationRequest;
-import modules.account.dto.UserDto;
+import modules.account.dto.UserPayload.UserCreationRequest;
+import modules.account.dto.UserPayload.UserDto;
 import modules.account.entity.Emp;
 import modules.account.entity.User;
 import modules.account.repository.EmpRepository;

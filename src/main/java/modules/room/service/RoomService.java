@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import modules.room.dto.RoomCreateRequest;
-import modules.room.dto.RoomDto;
-import modules.reservation.dto.AvailableRoom;
+import modules.room.dto.RoomPayload.RoomCreateRequest;
+import modules.room.dto.RoomPayload.RoomDto;
+import modules.reservation.dto.ReservationPayload.AvailableRoom;
 import modules.room.entity.Room;
 import modules.room.entity.RoomType;
 import modules.room.repository.RoomRepository;

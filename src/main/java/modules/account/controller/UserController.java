@@ -6,63 +6,139 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import common.payload.ApiResponse;
-import modules.account.dto.CreateUserRequest;
+import modules.account.dto.EmpPayload.EmpCreationRequest;
+import modules.account.dto.EmpPayload.EmpDto;
+import modules.account.dto.GuestPayload.GuestCreationRequest;
+import modules.account.dto.GuestPayload.GuestDto;
+import modules.account.dto.UserPayload.UserCreationRequest;
+import modules.account.dto.UserPayload.UserDto;
+import modules.account.dto.UserPayload.CreateUserRequest;
+import modules.reservation.dto.ReservationPayload.GuestStayDto;
+
+import modules.account.service.EmpService;
+import modules.account.service.GuestService;
+import modules.account.service.UserService;
+import modules.reservation.service.ReservationService;
+
 import modules.account.entity.Emp;
-import modules.account.entity.Role;
+import modules.account.entity.Guest;
 import modules.account.entity.User;
+import modules.account.entity.Role;
 import common.enums.RoleName;
+
 import modules.account.repository.EmpRepository;
 import modules.account.repository.UserRepository;
 import modules.account.repository.RoleRepository;
 
 import java.util.List;
 
-/**
- * User Management Controller
- * 
- * Quản lý users (chỉ dành cho Admin)
- * 
- * PROTECTED endpoints - Cần JWT token
- */
 @RestController
-@RequestMapping("/api/admin/users")
-public class UserManagementController {
+public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+    @Autowired private EmpService eDomain;
+    @Autowired private GuestService gDomain;
+    @Autowired private UserService userDomain;
+    @Autowired private ReservationService resDomain;
 
-    @Autowired
-    private EmpRepository empRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private EmpRepository empRepository;
+    @Autowired private RoleRepository roleRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    // ─── Employee Endpoints (from PersonController) ───────────────────────────
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @PostMapping("/api/emps")
+    public EmpDto createEmp(@RequestBody EmpCreationRequest rq) {
+        return eDomain.create(rq);
+    }
 
-    /**
-     * API Tạo User mới (Admin only)
-     * 
-     * POST /api/users
-     * Header: Authorization: Bearer <token>
-     * Body: {
-     *   "account": "newmanager",
-     *   "password": "password123",
-     *   "fullName": "Tran Van B",
-     *   "email": "manager@example.com",
-     *   "phone": "0912345678",
-     *   "address": "789 XYZ Street",
-     *   "identityNum": "012345678901",
-     *   "roleName": "MANAGER"  // "MANAGER" hoặc "EMPLOYEE"
-     * }
-     * 
-     * ✅ Admin có thể chọn role cho user mới
-     * ✅ Password tự động hash
-     */
-    @PostMapping
-    public ResponseEntity<ApiResponse<User>> createUser(@RequestBody CreateUserRequest request) {
+    @GetMapping("/api/emps")
+    public List<EmpDto> getAllEmps() {
+        return eDomain.getAll();
+    }
+
+    @GetMapping("/api/emps/{id}")
+    public EmpDto getEmpById(@PathVariable Integer id) {
+        return eDomain.getById(id);
+    }
+
+    @PutMapping("/api/emps/{id}")
+    public EmpDto updateEmp(@PathVariable Integer id, @RequestBody EmpCreationRequest rq) {
+        return eDomain.update(id, rq);
+    }
+
+    @DeleteMapping("/api/emps/{id}")
+    public String deleteEmp(@PathVariable Integer id) {
+        eDomain.delete(id);
+        return "Deleted emp successfully";
+    }
+
+    // ─── Guest Endpoints (from PersonController) ──────────────────────────────
+
+    @PostMapping("/api/guests")
+    public GuestDto createGuest(@RequestBody GuestCreationRequest rq) {
+        return gDomain.create(rq);
+    }
+
+    @GetMapping("/api/guests")
+    public List<GuestDto> getAllGuests() {
+        return gDomain.getAll();
+    }
+
+    @GetMapping("/api/guests/{id}")
+    public GuestDto getGuestById(@PathVariable Integer id) {
+        return gDomain.getById(id);
+    }
+
+    @PutMapping("/api/guests/{id}")
+    public GuestDto updateGuest(@PathVariable Integer id, @RequestBody GuestCreationRequest rq) {
+        return gDomain.update(id, rq);
+    }
+
+    @DeleteMapping("/api/guests/{id}")
+    public String deleteGuest(@PathVariable Integer id) {
+        gDomain.delete(id);
+        return "Deleted guest successfully";
+    }
+
+    @GetMapping("/api/guests/{guestId}/stays")
+    public GuestStayDto getStaysOfGuest(@PathVariable Integer guestId) {
+        return resDomain.getStaysOfGuest(guestId);
+    }
+
+    // ─── User Legacy Endpoints (from PersonController) ─────────────────────────
+
+    @PostMapping("/api/users")
+    public UserDto createPersonUser(@RequestBody UserCreationRequest rq) {
+        return userDomain.create(rq);
+    }
+
+    @GetMapping("/api/users")
+    public List<UserDto> getAllPersonUsers() {
+        return userDomain.getAll();
+    }
+
+    @GetMapping("/api/users/{id}")
+    public UserDto getPersonUserById(@PathVariable Integer id) {
+        return userDomain.getById(id);
+    }
+
+    @PutMapping("/api/users/{id}")
+    public UserDto updatePersonUser(@PathVariable Integer id, @RequestBody UserCreationRequest rq) {
+        return userDomain.update(id, rq);
+    }
+
+    @DeleteMapping("/api/users/{id}")
+    public String deletePersonUser(@PathVariable Integer id) {
+        userDomain.delete(id);
+        return "Deleted user successfully";
+    }
+
+    // ─── Admin User Management Endpoints (from UserManagementController) ────────
+
+    @PostMapping("/api/admin/users")
+    public ResponseEntity<ApiResponse<User>> createAdminUser(@RequestBody CreateUserRequest request) {
         try {
-            // 1. Validate
             if (userRepository.findByAccount(request.getAccount()).isPresent()) {
                 throw new IllegalArgumentException("Account already exists");
             }
@@ -76,7 +152,6 @@ public class UserManagementController {
                 throw new IllegalArgumentException("Identity number already exists");
             }
 
-            // 2. Parse role name
             RoleName roleName;
             try {
                 roleName = RoleName.valueOf(request.getRoleName().toUpperCase());
@@ -84,7 +159,6 @@ public class UserManagementController {
                 throw new IllegalArgumentException("Invalid role name. Use MANAGER or EMPLOYEE");
             }
 
-            // 3. Tạo Employee
             Emp emp = new Emp();
             String[] nameParts = request.getFullName().split(" ", 2);
             emp.setFirstName(nameParts[0]);
@@ -94,14 +168,12 @@ public class UserManagementController {
             emp.setAddress(request.getAddress());
             emp.setIdentityNum(request.getIdentityNum());
             
-            // Load role từ database
             Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new IllegalStateException(roleName + " role not found in database"));
             emp.setRole(role);
             
             emp = empRepository.save(emp);
 
-            // 4. Tạo User với password đã hash
             User user = new User();
             user.setAccount(request.getAccount());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -117,47 +189,21 @@ public class UserManagementController {
         }
     }
 
-    /**
-     * API Lấy danh sách tất cả users
-     * 
-     * GET /api/users
-     * Header: Authorization: Bearer <token>
-     */
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
+    @GetMapping("/api/admin/users")
+    public ResponseEntity<ApiResponse<List<User>>> getAllAdminUsers() {
         List<User> users = userRepository.findAll();
         return ResponseEntity.ok(ApiResponse.success("Users retrieved successfully", users));
     }
 
-    /**
-     * API Lấy thông tin user theo ID
-     * 
-     * GET /api/users/{id}
-     * Header: Authorization: Bearer <token>
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<User>> getUserById(@PathVariable Integer id) {
+    @GetMapping("/api/admin/users/{id}")
+    public ResponseEntity<ApiResponse<User>> getAdminUserById(@PathVariable Integer id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
         return ResponseEntity.ok(ApiResponse.success("User retrieved successfully", user));
     }
 
-    /**
-     * API Cập nhật thông tin user
-     * 
-     * PUT /api/admin/users/{id}
-     * Header: Authorization: Bearer <token>
-     * Body: {
-     *   "fullName": "Nguyen Van C",
-     *   "email": "newmail@example.com",
-     *   "phone": "0987654321",
-     *   "address": "New Address",
-     *   "identityNum": "123456789012",
-     *   "roleName": "MANAGER"
-     * }
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<User>> updateUser(
+    @PutMapping("/api/admin/users/{id}")
+    public ResponseEntity<ApiResponse<User>> updateAdminUser(
             @PathVariable Integer id,
             @RequestBody CreateUserRequest request) {
         try {
@@ -166,7 +212,6 @@ public class UserManagementController {
             
             Emp emp = user.getEmp();
             
-            // Update employee info
             if (request.getFullName() != null) {
                 String[] nameParts = request.getFullName().split(" ", 2);
                 emp.setFirstName(nameParts[0]);
@@ -202,14 +247,8 @@ public class UserManagementController {
         }
     }
 
-    /**
-     * API Xóa user
-     * 
-     * DELETE /api/users/{id}
-     * Header: Authorization: Bearer <token>
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Object>> deleteUser(@PathVariable Integer id) {
+    @DeleteMapping("/api/admin/users/{id}")
+    public ResponseEntity<ApiResponse<Object>> deleteAdminUser(@PathVariable Integer id) {
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("User not found");
         }
@@ -217,19 +256,7 @@ public class UserManagementController {
         return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
     }
 
-    /**
-     * API Reset password cho user (Admin only)
-     * 
-     * PUT /api/users/{id}/reset-password
-     * Header: Authorization: Bearer <token>
-     * Body: {
-     *   "newPassword": "newpassword123"
-     * }
-     * 
-     * ✅ Admin có thể reset password cho bất kỳ user nào
-     * ✅ Password tự động hash
-     */
-    @PutMapping("/{id}/reset-password")
+    @PutMapping("/api/admin/users/{id}/reset-password")
     public ResponseEntity<ApiResponse<Object>> resetPassword(
             @PathVariable Integer id,
             @RequestBody ResetPasswordRequest request) {
@@ -243,9 +270,6 @@ public class UserManagementController {
         return ResponseEntity.ok(ApiResponse.success("Password reset successfully", null));
     }
 
-    /**
-     * Inner class for reset password request
-     */
     public static class ResetPasswordRequest {
         private String newPassword;
 

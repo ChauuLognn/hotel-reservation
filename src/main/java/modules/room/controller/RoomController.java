@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import modules.room.dto.RoomCreateRequest;
-import modules.room.dto.RoomDto;
-import modules.room.dto.RoomTypeCreateRequest;
-import modules.room.dto.RoomTypeDto;
-import modules.reservation.dto.AvailableRoom;
+import modules.room.dto.RoomPayload.RoomCreateRequest;
+import modules.room.dto.RoomPayload.RoomDto;
+import modules.room.dto.RoomPayload.RoomTypeCreateRequest;
+import modules.room.dto.RoomPayload.RoomTypeDto;
+import modules.reservation.dto.ReservationPayload.AvailableRoom;
 import modules.room.service.RoomService;
 import modules.room.service.RoomTypeService;
 

@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import modules.room.dto.RoomTypeCreateRequest;
-import modules.room.dto.RoomTypeDto;
+import modules.room.dto.RoomPayload.RoomTypeCreateRequest;
+import modules.room.dto.RoomPayload.RoomTypeDto;
 import modules.room.entity.RoomType;
 import modules.room.repository.RoomTypeRepository;
 

@@ -10,10 +10,10 @@ import jakarta.persistence.*;
 @Table(name = "reservationGuest")
 public class ReservationGuest {
 
-    @EmbeddedId
-    private ReservationGuestId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @MapsId("reservationRoomId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
         name = "reservationRoomId",
@@ -22,7 +22,6 @@ public class ReservationGuest {
     )
     private ReservationRoom reservationRoom;
 
-    @MapsId("guestId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
         name = "guestId",
@@ -37,8 +36,8 @@ public class ReservationGuest {
     @Column(name = "checkOutAt")
     private LocalDateTime checkOutAt;
 
-    public ReservationGuestId getId(){return id;}
-    public void setId(ReservationGuestId id){this.id = id;}
+    public Long getId(){return id;}
+    public void setId(Long id){this.id = id;}
     public ReservationRoom getReservationRoom(){return reservationRoom;}
     public void setReservationRoom(ReservationRoom reservationRoom){this.reservationRoom = reservationRoom;}
     public Guest getGuest(){return guest;}

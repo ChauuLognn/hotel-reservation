@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import common.payload.ApiResponse;
-import modules.account.dto.ChangePasswordRequest;
-import modules.account.dto.LoginRequest;
-import modules.account.dto.LoginResponse;
-import modules.account.dto.RegisterRequest;
+import modules.account.dto.UserPayload.ChangePasswordRequest;
+import modules.account.dto.AuthPayload.LoginRequest;
+import modules.account.dto.AuthPayload.LoginResponse;
+import modules.account.dto.AuthPayload.RegisterRequest;
 import modules.account.entity.Emp;
 import modules.account.entity.User;
 import common.enums.RoleName;
