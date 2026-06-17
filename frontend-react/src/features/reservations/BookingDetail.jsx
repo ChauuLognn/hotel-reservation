@@ -10,11 +10,11 @@ import billApi from '../../api/billApi';
 
 const STATUS_MAP = {
   PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
+  PENDING_EXPIRED: { label:'Hết Hạn', cls:'badge-danger' },
   CONFIRMED: { label:'Đã Xác Nhận', cls:'badge-info' },
-  CHECKED_IN: { label:'Đang Ở', cls:'badge-success' },
-  CHECKED_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
+  CHECK_IN: { label:'Đang Ở', cls:'badge-success' },
+  CHECK_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
   CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
-  REFUNDED: { label:'Đã Hoàn Tiền', cls:'badge-purple' },
 };
 
 function formatDateTime(s) { 
@@ -284,11 +284,11 @@ export default function BookingDetail() {
   // Next status options for receptionist workflow
   const nextStatuses = {
     PENDING_PAYMENT: ['CONFIRMED', 'CANCELLED'],
-    CONFIRMED: ['CHECKED_IN', 'CANCELLED'],
-    CHECKED_IN: ['CHECKED_OUT'],
-    CHECKED_OUT: ['REFUNDED'],
+    CONFIRMED: ['CHECK_IN', 'CANCELLED'],
+    CHECK_IN: ['CHECK_OUT'],
+    CHECK_OUT: [],
     CANCELLED: [],
-    REFUNDED: [],
+    PENDING_EXPIRED: [],
   };
   const availableStatuses = nextStatuses[detail.status] || [];
 
@@ -332,14 +332,14 @@ export default function BookingDetail() {
               <div className="flex gap-2">
                 {availableStatuses.map(s => (
                   <button key={s} className="btn btn-sm" onClick={() => changeStatus(s)} disabled={changingStatus}
-                    style={{background: s==='CANCELLED'?'#fee2e2':s==='CHECKED_IN'?'#d1fae5':'#dbeafe', border:'none', color: s==='CANCELLED'?'#dc2626':s==='CHECKED_IN'?'#059669':'#2563eb'}}>
+                    style={{background: s==='CANCELLED'?'#fee2e2':s==='CHECK_IN'?'#d1fae5':'#dbeafe', border:'none', color: s==='CANCELLED'?'#dc2626':s==='CHECK_IN'?'#059669':'#2563eb'}}>
                     {STATUS_MAP[s]?.label}
                   </button>
                 ))}
               </div>
             )}
 
-            {detail.status === 'CHECKED_OUT' && (
+            {detail.status === 'CHECK_OUT' && (
               <button className="btn btn-primary btn-sm" onClick={confirmPayment}>
                 <CheckCircle size={14} /> Xác Nhận Thanh Toán Toàn Bộ
               </button>
@@ -378,7 +378,7 @@ export default function BookingDetail() {
                   <div style={{ marginBottom:'1.5rem' }}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem' }}>
                       <h5 style={{ fontSize:'0.85rem', fontWeight:700, margin:0, color:'#374151' }}>👥 Khách Lưu Trú ({registeredGuests.length})</h5>
-                      {['PENDING_PAYMENT', 'CONFIRMED', 'CHECKED_IN'].includes(detail.status) && (
+                      {['PENDING_PAYMENT', 'CONFIRMED', 'CHECK_IN'].includes(detail.status) && (
                         <button className="btn btn-xs" onClick={() => openAddGuest(rr.id)} style={{ fontSize:'0.72rem', padding:'0.2rem 0.4rem', border:'1px solid #cbd5e1', background:'white' }}>
                           <UserPlus size={10} style={{ display:'inline-block', marginRight:'0.15rem' }} /> Đăng Ký Khách
                         </button>
@@ -398,7 +398,7 @@ export default function BookingDetail() {
                               {rg.checkInAt ? (
                                 <span style={{ color:'#10b981' }}>{new Date(rg.checkInAt).toLocaleString('vi-VN')}</span>
                               ) : (
-                                ['CONFIRMED', 'CHECKED_IN'].includes(detail.status) ? (
+                                ['CONFIRMED', 'CHECK_IN'].includes(detail.status) ? (
                                   <button className="btn btn-xs" onClick={() => handleCheckIn(rr.id, rg.guestId, rg.guestName)} style={{ background:'#d1fae5', color:'#059669', border:'none' }}>Check-In</button>
                                 ) : '-'
                               )}
@@ -407,7 +407,7 @@ export default function BookingDetail() {
                               {rg.checkOutAt ? (
                                 <span style={{ color:'#6b7280' }}>{new Date(rg.checkOutAt).toLocaleString('vi-VN')}</span>
                               ) : (
-                                rg.checkInAt && detail.status === 'CHECKED_IN' ? (
+                                rg.checkInAt && detail.status === 'CHECK_IN' ? (
                                   <button className="btn btn-xs" onClick={() => handleCheckOut(rr.id, rg.guestId, rg.guestName)} style={{ background:'#fee2e2', color:'#dc2626', border:'none' }}>Check-Out</button>
                                 ) : '-'
                               )}
@@ -424,7 +424,7 @@ export default function BookingDetail() {
                   <div>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem' }}>
                       <h5 style={{ fontSize:'0.85rem', fontWeight:700, margin:0, color:'#374151' }}>☕ Dịch Vụ Sử Dụng ({usedServices.length})</h5>
-                      {detail.status === 'CHECKED_IN' && (
+                      {detail.status === 'CHECK_IN' && (
                         <button className="btn btn-xs" onClick={() => openAddService(rr.id)} style={{ fontSize:'0.72rem', padding:'0.2rem 0.4rem', border:'1px solid #cbd5e1', background:'white' }}>
                           <Plus size={10} style={{ display:'inline-block', marginRight:'0.15rem' }} /> Thêm Dịch Vụ
                         </button>
@@ -443,7 +443,7 @@ export default function BookingDetail() {
                             <td style={{ fontWeight:600, color:'#4f46e5' }}>{formatVND(svc.totalAmount)}</td>
                             <td>{formatDateTime(svc.usedAt)}</td>
                             <td>
-                              {detail.status === 'CHECKED_IN' ? (
+                              {detail.status === 'CHECK_IN' ? (
                                 <button className="action-btn delete" onClick={() => handleDeleteService(rr.id, svc.id)} title="Xóa" style={{ padding:'0.15rem' }}>
                                   <Trash2 size={12} />
                                 </button>
@@ -458,7 +458,7 @@ export default function BookingDetail() {
                   </div>
 
                   {/* Individual room billing payment confirmation */}
-                  {bill?.resRoomBill?.find(rb => rb.resRoomId === rr.id)?.totalDue > 0 && detail.status === 'CHECKED_OUT' && (
+                  {bill?.resRoomBill?.find(rb => rb.resRoomId === rr.id)?.totalDue > 0 && detail.status === 'CHECK_OUT' && (
                     <div style={{ display:'flex', justifyContent:'flex-end', marginTop:'0.75rem' }}>
                       <button className="btn btn-xs" onClick={() => confirmPaymentForRoom(rr.id, roomInfo.roomNumber)} style={{ background:'#dbeafe', color:'#2563eb', border:'none', fontSize:'0.75rem' }}>
                         💳 Thanh Toán Riêng Phòng Này

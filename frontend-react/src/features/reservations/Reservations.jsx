@@ -8,11 +8,11 @@ import roomApi from '../../api/roomApi';
 
 const STATUS_MAP = {
   PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
+  PENDING_EXPIRED: { label:'Hết Hạn', cls:'badge-danger' },
   CONFIRMED: { label:'Đã Xác Nhận', cls:'badge-info' },
-  CHECKED_IN: { label:'Đang Ở', cls:'badge-success' },
-  CHECKED_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
+  CHECK_IN: { label:'Đang Ở', cls:'badge-success' },
+  CHECK_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
   CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
-  REFUNDED: { label:'Đã Hoàn Tiền', cls:'badge-purple' },
 };
 
 function formatDate(s) { 
@@ -195,7 +195,7 @@ export default function Reservations() {
         </div>
         <div className="stat-card" style={{borderColor:'#10b981'}}>
           <div className="stat-content">
-            <div className="stat-info"><p>Đang Ở</p><h3>{statCounts.CHECKED_IN||0}</h3></div>
+            <div className="stat-info"><p>Đang Ở</p><h3>{statCounts.CHECK_IN||0}</h3></div>
             <div className="stat-icon" style={{background:'#d1fae5'}}><Calendar size={22} color="#10b981" /></div>
           </div>
         </div>

@@ -8,11 +8,11 @@ import roomApi from '../../api/roomApi';
 
 const BILL_STATUS = {
   PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
+  PENDING_EXPIRED: { label:'Hết Hạn', cls:'badge-danger' },
   CONFIRMED: { label:'Đã Xác Nhận', cls:'badge-info' },
-  CHECKED_IN: { label:'Đang Ở', cls:'badge-success' },
-  CHECKED_OUT: { label:'Đang Trả (Chưa TT)', cls:'badge-warning' },
+  CHECK_IN: { label:'Đang Ở', cls:'badge-success' },
+  CHECK_OUT: { label:'Đang Trả (Chưa TT)', cls:'badge-warning' },
   CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
-  REFUNDED: { label:'Đã Hoàn Tiền', cls:'badge-purple' },
 };
 
 function formatVND(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0); }

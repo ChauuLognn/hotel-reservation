@@ -5,11 +5,11 @@ import reservationApi from '../../api/reservationApi';
 
 const STATUS_MAP = {
   PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
+  PENDING_EXPIRED: { label:'Hết Hạn', cls:'badge-danger' },
   CONFIRMED: { label:'Đã Xác Nhận', cls:'badge-info' },
-  CHECKED_IN: { label:'Đang Ở', cls:'badge-success' },
-  CHECKED_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
+  CHECK_IN: { label:'Đang Ở', cls:'badge-success' },
+  CHECK_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
   CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
-  REFUNDED: { label:'Đã Hoàn Tiền', cls:'badge-purple' },
 };
 
 function formatDate(s) { 
