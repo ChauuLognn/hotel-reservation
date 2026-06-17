@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Pages
 import Login from './features/auth/Login';
+import Register from './features/auth/Register';
+import ForgotPassword from './features/auth/ForgotPassword';
 import Dashboard from './features/dashboard/Dashboard';
 import Guests from './features/users/Guests';
 import Rooms from './features/rooms/Rooms';
@@ -38,6 +40,8 @@ function AppRoutes() {
     <Routes>
       {/* Public */}
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/user-home" element={<UserHome />} />
 
       {/* Admin/Staff routes */}

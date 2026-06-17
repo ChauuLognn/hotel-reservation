@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { User, Shield, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -144,7 +144,7 @@ export default function Login() {
                 />
                 Ghi nhớ đăng nhập
               </label>
-              <a href="#" className="forgot-link">Quên mật khẩu?</a>
+              <Link to="/forgot-password" className="forgot-link">Quên mật khẩu?</Link>
             </div>
 
             <button type="submit" className="btn-login" disabled={loading}>
@@ -154,7 +154,7 @@ export default function Login() {
 
           {role === 'user' && (
             <div className="register-link">
-              Chưa có tài khoản? <a href="#">Đăng ký ngay</a>
+              Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
             </div>
           )}
         </div>

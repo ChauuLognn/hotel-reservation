@@ -20,6 +20,7 @@ axiosClient.interceptors.request.use(
     const userId = localStorage.getItem('userId');
     if (userId) {
       config.headers['X-User-Id'] = userId;
+      config.headers['X-User_id'] = userId;
     }
     return config;
   },

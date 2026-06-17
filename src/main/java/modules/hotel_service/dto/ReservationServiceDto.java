@@ -9,6 +9,7 @@ import modules.hotel_service.entity.ReservationService;
 
 // thông tin dịch vụ được resRoom sử dụng có thể xem
 public class ReservationServiceDto {
+    private String id;
     private Integer roomId;
     private String service;
     private Byte quantity;
@@ -18,6 +19,7 @@ public class ReservationServiceDto {
 
     static public ReservationServiceDto fromEntity(ReservationService rS){
         ReservationServiceDto dto = new ReservationServiceDto();
+        dto.setId(rS.getId());
         dto.setRoomId(rS.getReservationRoom().getRoom().getId());
         dto.setService(rS.getService().getName());
         dto.setQuantity(rS.getQuantity());
@@ -25,6 +27,14 @@ public class ReservationServiceDto {
         dto.setUsedAt(rS.getUsedAt());
         dto.createdBy = rS.getCreatedBy().getId();
         return dto;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Integer getRoomId() {

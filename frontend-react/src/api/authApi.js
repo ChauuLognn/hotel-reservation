@@ -5,6 +5,7 @@ const authApi = {
   logout: () => axiosClient.post('/api/auth/logout'),
   register: (data) => axiosClient.post('/api/auth/register', data),
   changePassword: (data) => axiosClient.post('/api/auth/change-password', data),
+  forgotPassword: (data) => axiosClient.post('/api/auth/reset-password', data),
 };
 
 export default authApi;

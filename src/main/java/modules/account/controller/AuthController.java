@@ -261,4 +261,36 @@ public class AuthController {
             throw new RuntimeException("Failed to change password: " + e.getMessage());
         }
     }
+
+    /**
+     * API Reset Password
+     * 
+     * POST /api/auth/reset-password
+     * Body: {
+     *   "account": "admin",
+     *   "identityNum": "11111",
+     *   "newPassword": "newpassword123"
+     * }
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Object>> resetPassword(@RequestBody modules.account.dto.AuthPayload.ResetPasswordRequest request) {
+        try {
+            User user = userRepository.findByAccount(request.getAccount())
+                    .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+            Emp emp = user.getEmp();
+            if (emp == null || !emp.getIdentityNum().equals(request.getIdentityNum())) {
+                throw new IllegalArgumentException("Identity number does not match");
+            }
+
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+
+            return ResponseEntity.ok(ApiResponse.success("Password reset successfully", null));
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to reset password: " + e.getMessage());
+        }
+    }
 }

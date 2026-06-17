@@ -19,8 +19,12 @@ export default function Services() {
     setLoading(true);
     try {
       const res = await serviceApi.getAll();
-      // Backend trả về List<Service> trực tiếp
-      setServices(Array.isArray(res.data) ? res.data : []);
+      const rawServices = Array.isArray(res.data) ? res.data : [];
+      const mapped = rawServices.map(s => ({
+        ...s,
+        serviceName: s.name
+      }));
+      setServices(mapped);
     } catch(e) { console.error(e); setServices([]); }
     finally { setLoading(false); }
   }
@@ -41,7 +45,12 @@ export default function Services() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const payload = { serviceName: form.serviceName, price: Number(form.price), description: form.description };
+      const payload = { 
+        name: form.serviceName, 
+        price: Number(form.price), 
+        status: editSvc ? editSvc.status : 'ACTIVE',
+        description: form.description 
+      };
       if (editSvc) {
         // Service uses name for update
         await serviceApi.update(editSvc.serviceName, payload);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Home, Key, Wrench } from 'lucide-react';
+import { Plus, Search, Home, Key, Wrench, Edit2, Trash2 } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import roomApi from '../../api/roomApi';
 
@@ -21,6 +21,12 @@ export default function Rooms() {
   const [showModal, setShowModal] = useState(false);
   const [editRoom, setEditRoom] = useState(null);
   const [form, setForm] = useState({ roomNumber:'', roomTypeName:'', status:'AVAILABLE', floorNumber:'' });
+
+  // Room Types states
+  const [showTypeModal, setShowTypeModal] = useState(false);
+  const [editType, setEditType] = useState(null);
+  const [typeForm, setTypeForm] = useState({ name:'', capacity:'', basePrice:'', description:'' });
+
   // Available room search
   const [availSearch, setAvailSearch] = useState({ name:'', checkIn:'', checkOut:'' });
   const [availRooms, setAvailRooms] = useState([]);
@@ -32,8 +38,23 @@ export default function Rooms() {
     setLoading(true);
     try {
       const [rRes, rtRes] = await Promise.all([roomApi.getAll(), roomApi.getAllTypes()]);
-      setRooms(Array.isArray(rRes.data) ? rRes.data : []);
-      setRoomTypes(Array.isArray(rtRes.data) ? rtRes.data : []);
+      const rawRooms = rRes.data?.data || rRes.data || [];
+      const rawTypes = rtRes.data?.data || rtRes.data || [];
+      
+      const mappedRooms = rawRooms.map(r => {
+        const typeInfo = rawTypes.find(t => t.name === r.typeName);
+        return {
+          id: r.id,
+          roomNumber: r.id,
+          roomTypeName: r.typeName,
+          floorNumber: Math.floor(r.id / 100) || 1,
+          capacity: typeInfo ? typeInfo.capacity : 1,
+          basePrice: typeInfo ? typeInfo.basePrice : 0,
+          status: r.status
+        };
+      });
+      setRooms(mappedRooms);
+      setRoomTypes(rawTypes);
     } catch(e) { console.error(e); }
     finally { setLoading(false); }
   }
@@ -47,7 +68,8 @@ export default function Rooms() {
       if (availSearch.checkIn) params.checkIn = availSearch.checkIn;
       if (availSearch.checkOut) params.checkOut = availSearch.checkOut;
       const res = await roomApi.findAvailable(params);
-      setAvailRooms(Array.isArray(res.data) ? res.data : []);
+      const list = res.data?.data || res.data || [];
+      setAvailRooms(Array.isArray(list) ? list : []);
     } catch(e) { console.error(e); setAvailRooms([]); }
     finally { setAvailLoading(false); }
   }
@@ -74,7 +96,12 @@ export default function Rooms() {
 
   function openEdit(r) {
     setEditRoom(r);
-    setForm({ roomNumber: String(r.roomNumber||''), roomTypeName: r.roomTypeName||'', status: r.status||'AVAILABLE', floorNumber: String(r.floorNumber||'') });
+    setForm({ 
+      roomNumber: String(r.roomNumber||''), 
+      roomTypeName: r.roomTypeName||'', 
+      status: r.status||'AVAILABLE', 
+      floorNumber: String(r.floorNumber||'') 
+    });
     setShowModal(true);
   }
 
@@ -82,14 +109,62 @@ export default function Rooms() {
     e.preventDefault();
     try {
       const payload = {
-        roomNumber: Number(form.roomNumber),
-        roomTypeName: form.roomTypeName,
+        id: Number(form.roomNumber),
+        typeName: form.roomTypeName,
         status: form.status,
-        floorNumber: form.floorNumber ? Number(form.floorNumber) : null,
       };
       if (editRoom) await roomApi.update(editRoom.id, payload);
       else await roomApi.create(payload);
       setShowModal(false);
+      fetchAll();
+    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+  }
+
+
+  async function handleDeleteRoom(id, roomNumber) {
+    if (!confirm(`Xóa phòng ${roomNumber}?`)) return;
+    try {
+      await roomApi.delete(id);
+      fetchAll();
+    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+  }
+
+  // Room Types CRUD handlers
+  function openAddType() {
+    setEditType(null);
+    setTypeForm({ name:'', capacity:'', basePrice:'', description:'' });
+    setShowTypeModal(true);
+  }
+
+  function openEditType(rt) {
+    setEditType(rt);
+    setTypeForm({ name: rt.name, capacity: String(rt.capacity || ''), basePrice: String(rt.basePrice || ''), description: rt.description || '' });
+    setShowTypeModal(true);
+  }
+
+  async function handleTypeSubmit(e) {
+    e.preventDefault();
+    try {
+      const payload = {
+        name: typeForm.name,
+        capacity: Number(typeForm.capacity),
+        basePrice: Number(typeForm.basePrice),
+        description: typeForm.description,
+      };
+      if (editType) {
+        await roomApi.updateType(editType.name, payload);
+      } else {
+        await roomApi.createType(payload);
+      }
+      setShowTypeModal(false);
+      fetchAll();
+    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+  }
+
+  async function handleDeleteType(name) {
+    if (!confirm(`Xóa loại phòng "${name}"?`)) return;
+    try {
+      await roomApi.deleteType(name);
       fetchAll();
     } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
   }
@@ -152,7 +227,10 @@ export default function Rooms() {
                       <td style={{ color:'#4f46e5', fontWeight:600 }}>{formatVND(r.basePrice)}</td>
                       <td><span className={`badge-status ${st.cls}`}>{st.label}</span></td>
                       <td>
-                        <button className="action-btn edit" onClick={() => openEdit(r)} title="Sửa">✏️</button>
+                        <div className="flex gap-2">
+                          <button className="action-btn edit" onClick={() => openEdit(r)} title="Sửa"><Edit2 size={15} /></button>
+                          <button className="action-btn delete" onClick={() => handleDeleteRoom(r.id, r.roomNumber)} title="Xóa"><Trash2 size={15} /></button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -168,22 +246,31 @@ export default function Rooms() {
       {/* Room Types Tab */}
       {tab === 'types' && (
         <div className="table-container">
-          <div className="table-header"><h3>Loại Phòng</h3></div>
+          <div className="table-header">
+            <h3>Loại Phòng</h3>
+            <button className="btn btn-primary" onClick={openAddType}><Plus size={16} /> Thêm Loại Phòng</button>
+          </div>
           <div style={{ overflowX:'auto' }}>
             <table className="table">
-              <thead><tr><th>Tên</th><th>Sức Chứa</th><th>Giá Cơ Bản</th><th>Mô Tả</th></tr></thead>
+              <thead><tr><th>Tên</th><th>Sức Chứa</th><th>Giá Cơ Bản</th><th>Mô Tả</th><th>Thao Tác</th></tr></thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={4} className="text-center text-gray" style={{padding:'2rem'}}>Đang tải...</td></tr>
+                  <tr><td colSpan={5} className="text-center text-gray" style={{padding:'2rem'}}>Đang tải...</td></tr>
                 ) : roomTypes.length ? roomTypes.map((rt, i) => (
                   <tr key={i}>
                     <td style={{ fontWeight:600 }}>{rt.name}</td>
                     <td>{rt.capacity} người</td>
                     <td style={{ color:'#4f46e5', fontWeight:600 }}>{formatVND(rt.basePrice)}</td>
                     <td style={{ color:'#6b7280' }}>{rt.description || '-'}</td>
+                    <td>
+                      <div className="flex gap-2">
+                        <button className="action-btn edit" onClick={() => openEditType(rt)} title="Sửa"><Edit2 size={15} /></button>
+                        <button className="action-btn delete" onClick={() => handleDeleteType(rt.name)} title="Xóa"><Trash2 size={15} /></button>
+                      </div>
+                    </td>
                   </tr>
                 )) : (
-                  <tr><td colSpan={4} className="text-center text-gray" style={{padding:'2rem'}}>Chưa có loại phòng nào</td></tr>
+                  <tr><td colSpan={5} className="text-center text-gray" style={{padding:'2rem'}}>Chưa có loại phòng nào</td></tr>
                 )}
               </tbody>
             </table>
@@ -274,6 +361,45 @@ export default function Rooms() {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn" onClick={() => setShowModal(false)}>Hủy</button>
+                <button type="submit" className="btn btn-primary">💾 Lưu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Add/Edit Room Type */}
+      {showTypeModal && (
+        <div className="modal-overlay" onClick={e => e.target===e.currentTarget && setShowTypeModal(false)}>
+          <div className="modal">
+            <div className="modal-header">
+              <h3 className="modal-title">{editType ? 'Sửa Loại Phòng' : 'Thêm Loại Phòng Mới'}</h3>
+              <button className="action-btn" onClick={() => setShowTypeModal(false)}>✕</button>
+            </div>
+            <form onSubmit={handleTypeSubmit}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label className="form-label">Tên Loại Phòng *</label>
+                  <input className="form-input" required value={typeForm.name} onChange={e => setTypeForm({...typeForm, name:e.target.value})} placeholder="VIP Suite" disabled={!!editType} />
+                  {editType && <small style={{color:'#9ca3af'}}>Tên loại phòng không thể thay đổi</small>}
+                </div>
+                <div className="grid-2">
+                  <div className="form-group">
+                    <label className="form-label">Sức Chứa (người) *</label>
+                    <input type="number" min="1" className="form-input" required value={typeForm.capacity} onChange={e => setTypeForm({...typeForm, capacity:e.target.value})} placeholder="2" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Giá Cơ Bản (VNĐ) *</label>
+                    <input type="number" min="0" className="form-input" required value={typeForm.basePrice} onChange={e => setTypeForm({...typeForm, basePrice:e.target.value})} placeholder="1000000" />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Mô Tả</label>
+                  <textarea className="form-input" rows={3} value={typeForm.description} onChange={e => setTypeForm({...typeForm, description:e.target.value})} placeholder="Mô tả loại phòng..." style={{resize:'vertical'}} />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn" onClick={() => setShowTypeModal(false)}>Hủy</button>
                 <button type="submit" className="btn btn-primary">💾 Lưu</button>
               </div>
             </form>

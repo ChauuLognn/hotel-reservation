@@ -38,6 +38,11 @@ const reservationApi = {
   getStatusHistory: (resId) => axiosClient.get(`/api/reservationStatus/${resId}`),
   getStatusHistoryByResRoom: (resId, resRoomId) => axiosClient.get(`/api/reservationStatus/${resId}/resRooms/${resRoomId}`),
   updateStatus: (resId, data) => axiosClient.post(`/api/reservationStatus/${resId}/status`, data),
+
+  // Room Services
+  getServicesOfResRoom: (resRoomId) => axiosClient.get(`/api/reservation-rooms/${resRoomId}/services`),
+  addServiceToResRoom: (resRoomId, data) => axiosClient.post(`/api/reservation-rooms/${resRoomId}/services`, data),
+  deleteServiceFromResRoom: (resRoomId, serId) => axiosClient.delete(`/api/reservation-rooms/${resRoomId}/services/${serId}`),
 };
 
 export default reservationApi;
