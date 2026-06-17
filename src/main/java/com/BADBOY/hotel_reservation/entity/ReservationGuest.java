@@ -1,4 +1,4 @@
-package com.BADBOY.hotel_reservation.entity.reservation_guest;
+package com.BADBOY.hotel_reservation.entity;
 
 import java.time.LocalDateTime;
 

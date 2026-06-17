@@ -1,4 +1,4 @@
-package com.BADBOY.hotel_reservation.entity.reservation_status_history;
+package com.BADBOY.hotel_reservation.entity;
 
 import java.io.Serializable;
 

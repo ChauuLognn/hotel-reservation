@@ -20,8 +20,8 @@ import com.BADBOY.hotel_reservation.entity.Emp;
 import com.BADBOY.hotel_reservation.entity.User;
 import com.BADBOY.hotel_reservation.entity.Enum.RoleName;
 import com.BADBOY.hotel_reservation.entity.Role;
-import com.BADBOY.hotel_reservation.repository.Person.EmpRepository;
-import com.BADBOY.hotel_reservation.repository.Person.UserRepository;
+import com.BADBOY.hotel_reservation.repository.EmpRepository;
+import com.BADBOY.hotel_reservation.repository.UserRepository;
 import com.BADBOY.hotel_reservation.repository.RoleRepository;
 import com.BADBOY.hotel_reservation.security.JwtUtil;
 

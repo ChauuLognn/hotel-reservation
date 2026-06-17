@@ -1,4 +1,4 @@
-package com.BADBOY.hotel_reservation.service.Serviceee;
+package com.BADBOY.hotel_reservation.service;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.BADBOY.hotel_reservation.dto.Service.serviceCreationRequest;
-import com.BADBOY.hotel_reservation.repository.Service.ServiceRepository;
+import com.BADBOY.hotel_reservation.repository.ServiceRepository;
 
 @Service
 public class ServiceDomain {

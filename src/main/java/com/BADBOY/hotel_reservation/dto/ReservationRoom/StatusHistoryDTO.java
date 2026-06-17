@@ -3,7 +3,7 @@ package com.BADBOY.hotel_reservation.dto.ReservationRoom;
 import java.time.LocalDateTime;
 
 import com.BADBOY.hotel_reservation.entity.Enum.ReservationStatus;
-import com.BADBOY.hotel_reservation.entity.reservation_status_history.ReservationStatusHistory;
+import com.BADBOY.hotel_reservation.entity.ReservationStatusHistory;
 
 // thông tin lần thay đổi trạng thái của resRoom được trả về để xem
 public class StatusHistoryDTO {

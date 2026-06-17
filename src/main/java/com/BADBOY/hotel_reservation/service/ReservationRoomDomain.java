@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.BADBOY.hotel_reservation.dto.ReservationGuest.ReservationGuestDto;
 import com.BADBOY.hotel_reservation.dto.ReservationRoom.ReservationRoomDto;
 import com.BADBOY.hotel_reservation.entity.ReservationRoom;
-import com.BADBOY.hotel_reservation.entity.reservation_guest.ReservationGuest;
+import com.BADBOY.hotel_reservation.entity.ReservationGuest;
 import com.BADBOY.hotel_reservation.repository.ReservationGuestRepository;
 import com.BADBOY.hotel_reservation.repository.ReservationRoomRepository;
 

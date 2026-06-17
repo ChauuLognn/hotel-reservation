@@ -1,4 +1,4 @@
-package com.BADBOY.hotel_reservation.service.Serviceee;
+package com.BADBOY.hotel_reservation.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import com.BADBOY.hotel_reservation.dto.Service.ReservationServiceCreationRequest;
 import com.BADBOY.hotel_reservation.dto.Service.ReservationServiceDto;
 import com.BADBOY.hotel_reservation.repository.BillRepository;
-import com.BADBOY.hotel_reservation.repository.Service.ReservationServiceRepository;
-import com.BADBOY.hotel_reservation.repository.Service.ServiceRepository;
+import com.BADBOY.hotel_reservation.repository.ReservationServiceRepository;
+import com.BADBOY.hotel_reservation.repository.ServiceRepository;
 
 @Service
 public class ReservationServiceDomain {

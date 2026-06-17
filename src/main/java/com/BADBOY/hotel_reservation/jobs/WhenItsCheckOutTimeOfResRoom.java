@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.BADBOY.hotel_reservation.entity.ReservationRoom;
-import com.BADBOY.hotel_reservation.entity.reservation_guest.ReservationGuest;
+import com.BADBOY.hotel_reservation.entity.ReservationGuest;
 import com.BADBOY.hotel_reservation.repository.ReservationGuestRepository;
 import com.BADBOY.hotel_reservation.repository.ReservationRoomRepository;
 import com.BADBOY.hotel_reservation.repository.ReservationStatusHistoryRepository;

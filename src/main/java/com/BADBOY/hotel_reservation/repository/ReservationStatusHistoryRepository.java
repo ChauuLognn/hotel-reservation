@@ -10,8 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.BADBOY.hotel_reservation.entity.reservation_status_history.ReservationStatusHistory;
-import com.BADBOY.hotel_reservation.entity.reservation_status_history.ReservationStatusHistoryId;
+import com.BADBOY.hotel_reservation.entity.ReservationStatusHistory;
+import com.BADBOY.hotel_reservation.entity.ReservationStatusHistoryId;
 
 @Repository
 public interface ReservationStatusHistoryRepository extends JpaRepository<ReservationStatusHistory, ReservationStatusHistoryId>{

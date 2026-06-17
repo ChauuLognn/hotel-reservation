@@ -16,9 +16,9 @@ import com.BADBOY.hotel_reservation.dto.ReservationRoom.ChangeStatusRequest;
 import com.BADBOY.hotel_reservation.entity.Enum.ReservationStatus;
 import com.BADBOY.hotel_reservation.entity.Guest;
 import com.BADBOY.hotel_reservation.entity.ReservationRoom;
-import com.BADBOY.hotel_reservation.entity.reservation_guest.ReservationGuest;
-import com.BADBOY.hotel_reservation.entity.reservation_status_history.ReservationStatusHistory;
-import com.BADBOY.hotel_reservation.repository.Person.GuestRepository;
+import com.BADBOY.hotel_reservation.entity.ReservationGuest;
+import com.BADBOY.hotel_reservation.entity.ReservationStatusHistory;
+import com.BADBOY.hotel_reservation.repository.GuestRepository;
 import com.BADBOY.hotel_reservation.repository.ReservationGuestRepository;
 import com.BADBOY.hotel_reservation.repository.ReservationStatusHistoryRepository;
 

@@ -1,4 +1,4 @@
-package com.BADBOY.hotel_reservation.service.Person;
+package com.BADBOY.hotel_reservation.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.BADBOY.hotel_reservation.dto.Person.GuestCreationRequest;
 import com.BADBOY.hotel_reservation.dto.Person.GuestDto;
 import com.BADBOY.hotel_reservation.entity.Guest;
-import com.BADBOY.hotel_reservation.repository.Person.GuestRepository;
+import com.BADBOY.hotel_reservation.repository.GuestRepository;
 
 @Service
 @Transactional

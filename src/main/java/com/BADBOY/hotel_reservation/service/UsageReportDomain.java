@@ -1,4 +1,4 @@
-package com.BADBOY.hotel_reservation.service.Report;
+package com.BADBOY.hotel_reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ import com.BADBOY.hotel_reservation.dto.Report.ServiceUsageItemDto;
 import com.BADBOY.hotel_reservation.dto.Report.ServiceUsageProjection;
 import com.BADBOY.hotel_reservation.dto.Report.ServiceUsageReportDto;
 import com.BADBOY.hotel_reservation.repository.ReservationRoomRepository;
-import com.BADBOY.hotel_reservation.repository.Service.ReservationServiceRepository;
+import com.BADBOY.hotel_reservation.repository.ReservationServiceRepository;
 
 @Service
 @Transactional(readOnly = true)

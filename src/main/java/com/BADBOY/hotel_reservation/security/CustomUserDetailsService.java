@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.BADBOY.hotel_reservation.entity.User;
-import com.BADBOY.hotel_reservation.repository.Person.UserRepository;
+import com.BADBOY.hotel_reservation.repository.UserRepository;
 
 /**
  * Custom UserDetailsService

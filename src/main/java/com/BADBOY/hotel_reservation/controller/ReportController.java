@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.BADBOY.hotel_reservation.dto.Report.RevenueReportDto;
 import com.BADBOY.hotel_reservation.dto.Report.RoomUsageReportDto;
 import com.BADBOY.hotel_reservation.dto.Report.ServiceUsageReportDto;
-import com.BADBOY.hotel_reservation.service.Report.RevenueReportDomain;
-import com.BADBOY.hotel_reservation.service.Report.UsageReportDomain;
+import com.BADBOY.hotel_reservation.service.RevenueReportDomain;
+import com.BADBOY.hotel_reservation.service.UsageReportDomain;
 
 @RestController
 @RequestMapping("/api/reports")

@@ -1,4 +1,4 @@
-package com.BADBOY.hotel_reservation.service.Report;
+package com.BADBOY.hotel_reservation.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

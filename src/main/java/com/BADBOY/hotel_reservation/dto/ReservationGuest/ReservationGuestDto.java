@@ -2,7 +2,7 @@ package com.BADBOY.hotel_reservation.dto.ReservationGuest;
 
 import java.time.LocalDateTime;
 
-import com.BADBOY.hotel_reservation.entity.reservation_guest.ReservationGuest;
+import com.BADBOY.hotel_reservation.entity.ReservationGuest;
 
 // không cần để ý
 

@@ -20,9 +20,9 @@ import com.BADBOY.hotel_reservation.entity.Enum.ReservationStatus;
 import com.BADBOY.hotel_reservation.entity.Reservation;
 import com.BADBOY.hotel_reservation.entity.ReservationRoom;
 import com.BADBOY.hotel_reservation.entity.User;
-import com.BADBOY.hotel_reservation.entity.reservation_status_history.ReservationStatusHistory;
+import com.BADBOY.hotel_reservation.entity.ReservationStatusHistory;
 import com.BADBOY.hotel_reservation.repository.BillRepository;
-import com.BADBOY.hotel_reservation.repository.Reservation.ReservationRepository;
+import com.BADBOY.hotel_reservation.repository.ReservationRepository;
 import com.BADBOY.hotel_reservation.repository.ReservationRoomRepository;
 import com.BADBOY.hotel_reservation.repository.ReservationStatusHistoryRepository;
 

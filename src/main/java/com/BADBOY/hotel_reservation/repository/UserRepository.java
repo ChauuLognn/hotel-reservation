@@ -1,4 +1,4 @@
-package com.BADBOY.hotel_reservation.repository.Person;
+package com.BADBOY.hotel_reservation.repository;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.BADBOY.hotel_reservation.service.Person;
+package com.BADBOY.hotel_reservation.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,8 +11,8 @@ import com.BADBOY.hotel_reservation.dto.Person.UserCreationRequest;
 import com.BADBOY.hotel_reservation.dto.Person.UserDto;
 import com.BADBOY.hotel_reservation.entity.Emp;
 import com.BADBOY.hotel_reservation.entity.User;
-import com.BADBOY.hotel_reservation.repository.Person.EmpRepository;
-import com.BADBOY.hotel_reservation.repository.Person.UserRepository;
+import com.BADBOY.hotel_reservation.repository.EmpRepository;
+import com.BADBOY.hotel_reservation.repository.UserRepository;
 
 @Service
 @Transactional

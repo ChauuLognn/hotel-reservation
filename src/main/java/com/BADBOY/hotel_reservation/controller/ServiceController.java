@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.BADBOY.hotel_reservation.dto.Service.serviceCreationRequest;
 import com.BADBOY.hotel_reservation.entity.Service;
-import com.BADBOY.hotel_reservation.service.Serviceee.ServiceDomain;
+import com.BADBOY.hotel_reservation.service.ServiceDomain;
 
 
 @RestController
