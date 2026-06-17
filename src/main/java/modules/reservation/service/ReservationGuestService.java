@@ -23,11 +23,11 @@ import modules.reservation.repository.ReservationGuestRepository;
 import modules.reservation.repository.ReservationStatusHistoryRepository;
 
 @Service
-public class ReservationGuestDomain {
+public class ReservationGuestService {
     @Autowired private ReservationGuestRepository resGuestRepo;
     @Autowired private GuestRepository guestRepo;
     @Autowired private ReservationStatusHistoryRepository rshRepo;
-    @Autowired private ReservationStatusHistoryDomain rshDomain;
+    @Autowired private ReservationStatusHistoryService rshDomain;
     
     // lấy thông tin mọi lần lưu trú của một khách hàng
     @Transactional(readOnly=true)

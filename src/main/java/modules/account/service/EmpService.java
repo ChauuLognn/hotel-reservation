@@ -14,7 +14,7 @@ import modules.account.repository.EmpRepository;
 
 @Service
 @Transactional
-public class EmpDomain {
+public class EmpService {
     @Autowired private EmpRepository empRepo;
 
     public EmpDto create(EmpCreationRequest rq) {

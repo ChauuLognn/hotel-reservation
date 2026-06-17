@@ -15,18 +15,18 @@ import modules.account.dto.GuestDto;
 import modules.account.dto.UserCreationRequest;
 import modules.account.dto.UserDto;
 import modules.reservation.dto.GuestStayDto;
-import modules.account.service.EmpDomain;
-import modules.account.service.GuestDomain;
-import modules.account.service.UserDomain;
-import modules.reservation.service.ReservationGuestDomain;
+import modules.account.service.EmpService;
+import modules.account.service.GuestService;
+import modules.account.service.UserService;
+import modules.reservation.service.ReservationGuestService;
 
 @RestController
 public class PersonController {
 
-    @Autowired private EmpDomain eDomain;
-    @Autowired private GuestDomain gDomain;
-    @Autowired private UserDomain userDomain;
-    @Autowired private ReservationGuestDomain resGuestDomain;
+    @Autowired private EmpService eDomain;
+    @Autowired private GuestService gDomain;
+    @Autowired private UserService userDomain;
+    @Autowired private ReservationGuestService resGuestDomain;
 
     // ─── Employee ─────────────────────────────────────────────────────────────
 

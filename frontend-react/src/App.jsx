@@ -6,13 +6,12 @@ import Login from './features/auth/Login';
 import Dashboard from './features/dashboard/Dashboard';
 import Guests from './features/users/Guests';
 import Rooms from './features/rooms/Rooms';
-import Bookings from './features/reservations/Bookings';
 import Reservations from './features/reservations/Reservations';
+import ReservationGuests from './features/reservations/ReservationGuests';
 import Services from './features/services/Services';
 import Bills from './features/billing/Bills';
 import Users from './features/users/Users';
 import Admin from './features/dashboard/Admin';
-import Settings from './features/settings/Settings';
 import BookingDetail from './features/reservations/BookingDetail';
 import UserHome from './features/dashboard/UserHome';
 
@@ -45,14 +44,12 @@ function AppRoutes() {
       <Route path="/" element={<AdminRoute><Dashboard /></AdminRoute>} />
       <Route path="/guests" element={<AdminRoute><Guests /></AdminRoute>} />
       <Route path="/rooms" element={<AdminRoute><Rooms /></AdminRoute>} />
-      <Route path="/bookings" element={<AdminRoute><Bookings /></AdminRoute>} />
-      <Route path="/reservations" element={<AdminRoute><Reservations /></AdminRoute>} />
+      <Route path="/bookings" element={<AdminRoute><Reservations /></AdminRoute>} />
+      <Route path="/reservations" element={<AdminRoute><ReservationGuests /></AdminRoute>} />
       <Route path="/services" element={<AdminRoute><Services /></AdminRoute>} />
       <Route path="/bills" element={<AdminRoute><Bills /></AdminRoute>} />
       <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
-      <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-      <Route path="/booking-detail/:resId" element={<AdminRoute><BookingDetail /></AdminRoute>} />
+      <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />      <Route path="/booking-detail/:resId" element={<AdminRoute><BookingDetail /></AdminRoute>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

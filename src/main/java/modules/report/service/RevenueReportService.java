@@ -18,7 +18,7 @@ import modules.reservation.repository.ReservationGuestRepository;
 
 @Service
 @Transactional(readOnly = true)
-public class RevenueReportDomain {
+public class RevenueReportService {
 
     @Autowired private BillRepository billRepo;
     @Autowired private ReservationGuestRepository rgRepo;

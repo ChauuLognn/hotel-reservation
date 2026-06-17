@@ -14,14 +14,14 @@ import modules.room.dto.RoomDto;
 import modules.room.dto.RoomTypeCreateRequest;
 import modules.room.dto.RoomTypeDto;
 import modules.reservation.dto.AvailableRoom;
-import modules.room.service.RoomDomain;
-import modules.room.service.RoomTypeDomain;
+import modules.room.service.RoomService;
+import modules.room.service.RoomTypeService;
 
 @RestController
 @RequestMapping("/api/rooms")
 public class RoomController {
-    @Autowired private RoomDomain rDomain;
-    @Autowired private RoomTypeDomain rTDomain;
+    @Autowired private RoomService rDomain;
+    @Autowired private RoomTypeService rTDomain;
 
     // tìm các phòng thỏa mãn yêu cầu của khách
     @GetMapping("/available")

@@ -15,7 +15,7 @@ import modules.reservation.repository.ReservationGuestRepository;
 import modules.reservation.repository.ReservationRoomRepository;
 
 @Service
-public class ReservationRoomDomain {
+public class ReservationRoomService {
     @Autowired private ReservationRoomRepository resRoomRepo;
     @Autowired private ReservationGuestRepository resGuestRepo;
 

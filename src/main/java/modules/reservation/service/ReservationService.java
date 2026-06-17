@@ -36,7 +36,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 @Service
-public class ReservationDomain {
+public class ReservationService {
     @Autowired private RoomRepository roomRepo;
     @Autowired private ReservationRepository resRepo;
     @Autowired private ReservationRoomRepository rrRepo;

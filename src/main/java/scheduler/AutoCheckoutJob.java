@@ -13,16 +13,16 @@ import modules.reservation.entity.ReservationGuest;
 import modules.reservation.repository.ReservationGuestRepository;
 import modules.reservation.repository.ReservationRoomRepository;
 import modules.reservation.repository.ReservationStatusHistoryRepository;
-import modules.reservation.service.ReservationGuestDomain;
+import modules.reservation.service.ReservationGuestService;
 
 
 // task tự động checkOut cho khách khi đến giờ resId.checkOutTime 
 @Component
-public class CheckoutJob {
+public class AutoCheckoutJob {
     @Autowired private ReservationGuestRepository rgRepo;
     @Autowired private ReservationStatusHistoryRepository rshRepo;
     @Autowired private ReservationRoomRepository rrRepo;
-    @Autowired private ReservationGuestDomain rgDomain;
+    @Autowired private ReservationGuestService rgDomain;
 
     @Scheduled(
         fixedDelayString = "${app.hold.cleanup.fixed-delay-ms:600000}",

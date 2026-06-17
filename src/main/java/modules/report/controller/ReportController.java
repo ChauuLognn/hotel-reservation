@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 import modules.report.dto.RevenueReportDto;
 import modules.report.dto.RoomUsageReportDto;
 import modules.report.dto.ServiceUsageReportDto;
-import modules.report.service.RevenueReportDomain;
-import modules.report.service.UsageReportDomain;
+import modules.report.service.RevenueReportService;
+import modules.report.service.UsageReportService;
 
 @RestController
 @RequestMapping("/api/reports")
 public class ReportController {
 
-    @Autowired private RevenueReportDomain revenueDomain;
-    @Autowired private UsageReportDomain usageDomain;
+    @Autowired private RevenueReportService revenueDomain;
+    @Autowired private UsageReportService usageDomain;
 
     @GetMapping("/revenue")
     public RevenueReportDto getRevenue(

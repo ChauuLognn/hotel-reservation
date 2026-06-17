@@ -14,7 +14,7 @@ import modules.room.repository.RoomTypeRepository;
 
 @Service
 @Transactional
-public class RoomTypeDomain {
+public class RoomTypeService {
     @Autowired private RoomTypeRepository roomTypeRepo;
 
     public RoomTypeDto create(RoomTypeCreateRequest rq){

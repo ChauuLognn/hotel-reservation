@@ -14,9 +14,7 @@ const navItems = [
   { path: '/services', icon: Coffee, label: 'Dịch Vụ' },
   { path: '/bills', icon: DollarSign, label: 'Hóa Đơn' },
   { path: '/users', icon: UserPlus, label: 'Người Dùng' },
-  { path: '/admin', icon: Shield, label: 'Quản Trị' },
-  { path: '/settings', icon: Settings, label: 'Cài Đặt' },
-];
+  { path: '/admin', icon: Shield, label: 'Quản Trị' },];
 
 export default function Sidebar() {
   const { logout, user } = useAuth();

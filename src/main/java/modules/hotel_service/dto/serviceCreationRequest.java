@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 // không cần để ý
 
 // thông tin tạo dịch vụ
-public class serviceCreationRequest {
+public class ServiceCreationRequest {
     private String name;
     private BigDecimal price;
     private String status;

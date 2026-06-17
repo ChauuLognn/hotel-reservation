@@ -16,7 +16,7 @@ import modules.hotel_service.repository.ReservationServiceRepository;
 import modules.hotel_service.repository.ServiceRepository;
 
 @Service
-public class ReservationServiceDomain {
+public class ReservationServiceService {
     @Autowired ReservationServiceRepository rSRepo;
     @Autowired ServiceRepository serRepo;
     @Autowired BillRepository billRepo;

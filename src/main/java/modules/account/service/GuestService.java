@@ -14,7 +14,7 @@ import modules.account.repository.GuestRepository;
 
 @Service
 @Transactional
-public class GuestDomain {
+public class GuestService {
     @Autowired private GuestRepository gRepo;
 
     public GuestDto create(GuestCreationRequest rq) {

@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import modules.hotel_service.dto.serviceCreationRequest;
+import modules.hotel_service.dto.ServiceCreationRequest;
 import modules.hotel_service.entity.Service;
-import modules.hotel_service.service.ServiceDomain;
+import modules.hotel_service.service.ServiceService;
 
 
 @RestController
 @RequestMapping("/api/services")
 public class ServiceController {
-    @Autowired ServiceDomain serDomain;
+    @Autowired ServiceService serDomain;
 
 
     // tạo dịch vụ mới
     @PostMapping
-    public Service createService(@RequestBody serviceCreationRequest rq){
+    public Service createService(@RequestBody ServiceCreationRequest rq){
         return serDomain.create(rq);
     }
 
@@ -44,7 +44,7 @@ public class ServiceController {
     // cập nhật thông tin dịch vụ theo tên
     @PutMapping("/{name}")
     public Service updateService(@PathVariable String name,
-                    @RequestBody serviceCreationRequest rq){
+                    @RequestBody ServiceCreationRequest rq){
         return serDomain.update(name, rq);
     }
 

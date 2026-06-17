@@ -20,7 +20,7 @@ import modules.hotel_service.repository.ReservationServiceRepository;
 
 @Service
 @Transactional(readOnly = true)
-public class UsageReportDomain {
+public class UsageReportService {
 
     @Autowired private ReservationRoomRepository rrRepo;
     @Autowired private ReservationServiceRepository rsRepo;

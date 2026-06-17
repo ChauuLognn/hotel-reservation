@@ -16,7 +16,7 @@ import modules.account.repository.UserRepository;
 
 @Service
 @Transactional
-public class UserDomain {
+public class UserService {
     @Autowired
     private UserRepository userRepo;
     @Autowired 

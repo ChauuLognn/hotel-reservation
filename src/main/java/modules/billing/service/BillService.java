@@ -25,7 +25,7 @@ import modules.reservation.repository.ReservationGuestRepository;
 import modules.reservation.repository.ReservationRoomRepository;
 
 @Service
-public class BillDomain {
+public class BillService {
 
     @Autowired private BillRepository billRepo;
     @Autowired private ReservationRoomRepository rrRepo;
