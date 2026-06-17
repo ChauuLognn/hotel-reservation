@@ -42,7 +42,7 @@ export function AuthProvider({ children }) {
 
   const isAdmin = () => {
     const role = user?.role;
-    return role === 'ADMIN' || role === 'MANAGER' || role === 'RECEPTIONIST';
+    return role === 'MANAGER';
   };
 
   return (

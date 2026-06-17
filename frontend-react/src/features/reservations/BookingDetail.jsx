@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Home, DollarSign, Clock, CheckCircle, Plus, Trash2, Calendar, Coffee, UserPlus } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
@@ -488,7 +488,7 @@ export default function BookingDetail() {
                     {bill.resRoomBill && bill.resRoomBill.map((rb, i) => {
                       const roomInfo = roomsLookup[rb.roomId] || {};
                       return (
-                        <>
+                        <React.Fragment key={i}>
                           <tr key={i} style={{ borderBottom:'1px dashed #e5e7eb' }}>
                             <td style={{ fontWeight:700, color:'#4f46e5' }}>Phòng {roomInfo.roomNumber || rb.roomId}</td>
                             <td style={{ textAlign:'right', fontWeight:700 }}>{formatVND(rb.total)}</td>
@@ -508,7 +508,7 @@ export default function BookingDetail() {
                               </td>
                             </tr>
                           ))}
-                        </>
+                        </React.Fragment>
                       );
                     })}
                     

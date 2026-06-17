@@ -35,22 +35,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // registry.addRedirectViewController("/", "/frontend/index.html");
     }
 
-    @Override
-    public void addCorsMappings(@NonNull CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173", "http://localhost:5174")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD")
-                .allowedHeaders(
-                        "Authorization",
-                        "Content-Type",
-                        "X-User-Id",
-                        "X-User_id",
-                        "Accept",
-                        "Origin",
-                        "X-Requested-With")
-                .allowCredentials(true)
-                .exposedHeaders("Authorization", "Content-Type", "X-User-Id", "X-User_id")
-                .maxAge(3600);
-    }
+    // CORS is configured centrally in SecurityConfig.corsConfigurationSource()
+    // Do NOT add addCorsMappings here to avoid conflicting CORS configuration.
 
 }

@@ -14,10 +14,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    strictPort: true,
     proxy: API_PROXY,
   },
   preview: {
     port: 5173,
+    strictPort: true,
     proxy: API_PROXY,
   },
 })

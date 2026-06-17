@@ -53,6 +53,7 @@ public interface ReservationGuestRepository extends JpaRepository<ReservationGue
     @Modifying
     @Query(value = """
         update reservationGuest rg
+        join reservationRoom rr on rr.id = rg.reservationRoomId
         set rg.checkInAt = :checkInAt
         where rg.reservationRoomId = :resRoomId
             and rg.guestId = :guestId

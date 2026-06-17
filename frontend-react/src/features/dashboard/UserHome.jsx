@@ -60,26 +60,20 @@ export default function UserHome() {
     setLoading(true);
     setIsSearching(false);
     try {
-      const [rRes, rtRes] = await Promise.all([roomApi.getAll(), roomApi.getAllTypes()]);
-      const allRooms = rRes.data?.data || rRes.data || [];
-      const allTypes = rtRes.data?.data || rtRes.data || [];
-      
-      const enriched = allRooms
-        .filter(r => r.status === 'AVAILABLE')
-        .map(r => {
-          const typeInfo = allTypes.find(t => t.name === r.typeName);
-          return {
-            id: r.id,
-            roomNumber: r.id,
-            floorNumber: Math.floor(r.id / 100) || 1,
-            status: r.status,
-            roomType: {
-              name: r.typeName,
-              basePrice: typeInfo ? typeInfo.basePrice : 0,
-              capacity: typeInfo ? typeInfo.capacity : 1
-            }
-          };
-        });
+      const availRes = await roomApi.findAvailable({ checkIn: getTodayString(), checkOut: getTomorrowString() });
+      const availList = availRes.data?.data || availRes.data || [];
+
+      const enriched = availList.map(av => ({
+        id: av.roomId,
+        roomNumber: av.roomId,
+        floorNumber: Math.floor(av.roomId / 100) || 1,
+        status: 'READY',
+        roomType: {
+          name: av.name,
+          basePrice: av.baseprice,
+          capacity: av.capacity
+        }
+      }));
       setRooms(enriched);
     } catch (err) {
       console.error('Lỗi tải phòng:', err);

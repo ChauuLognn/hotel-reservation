@@ -27,11 +27,18 @@ public class RoomService {
     public List<AvailableRoom> findAvaiableRooms(
         String roomTypeName, LocalDate checkIn, LocalDate checkOut
     ){
-        RoomType rt = rtRepo.findByName(roomTypeName)
-            .orElseThrow(() -> new IllegalArgumentException("no room has that name"));
-        Byte minCapacity = rt.getCapacity();
-        Byte safeMinCapacity = (minCapacity == null) ? 0 : minCapacity;
-        return roomRepo.findAvailableRooms(checkIn, checkOut, roomTypeName, safeMinCapacity);
+        String effectiveRoomTypeName = null;
+        Byte safeMinCapacity = null;
+
+        if (roomTypeName != null && !roomTypeName.isBlank()) {
+            RoomType rt = rtRepo.findByName(roomTypeName)
+                .orElseThrow(() -> new IllegalArgumentException("no room has that name: " + roomTypeName));
+            effectiveRoomTypeName = roomTypeName;
+            Byte minCapacity = rt.getCapacity();
+            safeMinCapacity = (minCapacity == null) ? 0 : minCapacity;
+        }
+
+        return roomRepo.findAvailableRooms(checkIn, checkOut, effectiveRoomTypeName, safeMinCapacity);
     }
 
     public RoomDto create(RoomCreateRequest rq){

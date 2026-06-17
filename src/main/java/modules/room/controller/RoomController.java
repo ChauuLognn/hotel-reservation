@@ -30,6 +30,12 @@ public class RoomController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut
     ) {
+        if (checkIn == null || checkOut == null) {
+            throw new IllegalArgumentException("checkIn và checkOut là bắt buộc để tìm phòng trống");
+        }
+        if (!checkOut.isAfter(checkIn)) {
+            throw new IllegalArgumentException("checkOut phải sau checkIn");
+        }
         return rDomain.findAvaiableRooms(name, checkIn, checkOut);
     }
 

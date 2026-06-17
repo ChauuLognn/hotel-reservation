@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DollarSign, Search, Eye } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
@@ -226,7 +226,7 @@ export default function Bills() {
                   {selectedBill.resRoomBill && selectedBill.resRoomBill.map((rb, i) => {
                     const roomInfo = roomsLookup[rb.roomId] || {};
                     return (
-                      <>
+                      <React.Fragment key={i}>
                         <tr key={i} style={{ background:'#f8fafc', fontWeight:700 }}>
                           <td colSpan={3}>Phòng {roomInfo.roomNumber || rb.roomId}</td>
                           <td style={{ textAlign:'right' }}>{formatVND(rb.total)}</td>
@@ -247,7 +247,7 @@ export default function Bills() {
                             </td>
                           </tr>
                         ))}
-                      </>
+                      </React.Fragment>
                     );
                   })}
                 </tbody>

@@ -34,7 +34,7 @@ export default function Login() {
         navigate('/user-home');
       } else {
         // Admin tab active: check if user is staff/admin
-        if (['ADMIN', 'MANAGER', 'RECEPTIONIST', 'EMPLOYEE'].includes(userRole)) {
+        if (['MANAGER', 'EMPLOYEE'].includes(userRole)) {
           navigate('/');
         } else {
           setError('Tài khoản này không có quyền quản trị!');

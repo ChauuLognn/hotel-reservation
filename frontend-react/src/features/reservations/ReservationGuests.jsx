@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ChevronDown, ChevronUp, User } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import reservationApi from '../../api/reservationApi';
@@ -116,7 +116,7 @@ export default function ReservationGuests() {
                 const isLoadingG = loadingGuests[b.resId];
 
                 return (
-                  <>
+                  <React.Fragment key={b.resId}>
                     <tr key={b.resId} style={{ cursor: 'pointer' }} onClick={() => toggleExpand(b.resId)}>
                       <td>
                         {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -143,7 +143,7 @@ export default function ReservationGuests() {
                               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.75rem', marginTop: '0.5rem' }}>
                                 {guestsList.map((g, idx) => (
                                   <div key={idx} style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <div style={{ background: '#e0e7ff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyCenter: 'center', justifyContent: 'center' }}>
+                                    <div style={{ background: '#e0e7ff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                       <User size={16} color="#4f46e5" />
                                     </div>
                                     <div>
@@ -172,7 +172,7 @@ export default function ReservationGuests() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               }) : (
                 <tr><td colSpan={7} className="text-center text-gray" style={{padding:'2rem'}}>Không có dữ liệu</td></tr>

@@ -4,10 +4,8 @@ import Layout from '../../components/layout/Layout';
 import roomApi from '../../api/roomApi';
 
 const STATUS_LABELS = {
-  AVAILABLE: { label:'Còn Trống', cls:'badge-success' },
-  OCCUPIED: { label:'Đang Thuê', cls:'badge-danger' },
-  MAINTENANCE: { label:'Bảo Trì', cls:'badge-warning' },
-  CLEANING: { label:'Đang Dọn', cls:'badge-info' },
+  READY: { label:'Sẵn Sàng', cls:'badge-success' },
+  UNDER_REPAIR: { label:'Đang Sửa Chữa', cls:'badge-warning' },
 };
 
 function formatVND(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0); }
@@ -20,7 +18,7 @@ export default function Rooms() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editRoom, setEditRoom] = useState(null);
-  const [form, setForm] = useState({ roomNumber:'', roomTypeName:'', status:'AVAILABLE', floorNumber:'' });
+  const [form, setForm] = useState({ roomNumber:'', roomTypeName:'', status:'READY', floorNumber:'' });
 
   // Room Types states
   const [showTypeModal, setShowTypeModal] = useState(false);
@@ -83,14 +81,13 @@ export default function Rooms() {
 
   const stats = {
     total: rooms.length,
-    available: rooms.filter(r => r.status === 'AVAILABLE').length,
-    occupied: rooms.filter(r => r.status === 'OCCUPIED').length,
-    maintenance: rooms.filter(r => r.status === 'MAINTENANCE').length,
+    ready: rooms.filter(r => r.status === 'READY').length,
+    underRepair: rooms.filter(r => r.status === 'UNDER_REPAIR').length,
   };
 
   function openAdd() {
     setEditRoom(null);
-    setForm({ roomNumber:'', roomTypeName: roomTypes[0]?.name || '', status:'AVAILABLE', floorNumber:'' });
+    setForm({ roomNumber:'', roomTypeName: roomTypes[0]?.name || '', status:'READY', floorNumber:'' });
     setShowModal(true);
   }
 
@@ -99,7 +96,7 @@ export default function Rooms() {
     setForm({ 
       roomNumber: String(r.roomNumber||''), 
       roomTypeName: r.roomTypeName||'', 
-      status: r.status||'AVAILABLE', 
+      status: r.status||'READY', 
       floorNumber: String(r.floorNumber||'') 
     });
     setShowModal(true);
@@ -175,9 +172,8 @@ export default function Rooms() {
       <div className="stats-grid">
         {[
           { label:'Tổng Phòng', val: stats.total, icon:<Home size={22} color="#6366f1" />, bg:'#e0e7ff' },
-          { label:'Còn Trống', val: stats.available, icon:<Key size={22} color="#10b981" />, bg:'#d1fae5' },
-          { label:'Đang Thuê', val: stats.occupied, icon:<Home size={22} color="#ef4444" />, bg:'#fee2e2' },
-          { label:'Bảo Trì', val: stats.maintenance, icon:<Wrench size={22} color="#f59e0b" />, bg:'#fef3c7' },
+          { label:'Sẵn Sàng', val: stats.ready, icon:<Key size={22} color="#10b981" />, bg:'#d1fae5' },
+          { label:'Đang Sửa Chữa', val: stats.underRepair, icon:<Wrench size={22} color="#f59e0b" />, bg:'#fef3c7' },
         ].map((s,i) => (
           <div key={i} className="stat-card">
             <div className="stat-content">

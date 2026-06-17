@@ -54,8 +54,8 @@ public interface ReservationServiceRepository extends JpaRepository<ReservationS
         SET reservationRoomId = :resRoomId,
             serviceId = :serId,
             quantity = :quantity,
-            price = :totalAmount,
-            usedAt = :usedAt
+            totalAmount = :totalAmount,
+            usedAt = :usedAt,
             createdBy = :createdBy
         WHERE id = :id
     """, nativeQuery = true)

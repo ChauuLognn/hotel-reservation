@@ -30,7 +30,7 @@ function AdminRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div className="loading-spinner"><div className="spinner" />Đang tải...</div>;
   if (!user) return <Navigate to="/login" replace />;
-  const staffRoles = ['ADMIN', 'MANAGER', 'RECEPTIONIST', 'EMPLOYEE'];
+  const staffRoles = ['MANAGER', 'EMPLOYEE'];
   if (!staffRoles.includes(user.role)) return <Navigate to="/user-home" replace />;
   return children;
 }

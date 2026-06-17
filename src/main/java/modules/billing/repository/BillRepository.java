@@ -79,8 +79,8 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     void markBillsPaidForResRoomId(@Param("resRoomId") String resRoomId);
 
     @Query(value = """
-        SELECT * FROM bill
-        join reservarionRoom rr on rr.id = b.reservationRoomId
+        SELECT b.* FROM bill b
+        join reservationRoom rr on rr.id = b.reservationRoomId
         WHERE rr.reservationId = :resId
         ORDER BY b.reservationRoomId, b.createdAt
         """, nativeQuery = true)
