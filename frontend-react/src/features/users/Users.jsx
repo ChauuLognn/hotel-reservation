@@ -15,6 +15,11 @@ const ROLE_LABELS = {
   EMPLOYEE: 'EMPLOYEE'
 };
 
+const ROLE_IDS = {
+  MANAGER: 1,
+  EMPLOYEE: 2,
+};
+
 export default function Users() {
   const [tab, setTab] = useState('employees'); // 'employees' or 'accounts'
   const [employees, setEmployees] = useState([]);
@@ -72,7 +77,8 @@ export default function Users() {
   function openEditEmp(emp) {
     setEditEmp(emp);
     // role is role ID or role object
-    const roleId = emp.role?.id || emp.role || 2;
+    const roleName = emp.role?.name || emp.role;
+    const roleId = emp.role?.id || ROLE_IDS[roleName] || 2;
     setEmpForm({
       firstName: emp.firstName || '',
       lastName: emp.lastName || '',
@@ -91,6 +97,7 @@ export default function Users() {
     try {
       const payload = {
         ...empForm,
+        dateOfBirth: empForm.dateOfBirth || null,
         role: Number(empForm.role)
       };
       if (editEmp) {

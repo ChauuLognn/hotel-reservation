@@ -45,7 +45,7 @@ public class UserPayload {
         static public UserDto fromEntity(User u){
             UserDto dto = new UserDto();
             dto.setId(u.getId());
-            dto.setEmpId(u.getEmp().getId());
+            dto.setEmpId(u.getEmp() != null ? u.getEmp().getId() : null);
             dto.setAccount(u.getAccount());
             dto.setPassword(u.getPassword());
             return dto;

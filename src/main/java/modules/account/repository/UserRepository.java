@@ -19,6 +19,9 @@ public interface UserRepository extends JpaRepository<User, Integer>{
     @Query(value = "select * from user where empId = :empId", nativeQuery = true)
     Optional<User> findUserByEmpId(@Param("empId") Integer empId);
 
+    @Query(value = "select * from user where empId = :empId", nativeQuery = true)
+    List<User> findByEmpId(@Param("empId") Integer empId);
+
     @Query(value = "SELECT * FROM user WHERE account = :account", nativeQuery = true)
     Optional<User> findByAccount(@Param("account") String account);
 
@@ -61,4 +64,8 @@ public interface UserRepository extends JpaRepository<User, Integer>{
     @Modifying
     @Query(value = "DELETE FROM user WHERE id = :id", nativeQuery = true)
     void deleteUser(@Param("id") Integer id);
+
+    @Modifying
+    @Query(value = "UPDATE user SET empId = NULL WHERE empId = :empId", nativeQuery = true)
+    void unlinkEmpFromUsers(@Param("empId") Integer empId);
 }

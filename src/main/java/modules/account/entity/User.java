@@ -14,7 +14,7 @@ public class User {
     @OneToOne
     @JoinColumn(
         name = "empId",
-        nullable = false,
+        nullable = true,
         foreignKey = @ForeignKey(name = "FK_user_emp")
     )
     private Emp emp;

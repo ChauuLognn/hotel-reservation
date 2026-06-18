@@ -70,12 +70,7 @@ public class EmpService {
         empRepo.findEmpById(id)
             .orElseThrow(() -> new IllegalArgumentException("Emp not found: " + id));
 
-        if (userRepo.findUserByEmpId(id).isPresent()) {
-            throw new IllegalArgumentException(
-                "Không thể xóa hồ sơ nhân viên này vì đang có tài khoản hệ thống liên kết. " +
-                "Hãy xóa hoặc khóa tài khoản hệ thống trước."
-            );
-        }
+        userRepo.unlinkEmpFromUsers(id);
 
         empRepo.deleteEmp(id);
     }
