@@ -22,6 +22,11 @@ function formatDateTime(s) {
   const d=new Date(s); 
   return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; 
 }
+function formatDate(s) { 
+  if(!s) return '-'; 
+  const d=new Date(s); 
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; 
+}
 function formatVND(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0); }
 
 export default function BookingDetail() {
@@ -56,7 +61,7 @@ export default function BookingDetail() {
 
   // Quick guest creation inside check-in modal
   const [showQuickGuest, setShowQuickGuest] = useState(false);
-  const [guestForm, setGuestForm] = useState({ firstName:'', lastName:'', phone:'', identityNum:'', email:'', address:'' });
+  const [guestForm, setGuestForm] = useState({ firstName:'', lastName:'', phone:'', identityNum:'' });
 
   useEffect(() => {
     if (resId) fetchAll();
@@ -204,7 +209,7 @@ export default function BookingDetail() {
       setAllGuests(Array.isArray(gList.data) ? gList.data : []);
       setSelectedGuestId(String(newGuest.id));
       setShowQuickGuest(false);
-      setGuestForm({ firstName:'', lastName:'', phone:'', identityNum:'', email:'', address:'' });
+      setGuestForm({ firstName:'', lastName:'', phone:'', identityNum:'' });
     } catch(err) {
       alert('Lỗi thêm khách: ' + (err?.response?.data?.message || err.message));
     }
@@ -320,7 +325,7 @@ export default function BookingDetail() {
           <div>
             <h2 style={{fontSize:'1.4rem', fontWeight:700, color:'#111827'}}>Đặt Phòng #{resId}</h2>
             <p style={{color:'#6b7280', marginTop:'0.25rem'}}>
-              Thời gian lưu trú: <strong>{formatDateTime(detail.checkInDate)}</strong> → <strong>{formatDateTime(detail.checkOutDate)}</strong>
+              Thời gian lưu trú: <strong>{formatDate(detail.checkIn)}</strong> → <strong>{formatDate(detail.checkOut)}</strong>
             </p>
             {detail.note && <p style={{color:'#6b7280', marginTop:'0.25rem'}}>Ghi chú: {detail.note}</p>}
           </div>

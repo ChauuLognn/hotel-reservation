@@ -13,6 +13,7 @@ import modules.reservation.entity.Reservation;
 import modules.reservation.entity.ReservationGuest;
 import modules.reservation.entity.ReservationRoom;
 import modules.reservation.entity.ReservationStatusHistory;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ReservationPayload {
 
@@ -131,6 +132,7 @@ public class ReservationPayload {
             this.total = total;
         }
 
+        @JsonProperty("resId")
         public String getReservationId() { return reservationId; }
         public void setReservationId(String reservationId) { this.reservationId = reservationId; }
         public String getGuestName() { return guestName; }
@@ -199,6 +201,7 @@ public class ReservationPayload {
             return dto;
         }
 
+        @JsonProperty("resId")
         public String getId() { return id; }
         public void setId(String id) { this.id = id; }
         public String getGuestName() { return guestName; }
@@ -283,6 +286,8 @@ public class ReservationPayload {
     public static class ChangeStatusRequest {
         private ReservationStatus newStatus;
         private String reason;
+
+        public ChangeStatusRequest() {}
 
         public ChangeStatusRequest(ReservationStatus newStatus, String reason) {
             this.newStatus = newStatus;

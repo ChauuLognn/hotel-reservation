@@ -306,10 +306,10 @@ export default function Rooms() {
                   <tr><td colSpan={5} className="text-center text-gray" style={{padding:'2rem'}}>Đang tìm...</td></tr>
                 ) : availRooms.length ? availRooms.map((r,i) => (
                   <tr key={i}>
-                    <td style={{fontWeight:700}}>{r.roomNumber}</td>
-                    <td>{r.roomTypeName}</td>
+                    <td style={{fontWeight:700}}>{r.roomId}</td>
+                    <td>{r.name}</td>
                     <td>{r.capacity} người</td>
-                    <td style={{color:'#4f46e5',fontWeight:600}}>{formatVND(r.basePrice)}</td>
+                    <td style={{color:'#4f46e5',fontWeight:600}}>{formatVND(r.baseprice)}</td>
                     <td><span className="badge-status badge-success">Trống</span></td>
                   </tr>
                 )) : (

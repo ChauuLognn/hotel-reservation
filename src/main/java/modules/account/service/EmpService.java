@@ -11,13 +11,17 @@ import modules.account.dto.EmpPayload.EmpCreationRequest;
 import modules.account.dto.EmpPayload.EmpDto;
 import modules.account.entity.Emp;
 import modules.account.repository.EmpRepository;
+import modules.account.repository.UserRepository;
 
 @Service
 @Transactional
 public class EmpService {
     @Autowired private EmpRepository empRepo;
+    @Autowired private UserRepository userRepo;
 
     public EmpDto create(EmpCreationRequest rq) {
+        validateUniqueFields(null, rq);
+
         empRepo.insertEmp(rq.getFirstName(),rq.getLastName(),
                         rq.getDateOfBirth(),rq.getIdentityNum(),
                         rq.getEmail(),rq.getPhone(),
@@ -48,6 +52,8 @@ public class EmpService {
         empRepo.findEmpById(id)
             .orElseThrow(() -> new IllegalArgumentException("Emp not found: " + id));
 
+        validateUniqueFields(id, rq);
+
         empRepo.updateEmp(
             id,rq.getFirstName(),rq.getLastName(),
             rq.getDateOfBirth(),rq.getIdentityNum(),
@@ -63,6 +69,28 @@ public class EmpService {
     public void delete(Integer id) {
         empRepo.findEmpById(id)
             .orElseThrow(() -> new IllegalArgumentException("Emp not found: " + id));
+
+        if (userRepo.findUserByEmpId(id).isPresent()) {
+            throw new IllegalArgumentException(
+                "Không thể xóa hồ sơ nhân viên này vì đang có tài khoản hệ thống liên kết. " +
+                "Hãy xóa hoặc khóa tài khoản hệ thống trước."
+            );
+        }
+
         empRepo.deleteEmp(id);
+    }
+
+    private void validateUniqueFields(Integer id, EmpCreationRequest rq) {
+        int safeId = id == null ? -1 : id;
+
+        if (empRepo.countByIdentityNumUsedByOtherEmp(rq.getIdentityNum(), safeId) > 0) {
+            throw new IllegalArgumentException("CMND/CCCD đã được sử dụng bởi nhân viên khác");
+        }
+        if (empRepo.countByEmailUsedByOtherEmp(rq.getEmail(), safeId) > 0) {
+            throw new IllegalArgumentException("Email đã được sử dụng bởi nhân viên khác");
+        }
+        if (empRepo.countByPhoneUsedByOtherEmp(rq.getPhone(), safeId) > 0) {
+            throw new IllegalArgumentException("Số điện thoại đã được sử dụng bởi nhân viên khác");
+        }
     }
 }

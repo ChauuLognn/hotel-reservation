@@ -28,6 +28,15 @@ public interface EmpRepository extends JpaRepository<Emp, Integer> {
     Optional<Emp> findByPhone(String phone);
     Optional<Emp> findByIdentityNum(String identityNum);
 
+    @Query(value = "SELECT COUNT(*) FROM emp WHERE email = :email AND id <> :id", nativeQuery = true)
+    Long countByEmailUsedByOtherEmp(@Param("email") String email, @Param("id") Integer id);
+
+    @Query(value = "SELECT COUNT(*) FROM emp WHERE phone = :phone AND id <> :id", nativeQuery = true)
+    Long countByPhoneUsedByOtherEmp(@Param("phone") String phone, @Param("id") Integer id);
+
+    @Query(value = "SELECT COUNT(*) FROM emp WHERE identityNum = :identityNum AND id <> :id", nativeQuery = true)
+    Long countByIdentityNumUsedByOtherEmp(@Param("identityNum") String identityNum, @Param("id") Integer id);
+
     @Modifying
     @Query(value = """
         INSERT INTO emp (firstName, lastName, dateOfBirth,

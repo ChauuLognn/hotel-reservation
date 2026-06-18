@@ -9,7 +9,7 @@ export default function Guests() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editGuest, setEditGuest] = useState(null);
-  const [form, setForm] = useState({ firstName:'', lastName:'', email:'', phone:'', identityNum:'', address:'' });
+  const [form, setForm] = useState({ firstName:'', lastName:'', phone:'', identityNum:'', dateOfBirth:'' });
 
   useEffect(() => { fetchGuests(); }, []);
 
@@ -29,21 +29,25 @@ export default function Guests() {
   const filtered = guests.filter(g => {
     const q = search.toLowerCase();
     return ((g.firstName||'')+(g.lastName||'')).toLowerCase().includes(q)
-      || (g.email||'').toLowerCase().includes(q)
       || (g.phone||'').toLowerCase().includes(q)
-      || (g.identityNum||'').toLowerCase().includes(q);
+      || (g.identityNum||'').toLowerCase().includes(q)
+      || (g.dateOfBirth||'').toLowerCase().includes(q);
   });
 
-  function openAdd() { setEditGuest(null); setForm({ firstName:'',lastName:'',email:'',phone:'',identityNum:'',address:'' }); setShowModal(true); }
-  function openEdit(g) { setEditGuest(g); setForm({ firstName:g.firstName||'',lastName:g.lastName||'',email:g.email||'',phone:g.phone||'',identityNum:g.identityNum||'',address:g.address||'' }); setShowModal(true); }
+  function openAdd() { setEditGuest(null); setForm({ firstName:'',lastName:'',phone:'',identityNum:'',dateOfBirth:'' }); setShowModal(true); }
+  function openEdit(g) { setEditGuest(g); setForm({ firstName:g.firstName||'',lastName:g.lastName||'',phone:g.phone||'',identityNum:g.identityNum||'',dateOfBirth:g.dateOfBirth||'' }); setShowModal(true); }
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const payload = {
+      ...form,
+      dateOfBirth: form.dateOfBirth || null,
+    };
     try {
       if (editGuest) { 
-        await guestApi.update(editGuest.id, form); 
+        await guestApi.update(editGuest.id, payload);
       } else { 
-        await guestApi.create(form); 
+        await guestApi.create(payload);
       }
       setShowModal(false);
       fetchGuests();
@@ -94,21 +98,20 @@ export default function Guests() {
           <table className="table">
             <thead>
               <tr>
-                <th>ID</th><th>Họ Tên</th><th>Email</th><th>Điện Thoại</th><th>CMND/CCCD</th><th>Địa Chỉ</th><th>Thao Tác</th>
+                <th>ID</th><th>Họ Tên</th><th>Điện Thoại</th><th>CMND/CCCD</th><th>Ngày Sinh</th><th>Thao Tác</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} className="text-center text-gray" style={{padding:'2rem'}}>Đang tải...</td></tr>
+                <tr><td colSpan={6} className="text-center text-gray" style={{padding:'2rem'}}>Đang tải...</td></tr>
               ) : filtered.length ? (
                 filtered.map(g => (
                   <tr key={g.id}>
                     <td style={{color:'#9ca3af', fontSize:'0.8rem'}}>#{g.id}</td>
                     <td style={{ fontWeight:600 }}>{g.firstName} {g.lastName}</td>
-                    <td>{g.email || '-'}</td>
                     <td>{g.phone || '-'}</td>
                     <td>{g.identityNum || '-'}</td>
-                    <td style={{maxWidth:'200px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{g.address || '-'}</td>
+                    <td>{g.dateOfBirth || '-'}</td>
                     <td>
                       <div className="flex gap-2">
                         <button className="action-btn edit" onClick={() => openEdit(g)} title="Sửa"><Edit2 size={15} /></button>
@@ -118,7 +121,7 @@ export default function Guests() {
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan={7} className="text-center text-gray" style={{padding:'2rem'}}>
+                <tr><td colSpan={6} className="text-center text-gray" style={{padding:'2rem'}}>
                   {search ? 'Không tìm thấy kết quả' : 'Chưa có khách hàng nào'}
                 </td></tr>
               )}
@@ -147,10 +150,6 @@ export default function Guests() {
                     <input className="form-input" required value={form.lastName} onChange={e => setForm({...form, lastName:e.target.value})} placeholder="Văn A" />
                   </div>
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Email</label>
-                  <input type="email" className="form-input" value={form.email} onChange={e => setForm({...form, email:e.target.value})} placeholder="example@email.com" />
-                </div>
                 <div className="grid-2">
                   <div className="form-group">
                     <label className="form-label">Điện Thoại</label>
@@ -162,8 +161,8 @@ export default function Guests() {
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Địa Chỉ</label>
-                  <input className="form-input" value={form.address} onChange={e => setForm({...form, address:e.target.value})} placeholder="123 Đường ABC, TP.HCM" />
+                  <label className="form-label">Ngày Sinh</label>
+                  <input type="date" className="form-input" value={form.dateOfBirth} onChange={e => setForm({...form, dateOfBirth:e.target.value})} />
                 </div>
               </div>
               <div className="modal-footer">

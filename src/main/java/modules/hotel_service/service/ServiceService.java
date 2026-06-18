@@ -32,10 +32,11 @@ public class ServiceService {
 
     @Transactional
     public modules.hotel_service.entity.Service update(String name, ServiceCreationRequest rq){
-        modules.hotel_service.entity.Service s = serRepo.findByName(rq.getName()).
+        serRepo.findByName(name).
             orElseThrow(() -> new IllegalArgumentException("Service not found"));
         serRepo.updateService(name, rq.getPrice(), rq.getStatus());
-        return s;
+        return serRepo.findByName(name)
+            .orElseThrow(() -> new IllegalStateException("Cannot load service after update"));
     }
 
     @Transactional

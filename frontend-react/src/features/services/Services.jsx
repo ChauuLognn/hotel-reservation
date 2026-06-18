@@ -11,7 +11,7 @@ export default function Services() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editSvc, setEditSvc] = useState(null);
-  const [form, setForm] = useState({ serviceName:'', price:'', description:'' });
+  const [form, setForm] = useState({ serviceName:'', price:'', status:'ACTIVE' });
 
   useEffect(() => { fetchServices(); }, []);
 
@@ -31,14 +31,14 @@ export default function Services() {
 
   const filtered = services.filter(s => {
     const q = search.toLowerCase();
-    return (s.serviceName||'').toLowerCase().includes(q) 
-      || (s.description||'').toLowerCase().includes(q);
+    return (s.serviceName||'').toLowerCase().includes(q)
+      || (s.status||'').toLowerCase().includes(q);
   });
 
-  function openAdd() { setEditSvc(null); setForm({ serviceName:'', price:'', description:'' }); setShowModal(true); }
+  function openAdd() { setEditSvc(null); setForm({ serviceName:'', price:'', status:'ACTIVE' }); setShowModal(true); }
   function openEdit(s) { 
     setEditSvc(s); 
-    setForm({ serviceName:s.serviceName||'', price:String(s.price||''), description:s.description||'' }); 
+    setForm({ serviceName:s.serviceName||'', price:String(s.price||''), status:s.status || 'ACTIVE' });
     setShowModal(true); 
   }
 
@@ -48,8 +48,7 @@ export default function Services() {
       const payload = { 
         name: form.serviceName, 
         price: Number(form.price), 
-        status: editSvc ? editSvc.status : 'ACTIVE',
-        description: form.description 
+        status: form.status
       };
       if (editSvc) {
         // Service uses name for update
@@ -106,7 +105,7 @@ export default function Services() {
         <div style={{ overflowX:'auto' }}>
           <table className="table">
             <thead>
-              <tr><th>Tên Dịch Vụ</th><th>Giá</th><th>Mô Tả</th><th>Thao Tác</th></tr>
+              <tr><th>Tên Dịch Vụ</th><th>Giá</th><th>Trạng Thái</th><th>Thao Tác</th></tr>
             </thead>
             <tbody>
               {loading ? (
@@ -115,7 +114,7 @@ export default function Services() {
                 <tr key={i}>
                   <td style={{ fontWeight:600 }}>{s.serviceName}</td>
                   <td style={{ color:'#4f46e5', fontWeight:600 }}>{formatVND(s.price)}</td>
-                  <td style={{ color:'#6b7280' }}>{s.description || '-'}</td>
+                  <td><span className={`badge-status ${s.status === 'ACTIVE' ? 'badge-success' : 'badge-secondary'}`}>{s.status || '-'}</span></td>
                   <td>
                     <div className="flex gap-2">
                       <button className="action-btn edit" onClick={() => openEdit(s)} title="Sửa"><Edit2 size={15} /></button>
@@ -157,11 +156,11 @@ export default function Services() {
                     onChange={e => setForm({...form, price:e.target.value})} placeholder="50000" />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Mô Tả</label>
-                  <textarea className="form-input" rows={3} value={form.description} 
-                    onChange={e => setForm({...form, description:e.target.value})} 
-                    placeholder="Mô tả dịch vụ..." 
-                    style={{resize:'vertical'}} />
+                  <label className="form-label">Trạng Thái</label>
+                  <select className="form-input" value={form.status} onChange={e => setForm({...form, status:e.target.value})}>
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="STOP">STOP</option>
+                  </select>
                 </div>
               </div>
               <div className="modal-footer">

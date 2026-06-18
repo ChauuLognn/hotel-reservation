@@ -66,6 +66,15 @@ public class UserService {
     public void delete(Integer id) {
         userRepo.findUserById(id)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+
+        Long referenceCount = userRepo.countBusinessReferencesByUserId(id);
+        if (referenceCount != null && referenceCount > 0) {
+            throw new IllegalArgumentException(
+                "Không thể xóa tài khoản này vì đã phát sinh đặt phòng, dịch vụ hoặc lịch sử trạng thái. " +
+                "Hãy giữ tài khoản để bảo toàn lịch sử nghiệp vụ hoặc đặt lại mật khẩu nếu cần khóa quyền truy cập."
+            );
+        }
+
         userRepo.deleteUser(id);
     }
 }

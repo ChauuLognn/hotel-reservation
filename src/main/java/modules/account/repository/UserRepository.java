@@ -25,6 +25,15 @@ public interface UserRepository extends JpaRepository<User, Integer>{
     @Query(value = "SELECT * FROM user", nativeQuery = true)
     List<User> takeAll();
 
+    @Query(value = """
+        SELECT (
+            (SELECT COUNT(*) FROM reservation WHERE createdBy = :id) +
+            (SELECT COUNT(*) FROM reservationService WHERE createdBy = :id) +
+            (SELECT COUNT(*) FROM reservationStatusHistory WHERE updatedBy = :id)
+        )
+        """, nativeQuery = true)
+    Long countBusinessReferencesByUserId(@Param("id") Integer id);
+
     @Modifying
     @Query(value = """
         INSERT INTO user (empId, account, password)

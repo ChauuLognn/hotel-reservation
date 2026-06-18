@@ -55,7 +55,7 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     @Modifying()
     @Query(value = """
         INSERT INTO bill (id, reservationRoomId, totalAmount, createdAt, reason, status)
-        SELECT UUID(), rr.id, rr.totalAmount, :now, 'REFUND', 'UNPAID'
+        SELECT UUID(), rr.id, rr.totalPrice, :now, 'REFUND', 'UNPAID'
         FROM reservationRoom rr
         where rr.id = :resRoomId
         """, nativeQuery = true)

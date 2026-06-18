@@ -243,6 +243,27 @@ export default function UserHome() {
     }
   };
 
+  async function handleCancelBooking(resId) {
+    if (!confirm('Bạn có chắc muốn hủy đặt phòng này?')) return;
+    try {
+      await reservationApi.updateStatus(resId, { newStatus: 'CANCELLED', reason: 'Khách hàng tự hủy' });
+      alert('Đã hủy đặt phòng thành công!');
+      await loadBookings();
+    } catch (err) {
+      alert('Lỗi hủy đặt phòng: ' + (err?.response?.data?.message || err.message));
+    }
+  }
+
+  async function handleConfirmPayment(resId) {
+    if (!confirm('Xác nhận bạn đã thanh toán cho đặt phòng này?')) return;
+    try {
+      await reservationApi.updateStatus(resId, { newStatus: 'CONFIRMED', reason: 'Khách hàng xác nhận thanh toán' });
+      alert('Xác nhận thanh toán thành công!');
+      await loadBookings();
+    } catch (err) {
+      alert('Lỗi xác nhận thanh toán: ' + (err?.response?.data?.message || err.message));
+    }
+  }
 
   const STATUS_MAP = {
     PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
@@ -418,21 +439,39 @@ export default function UserHome() {
           ) : (
             <div className="table-container">
               <table className="table">
-                <thead><tr><th>Mã Đặt</th><th>Check-in</th><th>Check-out</th><th>Tổng Tiền</th><th>Trạng Thái</th></tr></thead>
+                <thead><tr><th>Mã Đặt</th><th>Check-in</th><th>Check-out</th><th>Tổng Tiền</th><th>Trạng Thái</th><th>Hành Động</th></tr></thead>
                 <tbody>
                   {bookings.length ? bookings.slice(0,10).map(b => {
                     const st = STATUS_MAP[b.status]||{label:b.status,cls:'badge-secondary'};
                     return (
                       <tr key={b.resId}>
                         <td style={{ fontWeight:700, color:'#4f46e5' }}>{b.resId}</td>
-                        <td>{formatDate(b.checkInDate)}</td>
-                        <td>{formatDate(b.checkOutDate)}</td>
-                        <td>{formatVND(b.totalAmount)}</td>
+                        <td>{formatDate(b.checkIn)}</td>
+                        <td>{formatDate(b.checkOut)}</td>
+                        <td>{formatVND(b.total)}</td>
                         <td><span className={`badge-status ${st.cls}`}>{st.label}</span></td>
+                        <td>
+                          {b.status === 'PENDING_PAYMENT' && (
+                            <div style={{ display:'flex', gap:'0.4rem' }}>
+                              <button className="btn btn-xs" onClick={() => handleConfirmPayment(b.resId)} style={{ background:'#d1fae5', color:'#059669', border:'none', fontSize:'0.75rem' }}>
+                                Thanh Toán
+                              </button>
+                              <button className="btn btn-xs" onClick={() => handleCancelBooking(b.resId)} style={{ background:'#fee2e2', color:'#dc2626', border:'none', fontSize:'0.75rem' }}>
+                                Hủy
+                              </button>
+                            </div>
+                          )}
+                          {b.status === 'CONFIRMED' && (
+                            <button className="btn btn-xs" onClick={() => handleCancelBooking(b.resId)} style={{ background:'#fee2e2', color:'#dc2626', border:'none', fontSize:'0.75rem' }}>
+                              Hủy
+                            </button>
+                          )}
+                          {!['PENDING_PAYMENT','CONFIRMED'].includes(b.status) && '-'}
+                        </td>
                       </tr>
                     );
                   }) : (
-                    <tr><td colSpan={5} className="text-center text-gray" style={{padding:'2rem'}}>Bạn chưa có đặt phòng nào</td></tr>
+                    <tr><td colSpan={6} className="text-center text-gray" style={{padding:'2rem'}}>Bạn chưa có đặt phòng nào</td></tr>
                   )}
                 </tbody>
               </table>

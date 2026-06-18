@@ -249,10 +249,7 @@ public class UserController {
 
     @DeleteMapping("/api/admin/users/{id}")
     public ResponseEntity<ApiResponse<Object>> deleteAdminUser(@PathVariable Integer id) {
-        if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found");
-        }
-        userRepository.deleteById(id);
+        userDomain.delete(id);
         return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
     }
 

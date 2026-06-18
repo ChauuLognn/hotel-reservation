@@ -41,7 +41,7 @@ export default function Reservations() {
 
   // Quick guest creation inside modal
   const [showQuickGuest, setShowQuickGuest] = useState(false);
-  const [guestForm, setGuestForm] = useState({ firstName:'', lastName:'', phone:'', identityNum:'', email:'', address:'' });
+  const [guestForm, setGuestForm] = useState({ firstName:'', lastName:'', phone:'', identityNum:'' });
 
   useEffect(() => { fetchReservations(); }, []);
 
@@ -107,7 +107,7 @@ export default function Reservations() {
       setSelectedGuestId(String(newGuest.id));
       
       setShowQuickGuest(false);
-      setGuestForm({ firstName:'', lastName:'', phone:'', identityNum:'', email:'', address:'' });
+      setGuestForm({ firstName:'', lastName:'', phone:'', identityNum:'' });
     } catch(err) {
       alert('Lỗi thêm khách: ' + (err?.response?.data?.message || err.message));
     }

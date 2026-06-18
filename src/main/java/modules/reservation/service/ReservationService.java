@@ -81,7 +81,7 @@ public class ReservationService {
     private static final Map<ReservationStatus, Set<ReservationStatus>> Allowed;
     static {
         Map<ReservationStatus, Set<ReservationStatus>> m = new EnumMap<>(ReservationStatus.class);
-        m.put(ReservationStatus.PENDING_PAYMENT, EnumSet.of(ReservationStatus.CONFIRMED, ReservationStatus.PENDING_EXPIRED));
+        m.put(ReservationStatus.PENDING_PAYMENT, EnumSet.of(ReservationStatus.CONFIRMED, ReservationStatus.PENDING_EXPIRED, ReservationStatus.CANCELLED));
         m.put(ReservationStatus.CONFIRMED, EnumSet.of(ReservationStatus.CHECK_IN, ReservationStatus.CANCELLED));
         m.put(ReservationStatus.CHECK_IN, EnumSet.of(ReservationStatus.CHECK_OUT));
         m.put(ReservationStatus.CHECK_OUT, EnumSet.noneOf(ReservationStatus.class));
@@ -414,8 +414,11 @@ public class ReservationService {
         Reservation r = rr.getReservation();
         ReservationStatus statusOfRes = r.getStatus();
 
-        if(statusOfRes == ReservationStatus.PENDING_PAYMENT)
+        if(statusOfRes == ReservationStatus.PENDING_PAYMENT && 
+           req.getNewStatus() != ReservationStatus.CONFIRMED && 
+           req.getNewStatus() != ReservationStatus.CANCELLED) {
             throw new IllegalStateException("reservation of this room has to be confirmed first");
+        }
 
         ReservationStatus oldSt = CurrentStatusOfResRoom(resRoomId);
         ReservationStatus newSt = req.getNewStatus();
