@@ -248,10 +248,17 @@ export default function BookingDetail() {
   async function handleAddServiceSubmit(e) {
     e.preventDefault();
     if (!selectedServiceName || !activeResRoomId) return;
+    
+    const qty = Number(serviceQty);
+    if (qty < 1 || qty > 100) {
+      alert('Số lượng dịch vụ phải từ 1 đến 100');
+      return;
+    }
+    
     try {
       await reservationApi.addServiceToResRoom(activeResRoomId, {
         name: selectedServiceName,
-        quantity: Number(serviceQty)
+        quantity: qty
       });
       setShowAddServiceModal(false);
       reloadRoomData(activeResRoomId);

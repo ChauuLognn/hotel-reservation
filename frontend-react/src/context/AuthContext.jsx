@@ -37,6 +37,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('userId');
     localStorage.removeItem('userInfo');
+    localStorage.removeItem('currentGuestId');
     setUser(null);
   };
 

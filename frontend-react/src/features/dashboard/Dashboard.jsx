@@ -24,7 +24,7 @@ export default function Dashboard() {
   const [roomUsage, setRoomUsage] = useState(null);
   const [serviceUsage, setServiceUsage] = useState(null);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [dateFrom, dateTo]);
 
   async function fetchData() {
     setLoading(true);

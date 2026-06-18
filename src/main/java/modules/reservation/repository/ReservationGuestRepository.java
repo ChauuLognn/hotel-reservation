@@ -111,5 +111,13 @@ public interface ReservationGuestRepository extends JpaRepository<ReservationGue
     Integer countGuestsStayed(
         @Param("from") LocalDateTime from,
         @Param("to") LocalDateTime to
-    );    
+    );
+
+    @Query(value = """
+        SELECT COUNT(DISTINCT rr.reservationId)
+        FROM reservationGuest rg
+        JOIN reservationRoom rr ON rg.reservationRoomId = rr.id
+        WHERE rg.guestId = :guestId
+    """, nativeQuery = true)
+    Integer countReservationsByGuestId(@Param("guestId") Integer guestId);
 }

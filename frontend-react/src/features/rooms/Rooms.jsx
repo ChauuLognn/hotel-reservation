@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Home, Key, Wrench, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Home, Key, Wrench, Edit2, Trash2, Eye } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import roomApi from '../../api/roomApi';
 
@@ -19,6 +19,8 @@ export default function Rooms() {
   const [showModal, setShowModal] = useState(false);
   const [editRoom, setEditRoom] = useState(null);
   const [form, setForm] = useState({ roomNumber:'', roomTypeName:'', status:'READY', floorNumber:'' });
+  const [viewRoom, setViewRoom] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
 
   // Room Types states
   const [showTypeModal, setShowTypeModal] = useState(false);
@@ -59,6 +61,10 @@ export default function Rooms() {
 
   async function searchAvailableRooms(e) {
     e.preventDefault();
+    if (availSearch.checkIn && availSearch.checkOut && new Date(availSearch.checkIn) >= new Date(availSearch.checkOut)) {
+      alert("Ngày check-out phải sau ngày check-in!");
+      return;
+    }
     setAvailLoading(true);
     try {
       const params = {};
@@ -89,6 +95,11 @@ export default function Rooms() {
     setEditRoom(null);
     setForm({ roomNumber:'', roomTypeName: roomTypes[0]?.name || '', status:'READY', floorNumber:'' });
     setShowModal(true);
+  }
+
+  function openViewRoom(r) {
+    setViewRoom(r);
+    setShowViewModal(true);
   }
 
   function openEdit(r) {
@@ -224,6 +235,7 @@ export default function Rooms() {
                       <td><span className={`badge-status ${st.cls}`}>{st.label}</span></td>
                       <td>
                         <div className="flex gap-2">
+                          <button className="action-btn view" onClick={() => openViewRoom(r)} title="Xem Chi Tiết"><Eye size={15} /></button>
                           <button className="action-btn edit" onClick={() => openEdit(r)} title="Sửa"><Edit2 size={15} /></button>
                           <button className="action-btn delete" onClick={() => handleDeleteRoom(r.id, r.roomNumber)} title="Xóa"><Trash2 size={15} /></button>
                         </div>
@@ -360,6 +372,27 @@ export default function Rooms() {
                 <button type="submit" className="btn btn-primary">💾 Lưu</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Modal View Room Details */}
+      {showViewModal && viewRoom && (
+        <div className="modal-overlay" onClick={e => e.target===e.currentTarget && setShowViewModal(false)}>
+          <div className="modal" style={{maxWidth: '500px'}}>
+            <div className="modal-header">
+              <h3 className="modal-title">Chi Tiết Phòng {viewRoom.roomNumber}</h3>
+              <button className="action-btn" onClick={() => setShowViewModal(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div style={{marginBottom: '10px'}}><strong>Loại Phòng:</strong> {viewRoom.roomTypeName}</div>
+              <div style={{marginBottom: '10px'}}><strong>Tầng:</strong> {viewRoom.floorNumber}</div>
+              <div style={{marginBottom: '10px'}}><strong>Sức Chứa:</strong> {viewRoom.capacity} người</div>
+              <div style={{marginBottom: '10px'}}><strong>Giá/Đêm:</strong> {formatVND(viewRoom.basePrice)}</div>
+              <div style={{marginBottom: '10px'}}><strong>Trạng Thái:</strong> {STATUS_LABELS[viewRoom.status]?.label || viewRoom.status}</div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn" onClick={() => setShowViewModal(false)}>Đóng</button>
+            </div>
           </div>
         </div>
       )}

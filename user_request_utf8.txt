@@ -1,0 +1,82 @@
+<USER_REQUEST>
+Dự án: Hotel Reservation Premium
+Stack: Spring Boot backend (port 8081, context-path /hotel_reservation_premium) + React/Vite frontend (port 5173)
+
+Nhiệm vụ: Fix toàn bộ lỗi frontend-backend mismatch. Đọc kỹ từng mục bên dưới và sửa theo đúng thứ tự.
+
+═══════════════════════════════════════════════════════
+BUG 1 — XÓA NHÂN VIÊN (Users.jsx + EmpService.java)
+═══════════════════════════════════════════════════════
+
+Vấn đề: DELETE /api/emps/{id} bị lỗi FK constraint vì bảng `user` có FK empId → emp.id.
+EmpService.delete() đã gọi userRepo.unlinkEmpFromUsers(id) NHƯNG dùng native query
+@Modifying mà KHÔNG có @Transactional ở level repository.
+
+Fix backend — EmpService.java, method delete():
+  Đảm bảo thứ tự:
+  1. userRepo.unlinkEmpFromUsers(id)  ← set empId = NULL trước
+  2. empRepo.deleteEmp(id)             ← rồi mới xóa emp
+  Toàn bộ method phải có @Transactional (đã có ở class level, kiểm tra lại không bị override).
+
+Fix UserRepository.java — thêm @Transactional vào unlinkEmpFromUsers nếu chưa có:
+  @Modifying
+  @Transactional
+  @Query(value = "UPDATE user SET empId = NULL WHERE empId = :empId", nativeQuery = true)
+  void unlinkEmpFromUsers(@Param("empId") Integer empId);
+
+Fix frontend Users.jsx — hàm handleEmpDelete():
+  Hiện tại chỉ gọi userApi.deleteEmp(id). Đổi thành:
+  try {
+    await userApi.deleteEmp(id);
+    alert('Đã xóa nhân viên thành công!');
+    fetchData();
+  } catch(err) {
+    const msg = err?.response?.data?.message || err.message;
+    alert('Lỗi xóa nhân viên: ' + msg);
+  }
+
+════════════════════════════════════════════════════
+<truncated 18708 bytes>
+
+   → Thêm countReservationsByGuestId
+
+4. src/main/java/modules/reservation/dto/ReservationPayload.java
+   → Đổi IdentityNum → identityNum trong ReservationGuestDto và GuestStayDto
+
+5. src/main/java/modules/account/controller/UserController.java
+   → Thêm @Transactional(readOnly=true) vào getAllAdminUsers()
+
+Frontend (React):
+6. frontend-react/src/features/users/Users.jsx
+   → Fix handleEmpDelete error handling
+   → Fix handleEmpSubmit: role = Number(empForm.role)
+   → Fix openEditEmp: đảm bảo roleId là Number
+   → Fix handleUserDelete error message
+
+7. frontend-react/src/features/rooms/Rooms.jsx
+   → Thêm modal "Xem chi tiết phòng"
+   → Thêm validation ngày trong searchAvailableRooms
+
+8. frontend-react/src/features/dashboard/Dashboard.jsx
+   → Fix useEffect dependency: [dateFrom, dateTo]
+
+9. frontend-react/src/features/reservations/BookingDetail.jsx
+   → Thêm validation số lượng dịch vụ (1-100)
+   → Fix đọc field identityNum (sau khi fix backend ReservationPayload)
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-06-19T02:40:02+07:00.
+
+The user's current state is as follows:
+Active Document: c:\Users\chaul\Downloads\hotel-reservation\frontend-react\src\api\axiosClient.js (LANGUAGE_JAVASCRIPT)
+Cursor is on line: 11
+Other open documents:
+- c:\Users\chaul\Downloads\hotel-reservation\frontend-react\src\api\axiosClient.js (LANGUAGE_JAVASCRIPT)
+Running terminal commands:
+- $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot"
+.\m... (in c:\Users\chaul\Downloads\hotel-reservation, running for 29m44s)
+- npm run dev (in c:\Users\chaul\Downloads\hotel-reservation\frontend-react, running for 29m22s)
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from Gemini 3.5 Flash (Medium) to Gemini 3.1 Pro (High). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>

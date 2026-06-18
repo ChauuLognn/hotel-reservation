@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import modules.account.entity.User;
 
@@ -66,6 +67,7 @@ public interface UserRepository extends JpaRepository<User, Integer>{
     void deleteUser(@Param("id") Integer id);
 
     @Modifying
+    @Transactional
     @Query(value = "UPDATE user SET empId = NULL WHERE empId = :empId", nativeQuery = true)
     void unlinkEmpFromUsers(@Param("empId") Integer empId);
 }

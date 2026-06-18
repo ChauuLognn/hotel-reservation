@@ -230,7 +230,7 @@ public class ReservationPayload {
 
     public static class GuestStayDto {
         private String guestName;
-        private String IdentityNum;
+        private String identityNum;
         private List<Item> items;
 
         public static class Item{
@@ -245,8 +245,8 @@ public class ReservationPayload {
             public void setCheckOutAt(LocalDateTime checkOutAt) {this.checkOutAt = checkOutAt;}
         }
 
-        public String getIdentityNum() {return IdentityNum;}
-        public void setIdentityNum(String IdentityNum) {this.IdentityNum = IdentityNum;}
+        public String getIdentityNum() {return identityNum;}
+        public void setIdentityNum(String identityNum) {this.identityNum = identityNum;}
         public String getGuestName() {return guestName;}
         public void setGuestName(String guestName) {this.guestName = guestName;}
         public List<Item> getItems() {return items;}
@@ -256,7 +256,7 @@ public class ReservationPayload {
 
     public static class ReservationGuestDto {
         private Integer guestId;
-        private String IdentityNum;
+        private String identityNum;
         private String guestName;
         private LocalDateTime checkInAt;
         private LocalDateTime checkOutAt;
@@ -264,7 +264,7 @@ public class ReservationPayload {
         public static ReservationGuestDto fromEntity(ReservationGuest rg){
             ReservationGuestDto dto = new ReservationGuestDto();
             dto.guestId = rg.getGuest().getId();
-            dto.IdentityNum = rg.getGuest().getIdentityNum();
+            dto.identityNum = rg.getGuest().getIdentityNum();
             dto.guestName = rg.getGuest().getFirstName() + " " + rg.getGuest().getLastName();
             dto.checkInAt = rg.getCheckInAt();
             dto.checkOutAt = rg.getCheckOutAt();
@@ -279,8 +279,8 @@ public class ReservationPayload {
         public void setCheckInAt(LocalDateTime checkInAt) {this.checkInAt = checkInAt;}
         public LocalDateTime getCheckOutAt() {return checkOutAt;}
         public void setCheckOutAt(LocalDateTime checkOutAt) {this.checkOutAt = checkOutAt;}
-        public String getIdentityNum() {return IdentityNum;}
-        public void setIdentityNum(String IdentityNum) {this.IdentityNum = IdentityNum;}
+        public String getIdentityNum() {return identityNum;}
+        public void setIdentityNum(String identityNum) {this.identityNum = identityNum;}
     }
 
     public static class ChangeStatusRequest {

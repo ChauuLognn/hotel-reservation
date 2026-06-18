@@ -87,7 +87,7 @@ export default function Users() {
       email: emp.email || '',
       phone: emp.phone || '',
       address: emp.address || '',
-      role: roleId
+      role: Number(roleId)
     });
     setShowEmpModal(true);
   }
@@ -116,9 +116,11 @@ export default function Users() {
     if (!confirm(`Xóa hồ sơ nhân viên "${name}"?`)) return;
     try {
       await userApi.deleteEmp(id);
+      alert('Đã xóa nhân viên thành công!');
       fetchData();
     } catch(err) {
-      alert('Lỗi: ' + (err?.response?.data?.message || err.message));
+      const msg = err?.response?.data?.message || err.message;
+      alert('Lỗi xóa nhân viên: ' + msg);
     }
   }
 
@@ -173,9 +175,11 @@ export default function Users() {
     if (!confirm(`Xóa tài khoản đăng nhập "${account}"?`)) return;
     try {
       await userApi.deleteUser(id);
+      alert('Đã xóa tài khoản thành công!');
       fetchData();
     } catch(err) {
-      alert('Lỗi: ' + (err?.response?.data?.message || err.message));
+      const msg = err?.response?.data?.message || err.message;
+      alert('Lỗi xóa tài khoản: ' + msg);
     }
   }
 

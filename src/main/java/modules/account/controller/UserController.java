@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import common.payload.ApiResponse;
 import modules.account.dto.EmpPayload.EmpCreationRequest;
@@ -190,6 +191,7 @@ public class UserController {
     }
 
     @GetMapping("/api/admin/users")
+    @Transactional(readOnly=true)
     public ResponseEntity<ApiResponse<List<User>>> getAllAdminUsers() {
         List<User> users = userRepository.findAll();
         return ResponseEntity.ok(ApiResponse.success("Users retrieved successfully", users));

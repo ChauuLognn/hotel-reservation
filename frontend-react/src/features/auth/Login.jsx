@@ -26,6 +26,8 @@ export default function Login() {
     }
     setLoading(true);
     try {
+      // Clear old guestId to prevent cross-account booking history
+      localStorage.removeItem('currentGuestId');
       const userData = await login(form.username, form.password);
       const userRole = userData?.role || '';
       
