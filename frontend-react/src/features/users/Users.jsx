@@ -2,23 +2,9 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, UserPlus, Key, Settings, ClipboardList } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import userApi from '../../api/userApi';
+import { ROLE_BADGE } from '@shared/constants/statusMaps';
+import { ROLE_LABELS, ROLE_IDS } from '@shared/constants/roleConstants';
 
-const ROLE_BADGE = {
-  MANAGER: 'badge-warning',
-  EMPLOYEE: 'badge-secondary',
-};
-
-const ROLE_LABELS = {
-  1: 'MANAGER',
-  2: 'EMPLOYEE',
-  MANAGER: 'MANAGER',
-  EMPLOYEE: 'EMPLOYEE'
-};
-
-const ROLE_IDS = {
-  MANAGER: 1,
-  EMPLOYEE: 2,
-};
 
 export default function Users() {
   const [tab, setTab] = useState('employees'); // 'employees' or 'accounts'
@@ -45,6 +31,8 @@ export default function Users() {
   useEffect(() => { 
     fetchData(); 
   }, [tab]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   async function fetchData() {
     setLoading(true);

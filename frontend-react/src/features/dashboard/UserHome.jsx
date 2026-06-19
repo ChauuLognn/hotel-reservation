@@ -6,27 +6,11 @@ import roomApi from '../../api/roomApi';
 import reservationApi from '../../api/reservationApi';
 import userApi from '../../api/userApi';
 import guestApi from '../../api/guestApi';
+import { formatVND, formatDate } from '@shared/utils/format';
+import { getTodayString, getTomorrowString } from '@shared/utils/date';
+import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
 
 
-function formatVND(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0); }
-function formatDate(s) { if(!s) return '-'; return new Date(s).toLocaleDateString('vi-VN'); }
-
-const getTodayString = () => {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-const getTomorrowString = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
 
 export default function UserHome() {
   const { user, logout } = useAuth();
@@ -265,15 +249,6 @@ export default function UserHome() {
     }
   }
 
-  const STATUS_MAP = {
-    PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
-    PENDING_EXPIRED: { label:'Hết Hạn', cls:'badge-danger' },
-    CONFIRMED: { label:'Đã Xác Nhận', cls:'badge-info' },
-    CHECK_IN: { label:'Đang Ở', cls:'badge-success' },
-    CHECK_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
-    CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
-  };
-
   return (
     <div className="user-home-page">
       {/* Navbar */}
@@ -442,7 +417,7 @@ export default function UserHome() {
                 <thead><tr><th>Mã Đặt</th><th>Check-in</th><th>Check-out</th><th>Tổng Tiền</th><th>Trạng Thái</th><th>Hành Động</th></tr></thead>
                 <tbody>
                   {bookings.length ? bookings.slice(0,10).map(b => {
-                    const st = STATUS_MAP[b.status]||{label:b.status,cls:'badge-secondary'};
+                    const st = RESERVATION_STATUS[b.status]||{label:b.status,cls:'badge-secondary'};
                     return (
                       <tr key={b.resId}>
                         <td style={{ fontWeight:700, color:'#4f46e5' }}>{b.resId}</td>

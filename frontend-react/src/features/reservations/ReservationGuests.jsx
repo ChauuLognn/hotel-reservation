@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronDown, ChevronUp, User } from 'lucide-react';
+import { formatDate } from '@shared/utils/format';
+import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
 import Layout from '../../components/layout/Layout';
 import reservationApi from '../../api/reservationApi';
 
@@ -12,12 +14,6 @@ const STATUS_MAP = {
   CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
 };
 
-function formatDate(s) { 
-  if(!s) return '-'; 
-  const d=new Date(s); 
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; 
-}
-
 export default function ReservationGuests() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +21,8 @@ export default function ReservationGuests() {
   const [expandedResId, setExpandedResId] = useState(null);
   const [expandedGuests, setExpandedGuests] = useState({}); // resId -> list of registered guests
   const [loadingGuests, setLoadingGuests] = useState({});
+
+  
 
   useEffect(() => { fetchBookings(); }, []);
 

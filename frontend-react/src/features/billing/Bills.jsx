@@ -5,18 +5,9 @@ import Layout from '../../components/layout/Layout';
 import reservationApi from '../../api/reservationApi';
 import billApi from '../../api/billApi';
 import roomApi from '../../api/roomApi';
+import { formatVND, formatDate } from '@shared/utils/format';
+import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
 
-const BILL_STATUS = {
-  PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
-  PENDING_EXPIRED: { label:'Hết Hạn', cls:'badge-danger' },
-  CONFIRMED: { label:'Đã Xác Nhận', cls:'badge-info' },
-  CHECK_IN: { label:'Đang Ở', cls:'badge-success' },
-  CHECK_OUT: { label:'Đang Trả (Chưa TT)', cls:'badge-warning' },
-  CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
-};
-
-function formatVND(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0); }
-function formatDate(s) { if(!s) return '-'; const d=new Date(s); return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`; }
 
 export default function Bills() {
   const navigate = useNavigate();
@@ -172,7 +163,7 @@ export default function Bills() {
                 <tr><td colSpan={7} className="text-center text-gray" style={{padding:'2rem'}}>Đang tải hóa đơn...</td></tr>
               ) : filtered.length ? filtered.map(b => {
                 const bDetail = billDetails[b.resId] || {};
-                const st = BILL_STATUS[b.status] || { label: b.status, cls: 'badge-secondary' };
+                const st = RESERVATION_STATUS[b.status] || { label: b.status, cls: 'badge-secondary' };
                 
                 return (
                   <tr key={b.resId}>

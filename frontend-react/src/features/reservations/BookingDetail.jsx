@@ -7,27 +7,9 @@ import guestApi from '../../api/guestApi';
 import roomApi from '../../api/roomApi';
 import serviceApi from '../../api/serviceApi';
 import billApi from '../../api/billApi';
+import { formatVND, formatDate, formatDateTime } from '@shared/utils/format';
+import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
 
-const STATUS_MAP = {
-  PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
-  PENDING_EXPIRED: { label:'Hết Hạn', cls:'badge-danger' },
-  CONFIRMED: { label:'Đã Xác Nhận', cls:'badge-info' },
-  CHECK_IN: { label:'Đang Ở', cls:'badge-success' },
-  CHECK_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
-  CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
-};
-
-function formatDateTime(s) { 
-  if(!s) return '-'; 
-  const d=new Date(s); 
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; 
-}
-function formatDate(s) { 
-  if(!s) return '-'; 
-  const d=new Date(s); 
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; 
-}
-function formatVND(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0); }
 
 export default function BookingDetail() {
   const { resId } = useParams();
@@ -153,7 +135,7 @@ export default function BookingDetail() {
   }
 
   async function changeStatus(newStatus) {
-    if (!confirm(`Đổi trạng thái đặt phòng thành "${STATUS_MAP[newStatus]?.label}"?`)) return;
+    if (!confirm(`Đổi trạng thái đặt phòng thành "${RESERVATION_STATUS[newStatus]?.label}"?`)) return;
     setChangingStatus(true);
     try {
       await reservationApi.updateStatus(resId, { newStatus: newStatus });
@@ -290,7 +272,7 @@ export default function BookingDetail() {
   );
 
   // Status mapping
-  const st = STATUS_MAP[detail.status] || { label:detail.status, cls:'badge-secondary' };
+  const st = RESERVATION_STATUS[detail.status] || { label:detail.status, cls:'badge-secondary' };
 
 
   // Next status options for receptionist workflow
@@ -345,7 +327,7 @@ export default function BookingDetail() {
                 {availableStatuses.map(s => (
                   <button key={s} className="btn btn-sm" onClick={() => changeStatus(s)} disabled={changingStatus}
                     style={{background: s==='CANCELLED'?'#fee2e2':s==='CHECK_IN'?'#d1fae5':'#dbeafe', border:'none', color: s==='CANCELLED'?'#dc2626':s==='CHECK_IN'?'#059669':'#2563eb'}}>
-                    {STATUS_MAP[s]?.label}
+                    {RESERVATION_STATUS[s]?.label}
                   </button>
                 ))}
               </div>
@@ -550,7 +532,7 @@ export default function BookingDetail() {
             </div>
             <div className="card-body" style={{maxHeight:'300px', overflowY:'auto'}}>
               {statusHistory.length ? [...statusHistory].reverse().map((h, i) => {
-                const hSt = STATUS_MAP[h.newStatus] || {label:h.newStatus, cls:'badge-secondary'};
+                const hSt = RESERVATION_STATUS[h.newStatus] || {label:h.newStatus, cls:'badge-secondary'};
                 return (
                   <div key={i} style={{padding:'0.6rem 0', borderBottom:'1px solid #f3f4f6'}}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>

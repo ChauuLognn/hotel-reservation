@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Coffee } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import serviceApi from '../../api/serviceApi';
+import { formatVND } from '@shared/utils/format';
 
-function formatVND(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0); }
 
 export default function Services() {
   const [services, setServices] = useState([]);
