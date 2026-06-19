@@ -1,4 +1,4 @@
-package modules.hotel_service.controller;
+package modules.hotelservice.controller;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import modules.hotel_service.dto.ServiceCreationRequest;
-import modules.hotel_service.entity.Service;
-import modules.hotel_service.service.ServiceService;
+import modules.hotelservice.dto.ServiceCreationRequest;
+import modules.hotelservice.entity.Service;
+import modules.hotelservice.service.ServiceService;
 
 
 @RestController

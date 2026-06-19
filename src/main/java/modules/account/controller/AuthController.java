@@ -1,5 +1,4 @@
 package modules.account.controller;
-import modules.account.service.CustomUserDetailsService;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

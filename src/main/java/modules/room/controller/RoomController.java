@@ -1,5 +1,4 @@
 package modules.room.controller;
-import modules.room.entity.Room;
 
 
 import java.time.LocalDate;

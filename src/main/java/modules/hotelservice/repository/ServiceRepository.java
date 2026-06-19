@@ -1,4 +1,4 @@
-package modules.hotel_service.repository;
+package modules.hotelservice.repository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import modules.hotel_service.entity.Service;
+import modules.hotelservice.entity.Service;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, Integer>{

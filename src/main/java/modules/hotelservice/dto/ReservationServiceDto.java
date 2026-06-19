@@ -1,11 +1,11 @@
-package modules.hotel_service.dto;
+package modules.hotelservice.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import modules.hotel_service.entity.ReservationService;
+import modules.hotelservice.entity.ReservationService;
 
-// không cần để ý
+// trigger re-indexing
 
 // thông tin dịch vụ được resRoom sử dụng có thể xem
 public class ReservationServiceDto {

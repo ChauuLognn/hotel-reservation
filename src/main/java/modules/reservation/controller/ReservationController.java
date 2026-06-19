@@ -1,13 +1,8 @@
 package modules.reservation.controller;
-import modules.reservation.entity.ReservationGuest;
-import modules.reservation.entity.ReservationRoom;
 import java.time.LocalDateTime;
 import modules.reservation.dto.ReservationPayload.ReservationGuestDto;
-import modules.hotel_service.dto.ReservationServiceCreationRequest;
-import modules.hotel_service.dto.ReservationServiceDto;
-import modules.account.entity.User;
-import modules.billing.entity.Bill;
-import modules.reservation.entity.Reservation;
+import modules.hotelservice.dto.ReservationServiceCreationRequest;
+import modules.hotelservice.dto.ReservationServiceDto;
 
 
 import java.util.List;

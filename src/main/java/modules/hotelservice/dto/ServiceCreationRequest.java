@@ -1,4 +1,4 @@
-package modules.hotel_service.dto;
+package modules.hotelservice.dto;
 
 import java.math.BigDecimal;
 

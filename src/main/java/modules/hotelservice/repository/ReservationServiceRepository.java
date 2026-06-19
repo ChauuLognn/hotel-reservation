@@ -1,4 +1,4 @@
-package modules.hotel_service.repository;
+package modules.hotelservice.repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import modules.report.dto.ServiceUsageProjection;
-import modules.hotel_service.entity.ReservationService;
+import modules.hotelservice.entity.ReservationService;
 
 @Repository
 public interface ReservationServiceRepository extends JpaRepository<ReservationService, String>{

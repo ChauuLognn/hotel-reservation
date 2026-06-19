@@ -16,7 +16,7 @@ import modules.report.dto.ServiceUsageItemDto;
 import modules.report.dto.ServiceUsageProjection;
 import modules.report.dto.ServiceUsageReportDto;
 import modules.reservation.repository.ReservationRoomRepository;
-import modules.hotel_service.repository.ReservationServiceRepository;
+import modules.hotelservice.repository.ReservationServiceRepository;
 
 @Service
 @Transactional(readOnly = true)

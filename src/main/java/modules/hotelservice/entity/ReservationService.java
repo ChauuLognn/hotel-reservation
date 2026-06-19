@@ -1,6 +1,8 @@
-package modules.hotel_service.entity;
+package modules.hotelservice.entity;
 import modules.account.entity.User;
 import modules.reservation.entity.ReservationRoom;
+
+// trigger re-indexing
 
 
 import java.math.BigDecimal;

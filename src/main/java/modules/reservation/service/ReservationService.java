@@ -3,7 +3,6 @@ package modules.reservation.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -30,8 +29,8 @@ import modules.reservation.dto.ReservationPayload.GuestStayDto;
 import modules.reservation.dto.ReservationPayload.ReservationGuestDto;
 import modules.reservation.dto.ReservationPayload.ChangeStatusRequest;
 import modules.reservation.dto.ReservationPayload.StatusHistoryDTO;
-import modules.hotel_service.dto.ReservationServiceCreationRequest;
-import modules.hotel_service.dto.ReservationServiceDto;
+import modules.hotelservice.dto.ReservationServiceCreationRequest;
+import modules.hotelservice.dto.ReservationServiceDto;
 
 import common.enums.ReservationStatus;
 import modules.account.entity.Guest;
@@ -50,8 +49,8 @@ import modules.reservation.repository.ReservationStatusHistoryRepository;
 import modules.room.repository.RoomRepository;
 import modules.reservation.repository.ReservationGuestRepository;
 import modules.billing.repository.BillRepository;
-import modules.hotel_service.repository.ReservationServiceRepository;
-import modules.hotel_service.repository.ServiceRepository;
+import modules.hotelservice.repository.ReservationServiceRepository;
+import modules.hotelservice.repository.ServiceRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -490,7 +489,7 @@ public class ReservationService {
         }
     }
 
-    // ─── From ReservationServiceService (hotel_service) ──────────────────────
+    // ─── From ReservationServiceService (hotelservice) ──────────────────────
 
     @Transactional
     public void createReservationService(String resRoomId, 
@@ -499,7 +498,7 @@ public class ReservationService {
         if(billRepo.getByResRoomId(resRoomId).size() > 1)
             throw new IllegalStateException("cant serve this room for some reason");
 
-        modules.hotel_service.entity.Service ser = serRepo.findByName(rq.getName())
+        modules.hotelservice.entity.Service ser = serRepo.findByName(rq.getName())
                 .orElseThrow(() -> new IllegalArgumentException("Service not found"));
         
         BigDecimal totalAmount = ser.getPrice().multiply(BigDecimal.valueOf(rq.getQuantity()));
