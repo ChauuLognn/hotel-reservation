@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Home, Key, Wrench, Edit2, Trash2, Eye } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import roomApi from '../../api/roomApi';
+import { formatVND } from '@shared/utils/format';
+
 
 const STATUS_LABELS = {
   READY: { label:'Sẵn Sàng', cls:'badge-success' },
   UNDER_REPAIR: { label:'Đang Sửa Chữa', cls:'badge-warning' },
 };
-
-function formatVND(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0); }
 
 export default function Rooms() {
   const [tab, setTab] = useState('rooms');

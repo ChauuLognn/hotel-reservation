@@ -5,22 +5,9 @@ import Layout from '../../components/layout/Layout';
 import reservationApi from '../../api/reservationApi';
 import guestApi from '../../api/guestApi';
 import roomApi from '../../api/roomApi';
+import { formatVND, formatDate } from '@shared/utils/format';
+import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
 
-const STATUS_MAP = {
-  PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
-  PENDING_EXPIRED: { label:'Hết Hạn', cls:'badge-danger' },
-  CONFIRMED: { label:'Đã Xác Nhận', cls:'badge-info' },
-  CHECK_IN: { label:'Đang Ở', cls:'badge-success' },
-  CHECK_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
-  CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
-};
-
-function formatDate(s) { 
-  if(!s) return '-'; 
-  const d=new Date(s); 
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; 
-}
-function formatVND(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n||0); }
 
 export default function Reservations() {
   const navigate = useNavigate();
@@ -42,6 +29,8 @@ export default function Reservations() {
   // Quick guest creation inside modal
   const [showQuickGuest, setShowQuickGuest] = useState(false);
   const [guestForm, setGuestForm] = useState({ firstName:'', lastName:'', phone:'', identityNum:'' });
+
+  
 
   useEffect(() => { fetchReservations(); }, []);
 
@@ -161,7 +150,7 @@ export default function Reservations() {
     return matchSearch && matchStatus;
   });
 
-  const statCounts = Object.keys(STATUS_MAP).reduce((acc,k) => {
+  const statCounts = Object.keys(RESERVATION_STATUS).reduce((acc,k) => {
     acc[k] = reservations.filter(r => r.status === k).length;
     return acc;
   }, {});
@@ -214,7 +203,7 @@ export default function Reservations() {
           <div className="flex gap-2">
             <select className="form-input" style={{width:'180px',padding:'0.5rem'}} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
               <option value="">Tất cả trạng thái</option>
-              {Object.entries(STATUS_MAP).map(([k,v]) => <option key={k} value={k}>{v.label}</option>)}
+              {Object.entries(RESERVATION_STATUS).map(([k,v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
             <div className="search-box">
               <Search size={16} className="search-icon" />
@@ -242,7 +231,7 @@ export default function Reservations() {
               {loading ? (
                 <tr><td colSpan={7} className="text-center text-gray" style={{padding:'2rem'}}>Đang tải...</td></tr>
               ) : filtered.length ? filtered.map(r => {
-                const st = STATUS_MAP[r.status] || { label:r.status, cls:'badge-secondary' };
+                const st = RESERVATION_STATUS[r.status] || { label:r.status, cls:'badge-secondary' };
                 return (
                   <tr key={r.resId||r.id}>
                     <td style={{ fontWeight:700, color:'#4f46e5' }}>{r.resId}</td>
