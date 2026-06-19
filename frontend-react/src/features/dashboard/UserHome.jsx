@@ -104,7 +104,7 @@ export default function UserHome() {
   async function loadBookings() {
     if (!user?.userId) return;
     try {
-      let guestId = localStorage.getItem('currentGuestId');
+      let guestId = localStorage.getItem(`currentGuestId_${user.userId}`);
       
       if (!guestId && user.empId) {
         const empRes = await userApi.getEmpById(user.empId);
@@ -116,7 +116,7 @@ export default function UserHome() {
           const guest = guestsList.find(g => g.identityNum === emp.identityNum || g.phone === emp.phone);
           if (guest) {
             guestId = guest.id;
-            localStorage.setItem('currentGuestId', guestId);
+            localStorage.setItem(`currentGuestId_${user.userId}`, guestId);
           }
         }
       }
@@ -215,7 +215,7 @@ export default function UserHome() {
       alert(`✅ Đặt phòng thành công!\nMã đặt phòng của bạn là: ${resData.resId}`);
       
       // Lưu guestId
-      localStorage.setItem('currentGuestId', guestId);
+      localStorage.setItem(`currentGuestId_${user.userId}`, guestId);
       
       setSelectedRoom(null);
       setSection('bookings');

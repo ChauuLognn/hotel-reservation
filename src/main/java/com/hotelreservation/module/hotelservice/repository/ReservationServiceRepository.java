@@ -86,7 +86,7 @@ public interface ReservationServiceRepository extends JpaRepository<ReservationS
           AND rr.checkOutTime < :to
           AND res.status <> 'CANCELLED'
         GROUP BY s.id, s.name
-        ORDER BY rr.checkOutTime DESC
+        ORDER BY totalRevenue DESC
         """, nativeQuery = true)
     List<ServiceUsageProjection> getServiceUsage(
         @Param("from") LocalDateTime from,

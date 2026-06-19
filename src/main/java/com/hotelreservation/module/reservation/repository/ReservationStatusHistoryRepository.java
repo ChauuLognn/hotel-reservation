@@ -66,11 +66,10 @@ public interface ReservationStatusHistoryRepository extends JpaRepository<Reserv
             SELECT rsh.reservationRoomId
             FROM reservationStatusHistory rsh
             JOIN (
-                SELECT reservationRoomId, MAX(updatedAt) AS latestUpdate
+                SELECT reservationRoomId, MAX(id) AS latestId
                 FROM reservationStatusHistory
                 GROUP BY reservationRoomId
-            ) latest ON rsh.reservationRoomId = latest.reservationRoomId
-                    AND rsh.updatedAt = latest.latestUpdate 
+            ) latest ON rsh.id = latest.latestId 
             where rsh.newStatus = 'CHECK_IN'
         ) as tmp
         join reservationRoom rr

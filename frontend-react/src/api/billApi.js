@@ -11,6 +11,7 @@ const billApi = {
   confirmPaidForRes: (resId) => axiosClient.post(`/api/reservations/${resId}/bills`),
   getByResRoomId: (resId, resRoomId) => axiosClient.get(`/api/reservations/${resId}/bills/reservation-rooms/${resRoomId}`),
   confirmPaidForResRoom: (resId, resRoomId) => axiosClient.post(`/api/reservations/${resId}/bills/reservation-rooms/${resRoomId}`),
+  getSummaries: () => axiosClient.get('/api/bills/summaries'),
 };
 
 export default billApi;

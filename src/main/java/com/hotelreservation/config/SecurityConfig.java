@@ -20,6 +20,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.List;
 
 import com.hotelreservation.module.account.service.CustomUserDetailsService;
@@ -42,9 +44,8 @@ import com.hotelreservation.security.JwtAuthenticationFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final List<String> CORS_ALLOWED_ORIGINS = List.of(
-            "http://localhost:5173",
-            "http://localhost:5174");
+    @Value("${cors.allowed-origins:http://localhost:5173,http://localhost:5174}")
+    private List<String> corsAllowedOrigins;
 
     private static final List<String> CORS_ALLOWED_METHODS = List.of(
             "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD");
@@ -92,7 +93,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(CORS_ALLOWED_ORIGINS);
+        configuration.setAllowedOrigins(corsAllowedOrigins);
         configuration.setAllowedMethods(CORS_ALLOWED_METHODS);
         configuration.setAllowedHeaders(CORS_ALLOWED_HEADERS);
         configuration.setExposedHeaders(CORS_EXPOSED_HEADERS);

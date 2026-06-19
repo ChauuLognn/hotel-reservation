@@ -32,8 +32,6 @@ export default function Users() {
     fetchData(); 
   }, [tab]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
-
   async function fetchData() {
     setLoading(true);
     try {

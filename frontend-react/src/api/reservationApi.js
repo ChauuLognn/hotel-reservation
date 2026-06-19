@@ -31,8 +31,8 @@ const reservationApi = {
   // Reservation Guests
   getGuestsByResRoom: (resRoomId) => axiosClient.get(`/api/reservation-guests/reservation-room/${resRoomId}`),
   registerGuest: (resRoomId, guestId) => axiosClient.post('/api/reservation-guests/register', null, { params: { resRoomId, guestId } }),
-  checkIn: (resRoomId, guestId, checkInAt) => axiosClient.post(`/api/reservation-guests/resRoomId=${resRoomId}-guestId=${guestId}/checkIn`, checkInAt),
-  checkOut: (resRoomId, guestId, checkOutAt) => axiosClient.post(`/api/reservation-guests/resRoomId=${resRoomId}-guestId=${guestId}/checkOut`, checkOutAt),
+  checkIn: (resRoomId, guestId, checkInAt) => axiosClient.post(`/api/reservation-guests/rooms/${resRoomId}/guests/${guestId}/check-in`, checkInAt),
+  checkOut: (resRoomId, guestId, checkOutAt) => axiosClient.post(`/api/reservation-guests/rooms/${resRoomId}/guests/${guestId}/check-out`, checkOutAt),
 
   // Status History
   getStatusHistory: (resId) => axiosClient.get(`/api/reservationStatus/${resId}`),

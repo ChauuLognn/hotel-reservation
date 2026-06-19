@@ -137,20 +137,20 @@ public class ReservationController {
         return resDomain.createReservationGuest(resRoomId, guestId);
     }
 
-    @PostMapping("/api/reservation-guests/resRoomId={resRoomId}-guestId={guestId}")
+    @PostMapping("/api/reservation-guests/rooms/{resRoomId}/guests/{guestId}")
     public void createReservationGuestLegacy(@PathVariable String resRoomId,
                                              @PathVariable Integer guestId) {
         resDomain.createReservationGuest(resRoomId, guestId);
     }
 
-    @PostMapping("/api/reservation-guests/resRoomId={resRoomId}-guestId={guestId}/checkIn")
+    @PostMapping("/api/reservation-guests/rooms/{resRoomId}/guests/{guestId}/check-in")
     public ReservationGuestResponse checkIn(@PathVariable String resRoomId,
                                        @PathVariable Integer guestId,
                                        @RequestBody(required = false) LocalDateTime checkInAt) {
         return resDomain.setCheckIn(resRoomId, guestId, checkInAt);
     }
 
-    @PostMapping("/api/reservation-guests/resRoomId={resRoomId}-guestId={guestId}/checkOut")
+    @PostMapping("/api/reservation-guests/rooms/{resRoomId}/guests/{guestId}/check-out")
     public ReservationGuestResponse checkOut(@PathVariable String resRoomId,
                                         @PathVariable Integer guestId,
                                         @RequestBody(required = false) LocalDateTime checkOutAt) {

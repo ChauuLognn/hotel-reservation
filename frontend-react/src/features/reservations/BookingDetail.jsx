@@ -53,33 +53,35 @@ export default function BookingDetail() {
     setLoading(true);
     try {
       // 1. Fetch reservation detail, status history, and bills
-      const [detailRes, histRes, billRes, roomsRes, svcRes, guestsRes, resRoomsRes] = await Promise.all([
+      const [detailRes, histRes, billRes, svcRes, resRoomsRes] = await Promise.all([
         reservationApi.getDetail(resId),
         reservationApi.getStatusHistory(resId),
         billApi.getByResId(resId).catch(() => ({ data: null })),
-        roomApi.getAll(),
         serviceApi.getAll(),
-        guestApi.getAll(),
         reservationApi.getRoomsByResId(resId).catch(() => ({ data: [] }))
       ]);
 
       setDetail(detailRes.data);
       setStatusHistory(Array.isArray(histRes.data) ? histRes.data : []);
       setBill(billRes.data);
-      setRoomsList(Array.isArray(roomsRes.data) ? roomsRes.data : []);
       
       const mappedServices = (Array.isArray(svcRes.data) ? svcRes.data : []).map(s => ({
         ...s,
         serviceName: s.name
       }));
       setServicesList(mappedServices);
-      setAllGuests(Array.isArray(guestsRes.data) ? guestsRes.data : []);
-
+      
       const resRoomsData = resRoomsRes.data || [];
       setResRooms(resRoomsData);
 
-      if (guestsRes.data?.length > 0) setSelectedGuestId(String(guestsRes.data[0].id));
       if (mappedServices.length > 0) setSelectedServiceName(mappedServices[0].serviceName);
+
+      // Fetch rooms list asynchronously in background
+      roomApi.getAll()
+        .then(roomsRes => {
+          setRoomsList(Array.isArray(roomsRes.data) ? roomsRes.data : []);
+        })
+        .catch(err => console.error("Error loading rooms list:", err));
 
       // 2. Fetch guests and services room-by-room
       const tempGuestsMap = {};
@@ -161,11 +163,23 @@ export default function BookingDetail() {
   }
 
   // Guest registration handler
-  function openAddGuest(resRoomId) {
+  async function openAddGuest(resRoomId) {
     setActiveResRoomId(resRoomId);
     setGuestSearch('');
     setShowQuickGuest(false);
     setShowAddGuestModal(true);
+    if (!allGuests.length) {
+      try {
+        const guestsRes = await guestApi.getAll();
+        const guestsList = Array.isArray(guestsRes.data) ? guestsRes.data : [];
+        setAllGuests(guestsList);
+        if (guestsList.length > 0) {
+          setSelectedGuestId(String(guestsList[0].id));
+        }
+      } catch (err) {
+        console.error('Lỗi tải danh sách khách hàng:', err);
+      }
+    }
   }
 
   async function handleAddGuestSubmit(e) {

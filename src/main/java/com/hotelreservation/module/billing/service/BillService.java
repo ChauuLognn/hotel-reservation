@@ -3,6 +3,7 @@ package com.hotelreservation.module.billing.service;
 import com.hotelreservation.module.billing.dto.response.BillResponse;
 import com.hotelreservation.module.billing.dto.response.ResRoomBillResponse;
 import com.hotelreservation.module.billing.dto.response.ReservationBillResponse;
+import com.hotelreservation.module.billing.dto.response.ReservationBillSummaryProjection;
 import java.util.List;
 
 public interface BillService {
@@ -12,4 +13,5 @@ public interface BillService {
     void ConfirmedPaidBillsForResRoomId(String resRoomId);
     ResRoomBillResponse createResRoomBillSummary(String resRoomId);
     ReservationBillResponse createReservationBillSummary(String resId);
+    List<ReservationBillSummaryProjection> getReservationBillSummaries();
 }

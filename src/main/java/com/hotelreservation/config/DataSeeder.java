@@ -27,6 +27,7 @@ public class DataSeeder implements CommandLineRunner {
         allowNullableUserEmployee();
         seedRoleIfMissing(RoleName.MANAGER);
         seedRoleIfMissing(RoleName.EMPLOYEE);
+        seedRoleIfMissing(RoleName.CUSTOMER);
         System.out.println("[DataSeeder] Roles seeded successfully.");
     }
 

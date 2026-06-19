@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = '/hotel_reservation_premium';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/hotel_reservation_premium';
 
 const axiosClient = axios.create({
   baseURL: BASE_URL,
@@ -35,6 +35,7 @@ axiosClient.interceptors.response.use(
       localStorage.removeItem('jwtToken');
       localStorage.removeItem('userId');
       localStorage.removeItem('userInfo');
+      localStorage.removeItem('currentGuestId');
       window.location.href = '/login';
     }
     return Promise.reject(error);

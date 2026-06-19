@@ -26,8 +26,6 @@ export default function Dashboard() {
 
   useEffect(() => { fetchData(); }, [dateFrom, dateTo]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
-
   async function fetchData() {
     setLoading(true);
     try {

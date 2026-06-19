@@ -1,5 +1,6 @@
 package com.hotelreservation.module.billing.controller;
 
+import com.hotelreservation.module.billing.dto.response.ReservationBillSummaryProjection;
 import com.hotelreservation.module.billing.dto.response.ResRoomBillResponse;
 import com.hotelreservation.module.billing.dto.response.ReservationBillResponse;
 import com.hotelreservation.module.billing.service.BillService;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 public class BillingController {
@@ -32,5 +34,10 @@ public class BillingController {
     @GetMapping("/api/reservations/{resId}/bills/reservation-rooms/{resRoomId}")
     public ResRoomBillResponse getRoomBill(@PathVariable String resRoomId) {
         return billService.createResRoomBillSummary(resRoomId);
+    }
+
+    @GetMapping("/api/bills/summaries")
+    public List<ReservationBillSummaryProjection> getReservationBillSummaries() {
+        return billService.getReservationBillSummaries();
     }
 }

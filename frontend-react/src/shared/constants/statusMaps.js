@@ -15,4 +15,5 @@ export const ROOM_STATUS = {
 export const ROLE_BADGE = {
   MANAGER:  'badge-warning',
   EMPLOYEE: 'badge-secondary',
+  CUSTOMER: 'badge-info',
 };

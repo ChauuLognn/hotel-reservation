@@ -42,7 +42,7 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/user-home" element={<UserHome />} />
+      <Route path="/user-home" element={<ProtectedRoute><UserHome /></ProtectedRoute>} />
 
       {/* Admin/Staff routes */}
       <Route path="/" element={<AdminRoute><Dashboard /></AdminRoute>} />

@@ -3,6 +3,7 @@ package com.hotelreservation.module.billing.service.impl;
 import com.hotelreservation.module.billing.dto.response.BillResponse;
 import com.hotelreservation.module.billing.dto.response.ResRoomBillResponse;
 import com.hotelreservation.module.billing.dto.response.ReservationBillResponse;
+import com.hotelreservation.module.billing.dto.response.ReservationBillSummaryProjection;
 import com.hotelreservation.module.billing.entity.Bill;
 import com.hotelreservation.module.billing.mapper.BillMapper;
 import com.hotelreservation.module.billing.repository.BillRepository;
@@ -115,8 +116,10 @@ public class BillServiceImpl implements BillService {
         );
         query.setParameter("resId", resId);
         
-        Reservation res = (Reservation) query.getSingleResult();
-        if (res == null) {
+        Reservation res;
+        try {
+            res = (Reservation) query.getSingleResult();
+        } catch (jakarta.persistence.NoResultException e) {
             throw new IllegalArgumentException("Reservation not found: " + resId);
         }
         
@@ -167,5 +170,11 @@ public class BillServiceImpl implements BillService {
         summary.setTotal();
 
         return summary;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReservationBillSummaryProjection> getReservationBillSummaries() {
+        return billRepo.getReservationBillSummaries();
     }
 }

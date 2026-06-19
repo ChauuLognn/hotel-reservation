@@ -50,49 +50,6 @@ public interface ReservationGuestRepository extends JpaRepository<ReservationGue
         @Param("guestId") Integer guestId
     );
 
-    @Modifying
-    @Query(value = """
-        update reservationGuest rg
-        join reservationRoom rr on rr.id = rg.reservationRoomId
-        set rg.checkInAt = :checkInAt
-        where rg.reservationRoomId = :resRoomId
-            and rg.guestId = :guestId
-            and rg.checkInAt is null
-            and now() >= timestamp(rr.checkInTime, '12:00:00')
-            and now() < timestamp(rr.checkOutTime, '14:00:00')
-    """, nativeQuery = true)
-    void setCheckIn(
-        @Param("resRoomId") String resRoomId,
-        @Param("guestId") Integer guestId,
-        @Param("checkInAt") LocalDateTime checkInAt
-    );
-
-    @Modifying
-    @Query(value = """
-        update reservationGuest
-        set checkOutAt = :checkOutAt
-        where reservationRoomId = :resRoomId
-            and guestId = :guestId
-            and checkInAt is not null
-            and checkOutAt is null
-            and :checkOutAt >= checkInAt
-    """, nativeQuery = true)
-    void setCheckOut(
-        @Param("resRoomId") String resRoomId,
-        @Param("guestId") Integer guestId,
-        @Param("checkOutAt") LocalDateTime checkOutAt
-    );
-
-    @Modifying
-    @Query(value= """
-        update reservationGuest rg
-        join reservationRoom rr on rg.reservationRoomId = rr.id
-        set rg.checkOutAt = timestamp(rr.checkOutTime, '14:00:00')
-        where rg.checkInAt is not null
-            and rg.checkOutAt is null
-            and timestamp(rr.checkOutTime, '14:00:00') <= :now;
-    """, nativeQuery=true)
-    void autoCheckOutByRoomCheckOutTime(@Param("now") LocalDateTime now);
 
     @Query(value="""
         select count(*)

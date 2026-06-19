@@ -28,35 +28,27 @@ export default function Bills() {
   async function fetchData() {
     setLoading(true);
     try {
-      const [resList, roomsRes] = await Promise.all([
+      const [resList, roomsRes, summariesRes] = await Promise.all([
         reservationApi.getAll(),
-        roomApi.getAll()
+        roomApi.getAll(),
+        billApi.getSummaries()
       ]);
       const bookingsList = Array.isArray(resList.data) ? resList.data : [];
       setBookings(bookingsList);
       setRoomsList(Array.isArray(roomsRes.data) ? roomsRes.data : []);
 
-      // Fetch bill details for each reservation in parallel for stats
+      const summariesData = Array.isArray(summariesRes.data) ? summariesRes.data : [];
       const summaries = {};
       let paidSum = 0;
       let unpaidCount = 0;
 
-      await Promise.all(
-        bookingsList.map(async (b) => {
-          try {
-            const bRes = await billApi.getByResId(b.resId);
-            if (bRes.data) {
-              summaries[b.resId] = bRes.data;
-              paidSum += Number(bRes.data.totalPaid || 0);
-              if (Number(bRes.data.totalDue || 0) > 0) {
-                unpaidCount++;
-              }
-            }
-          } catch(err) {
-            console.error(`Error loading bill for ${b.resId}:`, err);
-          }
-        })
-      );
+      summariesData.forEach((s) => {
+        summaries[s.reservationId] = s;
+        paidSum += Number(s.totalPaid || 0);
+        if (Number(s.totalDue || 0) > 0) {
+          unpaidCount++;
+        }
+      });
 
       setBillDetails(summaries);
       setStats({ paidSum, unpaidCount });
@@ -82,11 +74,11 @@ export default function Bills() {
 
   function openDetailModal(resId) {
     const billDetail = billDetails[resId];
-    if (billDetail) {
+    if (billDetail && billDetail.resRoomBill) {
       setSelectedBill(billDetail);
       setShowModal(true);
     } else {
-      // Fetch details if not cached
+      // Fetch details if not cached or missing full invoice list
       setLoading(true);
       billApi.getByResId(resId)
         .then(res => {

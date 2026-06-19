@@ -27,7 +27,15 @@ spring:
     init:
       mode: never
 
-# JWT Configuration (required by JwtUtil; fallback defaults exist in @Value annotations)
 jwt:
   secret: hotel_reservation_secret_key_2024_very_long_and_secure_at_least_256_bits_for_hs256_algorithm
   expiration: 86400000
+
+cors:
+  allowed-origins:
+    - http://localhost:5173
+    - http://localhost:5174
+
+system-user-id: 9
+
+

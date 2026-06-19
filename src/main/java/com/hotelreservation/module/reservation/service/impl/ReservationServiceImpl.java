@@ -30,6 +30,7 @@ import com.hotelreservation.module.room.entity.Room;
 import com.hotelreservation.module.room.repository.RoomRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +65,8 @@ public class ReservationServiceImpl implements ReservationService {
     @PersistenceContext
     private EntityManager em;
 
-    private Integer systemUserId = 9;
+    @Value("${system-user-id:9}")
+    private Integer systemUserId;
 
     private static final Map<ReservationStatus, Set<ReservationStatus>> Allowed;
     static {
@@ -141,7 +143,7 @@ public class ReservationServiceImpl implements ReservationService {
             now
         );
 
-        Reservation res = resRepo.getLastResByGuestId(guest.getId())
+        Reservation res = resRepo.findById(resId)
             .orElseThrow(() -> new IllegalArgumentException("Reservation has not been created yet"));
 
         List<Integer> roomIds = new ArrayList<>();
@@ -341,7 +343,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         if(rsh.getNewStatus() == ReservationStatus.CONFIRMED)
             rshRepo.insertResStatusHistory(resRoomId, rsh.getNewStatus().name(), 
-                "CHECK_IN", now, 9, "automatically");
+                "CHECK_IN", now, systemUserId, "automatically");
 
         return ReservationMapper.toGuestResponse(rg);
     }
@@ -371,7 +373,7 @@ public class ReservationServiceImpl implements ReservationService {
         if(resGuestRepo.cntGuestHasNotCheckOutInResRoom(resRoomId) == 0 &&
             rsh.getNewStatus() == ReservationStatus.CHECK_IN)
             this.updateResRoomStatus(resRoomId, 
-                new ChangeStatusRequest(ReservationStatus.CHECK_OUT, "automatically"), 9);
+                new ChangeStatusRequest(ReservationStatus.CHECK_OUT, "automatically"), systemUserId);
             
         return ReservationMapper.toGuestResponse(rg);
     }
@@ -425,7 +427,7 @@ public class ReservationServiceImpl implements ReservationService {
         if(newSt == ReservationStatus.CHECK_OUT)
             billRepo.insertServiceBills(resRoomId, now);
         else if(newSt == ReservationStatus.CANCELLED){
-            if(rr.getCheckInTime().isAfter(LocalDate.now()))
+            if(rr.getCheckInTime().isBefore(LocalDate.now()))
                 throw new IllegalStateException("cant cancelled resRoom that over time of checkIn");
             billRepo.insertRefundBills(resRoomId, now);
         }

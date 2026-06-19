@@ -20,12 +20,14 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public GuestResponse create(GuestCreateRequest rq) {
-        gRepo.insertGuest(
-            rq.getFirstName(), rq.getLastName(), rq.getIdentityNum(),
-            rq.getPhone(), rq.getDateOfBirth());
+        Guest g = new Guest();
+        g.setFirstName(rq.getFirstName());
+        g.setLastName(rq.getLastName());
+        g.setIdentityNum(rq.getIdentityNum());
+        g.setPhone(rq.getPhone());
+        g.setDateOfBirth(rq.getDateOfBirth());
 
-        Guest g = gRepo.findGuestByIdentityNum(rq.getIdentityNum())
-            .orElseThrow(() -> new IllegalStateException("Cannot load Guest after insert"));
+        g = gRepo.save(g);
 
         return GuestMapper.toResponse(g);
     }
@@ -49,24 +51,24 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public GuestResponse update(Integer id, GuestCreateRequest rq) {
-        gRepo.findGuestById(id)
+        Guest g = gRepo.findGuestById(id)
             .orElseThrow(() -> new IllegalArgumentException("Guest not found: " + id));
 
-        gRepo.updateGuest(
-            id, rq.getFirstName(), rq.getLastName(),
-            rq.getIdentityNum(), rq.getPhone(),
-            rq.getDateOfBirth());
+        g.setFirstName(rq.getFirstName());
+        g.setLastName(rq.getLastName());
+        g.setIdentityNum(rq.getIdentityNum());
+        g.setPhone(rq.getPhone());
+        g.setDateOfBirth(rq.getDateOfBirth());
 
-        Guest updated = gRepo.findGuestById(id)
-            .orElseThrow(() -> new IllegalStateException("Cannot load Guest after update"));
+        g = gRepo.save(g);
 
-        return GuestMapper.toResponse(updated);
+        return GuestMapper.toResponse(g);
     }
 
     @Override
     public void delete(Integer id) {
-        gRepo.findGuestById(id)
+        Guest g = gRepo.findGuestById(id)
             .orElseThrow(() -> new IllegalArgumentException("Guest not found: " + id));
-        gRepo.deleteGuest(id);
+        gRepo.delete(g);
     }
 }

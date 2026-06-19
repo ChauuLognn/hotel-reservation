@@ -109,8 +109,15 @@ public class AuthController {
 
             // 4. Lấy thông tin employee
             Emp emp = user.getEmp();
-            if (emp == null) {
-                throw new IllegalStateException("User is not associated with any employee");
+            Integer empId = null;
+            String empName = "";
+            String role = "CUSTOMER";
+            if (emp != null) {
+                empId = emp.getId();
+                empName = emp.getFirstName() + " " + emp.getLastName();
+                if (emp.getRole() != null) {
+                    role = emp.getRole().getName().name();
+                }
             }
 
             // 5. Tạo response với JWT
@@ -118,9 +125,9 @@ public class AuthController {
                 jwtToken,                                   // JWT token
                 user.getId(),
                 user.getAccount(),
-                emp.getId(),
-                emp.getFirstName() + " " + emp.getLastName(),
-                emp.getRole().getName().name(),
+                empId,
+                empName,
+                role,
                 jwtUtil.getExpirationTime()                // Expiration time (24h)
             );
 
@@ -195,10 +202,10 @@ public class AuthController {
             emp.setAddress(request.getAddress());
             emp.setIdentityNum(request.getIdentityNum());
             
-            // Load default role EMPLOYEE từ database
-            Role employeeRole = roleRepository.findByName(RoleName.EMPLOYEE)
-                .orElseThrow(() -> new IllegalStateException("EMPLOYEE role not found in database"));
-            emp.setRole(employeeRole);
+            // Load default role CUSTOMER từ database
+            Role customerRole = roleRepository.findByName(RoleName.CUSTOMER)
+                .orElseThrow(() -> new IllegalStateException("CUSTOMER role not found in database"));
+            emp.setRole(customerRole);
             
             emp = empRepository.save(emp);
 

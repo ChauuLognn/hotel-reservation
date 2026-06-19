@@ -11,9 +11,22 @@ import org.springframework.stereotype.Repository;
 
 import com.hotelreservation.module.report.projection.DailyRevenueProjection;
 import com.hotelreservation.module.billing.entity.Bill;
+import com.hotelreservation.module.billing.dto.response.ReservationBillSummaryProjection;
 
 @Repository
 public interface BillRepository extends JpaRepository<Bill, String> {
+
+    @Query(value = """
+        SELECT 
+            rr.reservationId AS reservationId,
+            SUM(CASE WHEN b.status = 'PAID' THEN b.totalAmount ELSE 0 END) AS totalPaid,
+            SUM(CASE WHEN b.status = 'UNPAID' THEN b.totalAmount ELSE 0 END) AS totalDue,
+            SUM(b.totalAmount) AS total
+        FROM bill b
+        JOIN reservationRoom rr ON b.reservationRoomId = rr.id
+        GROUP BY rr.reservationId
+        """, nativeQuery = true)
+    List<ReservationBillSummaryProjection> getReservationBillSummaries();
 
     @Query(value="""
         select * 

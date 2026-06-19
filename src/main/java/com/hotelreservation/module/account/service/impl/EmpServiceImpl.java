@@ -8,6 +8,8 @@ import com.hotelreservation.module.account.mapper.EmpMapper;
 import com.hotelreservation.module.account.repository.EmpRepository;
 import com.hotelreservation.module.account.repository.UserRepository;
 import com.hotelreservation.module.account.service.EmpService;
+import com.hotelreservation.module.account.entity.Role;
+import com.hotelreservation.module.account.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,18 +22,26 @@ import java.util.stream.Collectors;
 public class EmpServiceImpl implements EmpService {
     @Autowired private EmpRepository empRepo;
     @Autowired private UserRepository userRepo;
+    @Autowired private RoleRepository roleRepo;
 
     @Override
     public EmpResponse create(EmpCreateRequest rq) {
         validateUniqueFields(null, rq);
 
-        empRepo.insertEmp(rq.getFirstName(), rq.getLastName(),
-                        rq.getDateOfBirth(), rq.getIdentityNum(),
-                        rq.getEmail(), rq.getPhone(),
-                        rq.getAddress(), rq.getRole());
+        Emp e = new Emp();
+        e.setFirstName(rq.getFirstName());
+        e.setLastName(rq.getLastName());
+        e.setDateOfBirth(rq.getDateOfBirth());
+        e.setIdentityNum(rq.getIdentityNum());
+        e.setEmail(rq.getEmail());
+        e.setPhone(rq.getPhone());
+        e.setAddress(rq.getAddress());
+        
+        Role role = roleRepo.findById(rq.getRole())
+            .orElseThrow(() -> new IllegalArgumentException("Role not found: " + rq.getRole()));
+        e.setRole(role);
 
-        Emp e = empRepo.findEmpByIdentityNum(rq.getIdentityNum())
-            .orElseThrow(() -> new IllegalStateException("Cannot load Emp after insert"));
+        e = empRepo.save(e);
 
         return EmpMapper.toResponse(e);
     }
@@ -55,31 +65,36 @@ public class EmpServiceImpl implements EmpService {
 
     @Override
     public EmpResponse update(Integer id, EmpCreateRequest rq) {
-        empRepo.findEmpById(id)
+        Emp e = empRepo.findEmpById(id)
             .orElseThrow(() -> new IllegalArgumentException("Emp not found: " + id));
 
         validateUniqueFields(id, rq);
 
-        empRepo.updateEmp(
-            id, rq.getFirstName(), rq.getLastName(),
-            rq.getDateOfBirth(), rq.getIdentityNum(),
-            rq.getEmail(), rq.getPhone(),
-            rq.getAddress(), rq.getRole());
+        e.setFirstName(rq.getFirstName());
+        e.setLastName(rq.getLastName());
+        e.setDateOfBirth(rq.getDateOfBirth());
+        e.setIdentityNum(rq.getIdentityNum());
+        e.setEmail(rq.getEmail());
+        e.setPhone(rq.getPhone());
+        e.setAddress(rq.getAddress());
+        
+        Role role = roleRepo.findById(rq.getRole())
+            .orElseThrow(() -> new IllegalArgumentException("Role not found: " + rq.getRole()));
+        e.setRole(role);
 
-        Emp updated = empRepo.findEmpById(id)
-            .orElseThrow(() -> new IllegalStateException("Cannot load Emp after update"));
+        e = empRepo.save(e);
 
-        return EmpMapper.toResponse(updated);
+        return EmpMapper.toResponse(e);
     }
 
     @Override
     public void delete(Integer id) {
-        empRepo.findEmpById(id)
+        Emp e = empRepo.findEmpById(id)
             .orElseThrow(() -> new IllegalArgumentException("Emp not found: " + id));
 
         userRepo.unlinkEmpFromUsers(id);
 
-        empRepo.deleteEmp(id);
+        empRepo.delete(e);
     }
 
     private void validateUniqueFields(Integer id, EmpCreateRequest rq) {
