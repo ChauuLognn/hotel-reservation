@@ -1,16 +1,7 @@
-<<<<<<<< HEAD:src/main/java/modules/hotelservice/entity/ReservationService.java
-package modules.hotelservice.entity;
-import modules.account.entity.User;
-import modules.reservation.entity.ReservationRoom;
-
-// trigger re-indexing
-
-========
 package com.hotelreservation.module.hotelservice.entity;
 
 import com.hotelreservation.module.account.entity.User;
 import com.hotelreservation.module.reservation.entity.ReservationRoom;
->>>>>>>> cbefeac3b6cddeb05a11784a799ae6ee9e5b4f93:src/main/java/com/hotelreservation/module/hotelservice/entity/ReservationService.java
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

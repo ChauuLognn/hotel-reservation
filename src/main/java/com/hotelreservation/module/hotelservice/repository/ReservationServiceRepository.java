@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/modules/hotelservice/repository/ReservationServiceRepository.java
-package modules.hotelservice.repository;
-========
 package com.hotelreservation.module.hotelservice.repository;
->>>>>>>> cbefeac3b6cddeb05a11784a799ae6ee9e5b4f93:src/main/java/com/hotelreservation/module/hotelservice/repository/ReservationServiceRepository.java
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,13 +12,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-<<<<<<<< HEAD:src/main/java/modules/hotelservice/repository/ReservationServiceRepository.java
-import modules.report.dto.ServiceUsageProjection;
-import modules.hotelservice.entity.ReservationService;
-========
 import com.hotelreservation.module.report.projection.ServiceUsageProjection;
 import com.hotelreservation.module.hotelservice.entity.ReservationService;
->>>>>>>> cbefeac3b6cddeb05a11784a799ae6ee9e5b4f93:src/main/java/com/hotelreservation/module/hotelservice/repository/ReservationServiceRepository.java
 
 @Repository
 public interface ReservationServiceRepository extends JpaRepository<ReservationService, String>{

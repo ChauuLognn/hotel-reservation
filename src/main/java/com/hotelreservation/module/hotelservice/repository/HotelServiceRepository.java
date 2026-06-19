@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/modules/hotelservice/repository/ServiceRepository.java
-package modules.hotelservice.repository;
-========
 package com.hotelreservation.module.hotelservice.repository;
->>>>>>>> cbefeac3b6cddeb05a11784a799ae6ee9e5b4f93:src/main/java/com/hotelreservation/module/hotelservice/repository/HotelServiceRepository.java
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,11 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-<<<<<<<< HEAD:src/main/java/modules/hotelservice/repository/ServiceRepository.java
-import modules.hotelservice.entity.Service;
-========
 import com.hotelreservation.module.hotelservice.entity.HotelService;
->>>>>>>> cbefeac3b6cddeb05a11784a799ae6ee9e5b4f93:src/main/java/com/hotelreservation/module/hotelservice/repository/HotelServiceRepository.java
 
 @Repository
 public interface HotelServiceRepository extends JpaRepository<HotelService, Integer> {

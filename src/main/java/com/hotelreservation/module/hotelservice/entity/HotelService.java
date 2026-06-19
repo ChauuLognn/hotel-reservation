@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/modules/hotelservice/entity/Service.java
-package modules.hotelservice.entity;
-========
 package com.hotelreservation.module.hotelservice.entity;
->>>>>>>> cbefeac3b6cddeb05a11784a799ae6ee9e5b4f93:src/main/java/com/hotelreservation/module/hotelservice/entity/HotelService.java
 
 import java.math.BigDecimal;
 import com.hotelreservation.common.enums.ServiceStatus;

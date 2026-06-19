@@ -1,22 +1,8 @@
-<<<<<<<< HEAD:src/main/java/modules/hotelservice/dto/ReservationServiceDto.java
-package modules.hotelservice.dto;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-import modules.hotelservice.entity.ReservationService;
-
-// trigger re-indexing
-
-// thông tin dịch vụ được resRoom sử dụng có thể xem
-public class ReservationServiceDto {
-========
 package com.hotelreservation.module.hotelservice.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 public class ReservationServiceResponse {
->>>>>>>> cbefeac3b6cddeb05a11784a799ae6ee9e5b4f93:src/main/java/com/hotelreservation/module/hotelservice/dto/response/ReservationServiceResponse.java
     private String id;
     private Integer roomId;
     private String service;
