@@ -58,4 +58,7 @@ public interface GuestRepository extends JpaRepository<Guest, Integer>{
     @Modifying
     @Query(value = "DELETE FROM guest WHERE id = :id", nativeQuery = true)
     void deleteGuest(@Param("id") Integer id);
+
+    @Query(value = "SELECT * FROM guest WHERE phone = :phone", nativeQuery = true)
+    Optional<Guest> findGuestByPhone(@Param("phone") String phone);
 }

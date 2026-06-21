@@ -7,10 +7,14 @@ import billApi from '../../api/billApi';
 import roomApi from '../../api/roomApi';
 import { formatVND, formatDate } from '@shared/utils/format';
 import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 
 
 export default function Bills() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const confirm = useConfirm();
   const [bookings, setBookings] = useState([]);
   const [billDetails, setBillDetails] = useState({}); // resId -> ReservationBillSummary
   const [roomsList, setRoomsList] = useState([]);
@@ -86,23 +90,27 @@ export default function Bills() {
             setSelectedBill(res.data);
             setShowModal(true);
           } else {
-            alert('Không tìm thấy thông tin hóa đơn cho đặt phòng này.');
+            showToast('Không tìm thấy thông tin hóa đơn cho đặt phòng này.', 'error');
           }
         })
-        .catch(() => alert('Lỗi tải hóa đơn'))
+        .catch(() => showToast('Lỗi tải hóa đơn', 'error'))
         .finally(() => setLoading(false));
     }
   }
 
   async function handleConfirmPayment(resId) {
-    if (!confirm('Xác nhận thanh toán cho toàn bộ đặt phòng này?')) return;
+    const isConfirmed = await confirm({
+      title: 'Thanh Toán Hóa Đơn',
+      message: 'Xác nhận thanh toán cho toàn bộ đặt phòng này?'
+    });
+    if (!isConfirmed) return;
     try {
       await billApi.confirmPaidForRes(resId);
-      alert('Đã thanh toán hóa đơn thành công!');
+      showToast('Đã thanh toán hóa đơn thành công!', 'success');
       setShowModal(false);
       fetchData();
     } catch(err) {
-      alert('Lỗi thanh toán: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi thanh toán: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 

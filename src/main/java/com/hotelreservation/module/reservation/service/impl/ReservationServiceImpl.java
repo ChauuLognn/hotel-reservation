@@ -30,6 +30,7 @@ import com.hotelreservation.module.room.entity.Room;
 import com.hotelreservation.module.room.repository.RoomRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,12 +52,9 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired private RoomRepository roomRepo;
     @Autowired private ReservationRepository resRepo;
     @Autowired private ReservationRoomRepository rrRepo;
-    @Autowired private ReservationRoomRepository resRoomRepo;
     @Autowired private GuestRepository guestRepo;
     @Autowired private UserRepository userRepo;
     @Autowired private ReservationStatusHistoryRepository statusHistoryRepo;
-    @Autowired private ReservationStatusHistoryRepository rshRepo;
-    @Autowired private ReservationStatusHistoryRepository resHistoryRepo;
     @Autowired private ReservationGuestRepository resGuestRepo;
     @Autowired private BillRepository billRepo;
     @Autowired private ReservationServiceRepository rSRepo;
@@ -94,7 +92,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponse getByResId(String resId) {
         Reservation r = resRepo.getResById(resId);
         List<ReservationRoom> lstRr = rrRepo.findByReservationId(resId);
-        return ReservationMapper.toResponse(r, lstRr);
+        return toReservationResponse(r, lstRr);
     }
 
     @Override
@@ -116,7 +114,7 @@ public class ReservationServiceImpl implements ReservationService {
                 Guest guest = r.getGuest();
                 if (guest == null) continue;
                 List<ReservationRoom> rooms = rrRepo.findByReservationId(r.getId());
-                ReservationResponse dto = ReservationMapper.toResponse(r, rooms);
+                ReservationResponse dto = toReservationResponse(r, rooms);
                 lst.add(dto);
             } catch (Exception e) {
                 System.err.println("Error processing reservation " + r.getId() + ": " + e.getMessage());
@@ -230,7 +228,7 @@ public class ReservationServiceImpl implements ReservationService {
         List<ReservationResponse> lst = new ArrayList<>();
         List<Reservation> reservations = resRepo.getAllResByGuestId(guestId);
         for(Reservation r : reservations){
-            lst.add(ReservationMapper.toResponse(r, rrRepo.findByReservationId(r.getId())));
+            lst.add(toReservationResponse(r, rrRepo.findByReservationId(r.getId())));
         }
         return lst;
     }
@@ -240,7 +238,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponse getLastResByGuestId(Integer guestId) {
         Reservation r = resRepo.getLastResByGuestId(guestId)
             .orElseThrow(() -> new IllegalArgumentException("Guest has no reservation yet"));
-        return ReservationMapper.toResponse(r, rrRepo.findByReservationId(r.getId()));
+        return toReservationResponse(r, rrRepo.findByReservationId(r.getId()));
     }
     
     @Override
@@ -253,7 +251,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional(readOnly = true)
     public ReservationRoomResponse getResRoomById(String resRoomId) {
-        ReservationRoom rr = resRoomRepo.getByResRoomId(resRoomId)
+        ReservationRoom rr = rrRepo.getByResRoomId(resRoomId)
             .orElseThrow(() -> new IllegalArgumentException("ReservationRoom not found"));
         return ReservationMapper.toRoomResponse(rr);
     }
@@ -267,9 +265,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void deleteResRoom(String resRoomId) {
-        if(!resRoomRepo.existsById(resRoomId))
+        if(!rrRepo.existsById(resRoomId))
             throw new IllegalArgumentException("ReservationRoom not found: " + resRoomId);
-        resRoomRepo.deleteById(resRoomId);
+        rrRepo.deleteById(resRoomId);
     }
 
     @Override
@@ -307,12 +305,20 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationGuestResponse createReservationGuest(String resRoomId, Integer guestId) {     
-        ReservationStatusHistory rsh = rshRepo.findLatestByResRoomId(resRoomId)
+        ReservationStatusHistory rsh = statusHistoryRepo.findLatestByResRoomId(resRoomId)
             .orElseThrow(() -> new IllegalArgumentException("this resRoom has no status record"));
         
         if(rsh.getNewStatus() != ReservationStatus.CONFIRMED 
             && rsh.getNewStatus() != ReservationStatus.CHECK_IN)
             throw new IllegalStateException("Cant add guest to this room");
+
+        // Overlapping date check
+        ReservationRoom rr = rrRepo.getByResRoomId(resRoomId)
+            .orElseThrow(() -> new IllegalArgumentException("ReservationRoom not found: " + resRoomId));
+        Long overlaps = resGuestRepo.countOverlappingStays(guestId, resRoomId, rr.getCheckInTime(), rr.getCheckOutTime());
+        if (overlaps > 0) {
+            throw new IllegalStateException("Khách hàng đã có phòng khác trong thời gian này");
+        }
 
         resGuestRepo.insertResGuest(resRoomId, guestId);
 
@@ -324,7 +330,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationGuestResponse setCheckIn(String resRoomId, Integer guestId, LocalDateTime checkInAt) {
-        ReservationStatusHistory rsh = rshRepo.findLatestByResRoomId(resRoomId)
+        ReservationStatusHistory rsh = statusHistoryRepo.findLatestByResRoomId(resRoomId)
             .orElseThrow(() -> new IllegalArgumentException("this resRoom has no status record"));
 
         if(rsh.getNewStatus() == ReservationStatus.PENDING_PAYMENT)
@@ -341,16 +347,26 @@ public class ReservationServiceImpl implements ReservationService {
 
         rg.setCheckInAt(checkInAt);
 
-        if(rsh.getNewStatus() == ReservationStatus.CONFIRMED)
-            rshRepo.insertResStatusHistory(resRoomId, rsh.getNewStatus().name(), 
-                "CHECK_IN", now, systemUserId, "automatically");
+        if(rsh.getNewStatus() == ReservationStatus.CONFIRMED) {
+            statusHistoryRepo.insertResStatusHistory(resRoomId, rsh.getNewStatus().name(), 
+                ReservationStatus.CHECK_IN.name(), now, systemUserId, "automatically");
+            
+            // Automatically propagate CHECK_IN status to parent reservation
+            ReservationRoom rr = rrRepo.getByResRoomId(resRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("ReservationRoom not found: " + resRoomId));
+            Reservation r = rr.getReservation();
+            if (r.getStatus() != ReservationStatus.CHECK_IN) {
+                r.setStatus(ReservationStatus.CHECK_IN);
+                resRepo.save(r);
+            }
+        }
 
         return ReservationMapper.toGuestResponse(rg);
     }
 
     @Override
     public ReservationGuestResponse setCheckOut(String resRoomId, Integer guestId, LocalDateTime checkOutAt) {
-        ReservationStatusHistory rsh = rshRepo.findLatestByResRoomId(resRoomId)
+        ReservationStatusHistory rsh = statusHistoryRepo.findLatestByResRoomId(resRoomId)
             .orElseThrow(() -> new IllegalArgumentException("this resRoom has no status record"));
 
         ReservationGuest rg = resGuestRepo.findByResRoomIdAndGuestId(resRoomId, guestId)
@@ -371,9 +387,10 @@ public class ReservationServiceImpl implements ReservationService {
         rg.setCheckOutAt(checkOutAt);
 
         if(resGuestRepo.cntGuestHasNotCheckOutInResRoom(resRoomId) == 0 &&
-            rsh.getNewStatus() == ReservationStatus.CHECK_IN)
+            rsh.getNewStatus() == ReservationStatus.CHECK_IN) {
             this.updateResRoomStatus(resRoomId, 
                 new ChangeStatusRequest(ReservationStatus.CHECK_OUT, "automatically"), systemUserId);
+        }
             
         return ReservationMapper.toGuestResponse(rg);
     }
@@ -381,22 +398,22 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional(readOnly = true)
     public List<StatusHistoryResponse> getHistoryByReservation(String resId) {
-        List<ReservationStatusHistory> lst = resHistoryRepo.findByResId(resId);
+        List<ReservationStatusHistory> lst = statusHistoryRepo.findByResId(resId);
         return lst.stream().map(ReservationMapper::toStatusHistoryResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<StatusHistoryResponse> getHistoryByReservationRoom(String resRoomId) {
-        ReservationRoom rr = resRoomRepo.findById(resRoomId)
+        ReservationRoom rr = rrRepo.findById(resRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("ReservationRoom not found: " + resRoomId));
 
-        List<ReservationStatusHistory> list = resHistoryRepo.findByResRoomId(rr.getId());
+        List<ReservationStatusHistory> list = statusHistoryRepo.findByResRoomId(rr.getId());
         return list.stream().map(ReservationMapper::toStatusHistoryResponse).collect(Collectors.toList());
     }
  
     private ReservationStatus CurrentStatusOfResRoom(String resRoomId) {
-        Optional<ReservationStatusHistory> opt = resHistoryRepo.findLatestByResRoomId(resRoomId);
+        Optional<ReservationStatusHistory> opt = statusHistoryRepo.findLatestByResRoomId(resRoomId);
         if (opt.isPresent()) {
             return opt.get().getNewStatus();
         }
@@ -405,7 +422,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void updateResRoomStatus(String resRoomId, ChangeStatusRequest req, Integer updatedByUserId) {
-        ReservationRoom rr = resRoomRepo.getByResRoomId(resRoomId).
+        ReservationRoom rr = rrRepo.getByResRoomId(resRoomId).
             orElseThrow(() -> new IllegalArgumentException("ReservationRoom not found: " + resRoomId));
 
         Reservation r = rr.getReservation();
@@ -435,8 +452,30 @@ public class ReservationServiceImpl implements ReservationService {
         Integer effectiveUserId = updatedByUserId != null? updatedByUserId : systemUserId;
         User by = em.getReference(User.class, effectiveUserId);
 
-        resHistoryRepo.insertResStatusHistory(resRoomId, oldSt.name(), 
+        statusHistoryRepo.insertResStatusHistory(resRoomId, oldSt.name(), 
             newSt.name(), now, by.getId(), req.getReason());
+
+        // Automatically propagate CHECK_IN/CHECK_OUT status updates from rooms to reservation
+        if (newSt == ReservationStatus.CHECK_IN) {
+            if (r.getStatus() != ReservationStatus.CHECK_IN) {
+                r.setStatus(ReservationStatus.CHECK_IN);
+                resRepo.save(r);
+            }
+        } else if (newSt == ReservationStatus.CHECK_OUT) {
+            List<ReservationRoom> allRooms = rrRepo.findByReservationId(r.getId());
+            boolean allCheckedOut = true;
+            for (ReservationRoom room : allRooms) {
+                ReservationStatus roomStatus = room.getId().equals(resRoomId) ? newSt : CurrentStatusOfResRoom(room.getId());
+                if (roomStatus != ReservationStatus.CHECK_OUT && roomStatus != ReservationStatus.CANCELLED) {
+                    allCheckedOut = false;
+                    break;
+                }
+            }
+            if (allCheckedOut && r.getStatus() != ReservationStatus.CHECK_OUT) {
+                r.setStatus(ReservationStatus.CHECK_OUT);
+                resRepo.save(r);
+            }
+        }
     }             
     
     @Override
@@ -452,21 +491,18 @@ public class ReservationServiceImpl implements ReservationService {
         if(newSt == ReservationStatus.CHECK_IN || newSt == ReservationStatus.CHECK_OUT)
             throw new IllegalStateException("invalid new status to update for a reservation");
 
+        // Set Reservation status first
+        r.setStatus(newSt);
+        resRepo.save(r);
+
         if(newSt == ReservationStatus.CONFIRMED){
-            r.setStatus(newSt);
-            resRepo.save(r);
             billRepo.insertRoomChargeBills(resId, LocalDateTime.now());
-        }
-        else if(newSt == ReservationStatus.PENDING_EXPIRED){
-            r.setStatus(newSt);
-            resRepo.save(r);
-            return;
         }
 
         Integer effectiveUserId = updatedBy != null? updatedBy : systemUserId;
         User by = em.getReference(User.class, effectiveUserId);
 
-        List<ReservationRoom> rooms = resRoomRepo.findByReservationId(resId);
+        List<ReservationRoom> rooms = rrRepo.findByReservationId(resId);
         boolean noRoomHasChangeStatus = true;
 
         for(ReservationRoom rr : rooms){
@@ -474,16 +510,13 @@ public class ReservationServiceImpl implements ReservationService {
             try{
                 updateResRoomStatus(resRoomId, req, by.getId());
                 noRoomHasChangeStatus = false;
-            } catch(IllegalStateException e){
+            } catch(IllegalStateException | IllegalArgumentException e){
                 // ignore
             }
         }
-        if(newSt == ReservationStatus.CANCELLED){
-            if(!noRoomHasChangeStatus){
-                r.setStatus(newSt);
-                resRepo.save(r);
-            }
-            else throw new IllegalStateException("cant change status for this reservation");
+
+        if(noRoomHasChangeStatus){
+            throw new IllegalStateException("Cannot change status because no rooms could transition");
         }
     }
 
@@ -514,5 +547,136 @@ public class ReservationServiceImpl implements ReservationService {
         if(!rSRepo.existsById(id))
             throw new IllegalArgumentException("Theres no reservationService to delete");
         rSRepo.delete(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReservationFullDetailResponse getReservationFullDetail(String resId) {
+        Reservation r = resRepo.findById(resId)
+            .orElseThrow(() -> new IllegalArgumentException("Reservation not found: " + resId));
+
+        ReservationFullDetailResponse resp = new ReservationFullDetailResponse();
+        resp.setId(r.getId());
+        if (r.getGuest() != null) {
+            String firstName = r.getGuest().getFirstName() != null ? r.getGuest().getFirstName() : "";
+            String lastName = r.getGuest().getLastName() != null ? r.getGuest().getLastName() : "";
+            resp.setGuestName((firstName + " " + lastName).trim());
+            resp.setGuestPhone(r.getGuest().getPhone());
+        } else {
+            resp.setGuestName("");
+            resp.setGuestPhone("");
+        }
+        resp.setTotal(r.getTotalAmount());
+        resp.setStatus(r.getStatus() != null ? r.getStatus().name() : "");
+        resp.setBookingDate(r.getBookingDate());
+
+        List<ReservationRoom> rooms = rrRepo.findByReservationId(resId);
+        resp.setOverallRoomStatus(computeOverallRoomStatus(rooms, r));
+        LocalDate earliestCheckIn = null;
+        LocalDate latestCheckOut = null;
+
+        List<ReservationFullDetailResponse.RoomDetailItem> roomItems = new ArrayList<>();
+        for (ReservationRoom rr : rooms) {
+            ReservationFullDetailResponse.RoomDetailItem item = new ReservationFullDetailResponse.RoomDetailItem();
+            item.setId(rr.getId());
+            item.setRoomId(rr.getRoom().getId());
+            item.setRoomTypeName(rr.getRoom().getRoomType().getName());
+            item.setCheckInTime(rr.getCheckInTime());
+            item.setCheckOutTime(rr.getCheckOutTime());
+            item.setTotalPrice(rr.getTotalPrice());
+
+            if (earliestCheckIn == null || rr.getCheckInTime().isBefore(earliestCheckIn)) {
+                earliestCheckIn = rr.getCheckInTime();
+            }
+            if (latestCheckOut == null || rr.getCheckOutTime().isAfter(latestCheckOut)) {
+                latestCheckOut = rr.getCheckOutTime();
+            }
+
+            // Guests
+            List<ReservationGuestResponse> guests = resGuestRepo.findByIdReservationRoomId(rr.getId())
+                .stream()
+                .map(ReservationMapper::toGuestResponse)
+                .collect(Collectors.toList());
+            item.setGuests(guests);
+
+            // Services
+            List<ReservationServiceResponse> services = rSRepo.getByResRoomId(rr.getId())
+                .stream()
+                .map(ReservationServiceMapper::toResponse)
+                .collect(Collectors.toList());
+            item.setServices(services);
+
+            roomItems.add(item);
+        }
+
+        resp.setRooms(roomItems);
+        resp.setCheckIn(earliestCheckIn);
+        resp.setCheckOut(latestCheckOut);
+
+        return resp;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReservationResponse> getMyBookings() {
+        String account = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepo.findByAccount(account)
+            .orElseThrow(() -> new IllegalStateException("User not found: " + account));
+
+        Guest guest = user.getGuest();
+        if (guest != null) {
+            List<Reservation> reservations = resRepo.getAllResByGuestId(guest.getId());
+            List<ReservationResponse> responseList = new ArrayList<>();
+            for (Reservation r : reservations) {
+                List<ReservationRoom> rooms = rrRepo.findByReservationId(r.getId());
+                responseList.add(toReservationResponse(r, rooms));
+            }
+            return responseList;
+        }
+        return Collections.emptyList();
+    }
+
+    private String computeOverallRoomStatus(List<ReservationRoom> rooms, Reservation r) {
+        if (r.getStatus() == com.hotelreservation.common.enums.ReservationStatus.CANCELLED) {
+            return "CANCELLED";
+        }
+        if (r.getStatus() == com.hotelreservation.common.enums.ReservationStatus.PENDING_EXPIRED) {
+            return "PENDING_EXPIRED";
+        }
+        if (r.getStatus() == com.hotelreservation.common.enums.ReservationStatus.PENDING_PAYMENT) {
+            return "PENDING_PAYMENT";
+        }
+        if (rooms == null || rooms.isEmpty()) {
+            return r.getStatus().name();
+        }
+
+        boolean anyCheckIn = false;
+        boolean allCheckOutOrCancelled = true;
+
+        for (ReservationRoom rr : rooms) {
+            com.hotelreservation.common.enums.ReservationStatus roomSt = CurrentStatusOfResRoom(rr.getId());
+            if (roomSt == com.hotelreservation.common.enums.ReservationStatus.CHECK_IN) {
+                anyCheckIn = true;
+            }
+            if (roomSt != com.hotelreservation.common.enums.ReservationStatus.CHECK_OUT && roomSt != com.hotelreservation.common.enums.ReservationStatus.CANCELLED) {
+                allCheckOutOrCancelled = false;
+            }
+        }
+
+        if (anyCheckIn) {
+            return "CHECK_IN";
+        }
+        if (allCheckOutOrCancelled) {
+            return "CHECK_OUT";
+        }
+        return r.getStatus().name();
+    }
+
+    private ReservationResponse toReservationResponse(Reservation r, List<ReservationRoom> rooms) {
+        ReservationResponse dto = ReservationMapper.toResponse(r, rooms);
+        if (dto != null) {
+            dto.setOverallRoomStatus(computeOverallRoomStatus(rooms, r));
+        }
+        return dto;
     }
 }

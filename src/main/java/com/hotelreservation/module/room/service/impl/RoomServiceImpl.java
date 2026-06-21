@@ -44,6 +44,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomResponse create(CreateRoomRequest rq) {
+        if (roomRepo.findRoom(rq.getId()).isPresent()) {
+            throw new IllegalArgumentException("Số phòng này đã tồn tại.");
+        }
         RoomType rt = rtRepo.findByName(rq.getTypeName())
             .orElseThrow(() -> new IllegalArgumentException("RoomType not found: " + rq.getTypeName()));
 

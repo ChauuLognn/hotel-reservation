@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Shield, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showToast } = useToast();
   const [role, setRole] = useState('user');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,7 +35,12 @@ export default function Login() {
       
       // If Customer tab is active, redirect to customer home
       if (role === 'user') {
-        navigate('/user-home');
+        if (['MANAGER', 'EMPLOYEE'].includes(userRole)) {
+          showToast('Tài khoản nhân viên được chuyển hướng đến trang quản trị.', 'info');
+          navigate('/');
+        } else {
+          navigate('/user-home');
+        }
       } else {
         // Admin tab active: check if user is staff/admin
         if (['MANAGER', 'EMPLOYEE'].includes(userRole)) {

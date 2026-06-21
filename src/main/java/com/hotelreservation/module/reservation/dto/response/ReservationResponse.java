@@ -19,6 +19,7 @@ public class ReservationResponse {
     private List<Long> nights;
     private LocalDate checkIn;
     private LocalDate checkOut;
+    private String overallRoomStatus;
 
     @JsonProperty("resId")
     public String getId() { return id; }
@@ -45,4 +46,6 @@ public class ReservationResponse {
     public void setCheckIn(LocalDate checkIn) { this.checkIn = checkIn; }
     public LocalDate getCheckOut() { return checkOut; }
     public void setCheckOut(LocalDate checkOut) { this.checkOut = checkOut; }
+    public String getOverallRoomStatus() { return overallRoomStatus; }
+    public void setOverallRoomStatus(String overallRoomStatus) { this.overallRoomStatus = overallRoomStatus; }
 }

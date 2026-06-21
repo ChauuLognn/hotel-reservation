@@ -66,7 +66,7 @@ public interface UserRepository extends JpaRepository<User, Integer>{
     @Query(value = "DELETE FROM user WHERE id = :id", nativeQuery = true)
     void deleteUser(@Param("id") Integer id);
 
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Transactional
     @Query(value = "UPDATE user SET empId = NULL WHERE empId = :empId", nativeQuery = true)
     void unlinkEmpFromUsers(@Param("empId") Integer empId);

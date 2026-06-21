@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Home, DollarSign, Clock, CheckCircle, Plus, Trash2, Calendar, Coffee, UserPlus } from 'lucide-react';
+import { ArrowLeft, DollarSign, Clock, CheckCircle, Plus, Trash2, UserPlus } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import reservationApi from '../../api/reservationApi';
 import guestApi from '../../api/guestApi';
@@ -9,11 +9,15 @@ import serviceApi from '../../api/serviceApi';
 import billApi from '../../api/billApi';
 import { formatVND, formatDate, formatDateTime } from '@shared/utils/format';
 import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 
 
 export default function BookingDetail() {
   const { resId } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const confirm = useConfirm();
   
   const [detail, setDetail] = useState(null);
   const [statusHistory, setStatusHistory] = useState([]);
@@ -52,16 +56,16 @@ export default function BookingDetail() {
   async function fetchAll() {
     setLoading(true);
     try {
-      // 1. Fetch reservation detail, status history, and bills
-      const [detailRes, histRes, billRes, svcRes, resRoomsRes] = await Promise.all([
-        reservationApi.getDetail(resId),
+      // Fetch reservation full detail, status history, bills, and services
+      const [fullDetailRes, histRes, billRes, svcRes] = await Promise.all([
+        reservationApi.getFullDetail(resId),
         reservationApi.getStatusHistory(resId),
         billApi.getByResId(resId).catch(() => ({ data: null })),
-        serviceApi.getAll(),
-        reservationApi.getRoomsByResId(resId).catch(() => ({ data: [] }))
+        serviceApi.getAll()
       ]);
 
-      setDetail(detailRes.data);
+      const fullDetail = fullDetailRes.data;
+      setDetail(fullDetail);
       setStatusHistory(Array.isArray(histRes.data) ? histRes.data : []);
       setBill(billRes.data);
       
@@ -71,8 +75,8 @@ export default function BookingDetail() {
       }));
       setServicesList(mappedServices);
       
-      const resRoomsData = resRoomsRes.data || [];
-      setResRooms(resRoomsData);
+      const roomsData = fullDetail.rooms || [];
+      setResRooms(roomsData);
 
       if (mappedServices.length > 0) setSelectedServiceName(mappedServices[0].serviceName);
 
@@ -83,28 +87,16 @@ export default function BookingDetail() {
         })
         .catch(err => console.error("Error loading rooms list:", err));
 
-      // 2. Fetch guests and services room-by-room
+      // Map guests and services from full detail response
       const tempGuestsMap = {};
       const tempServicesMap = {};
       const tempLoadingMap = {};
 
-      await Promise.all(
-        resRoomsData.map(async (rr) => {
-          tempLoadingMap[rr.id] = true;
-          try {
-            const [gRes, sRes] = await Promise.all([
-              reservationApi.getGuestsByResRoom(rr.id),
-              reservationApi.getServicesOfResRoom(rr.id),
-            ]);
-            tempGuestsMap[rr.id] = gRes.data || [];
-            tempServicesMap[rr.id] = sRes.data || [];
-          } catch(err) {
-            console.error(`Error loading details for room ${rr.id}:`, err);
-          } finally {
-            tempLoadingMap[rr.id] = false;
-          }
-        })
-      );
+      roomsData.forEach((room) => {
+        tempGuestsMap[room.id] = room.guests || [];
+        tempServicesMap[room.id] = room.services || [];
+        tempLoadingMap[room.id] = false;
+      });
 
       setRoomDetailsMap(tempGuestsMap);
       setRoomServicesMap(tempServicesMap);
@@ -137,29 +129,44 @@ export default function BookingDetail() {
   }
 
   async function changeStatus(newStatus) {
-    if (!confirm(`Đổi trạng thái đặt phòng thành "${RESERVATION_STATUS[newStatus]?.label}"?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Đổi Trạng Thái',
+      message: `Bạn có chắc chắn muốn đổi trạng thái đặt phòng thành "${RESERVATION_STATUS[newStatus]?.label}"?`
+    });
+    if (!isConfirmed) return;
     setChangingStatus(true);
     try {
       await reservationApi.updateStatus(resId, { newStatus: newStatus });
+      showToast('Đổi trạng thái thành công!', 'success');
       fetchAll();
-    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    } catch(err) { showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); }
     finally { setChangingStatus(false); }
   }
 
   async function confirmPayment() {
-    if (!confirm('Xác nhận thanh toán cho toàn bộ đặt phòng này?')) return;
+    const isConfirmed = await confirm({
+      title: 'Thanh Toán Hóa Đơn',
+      message: 'Xác nhận thanh toán cho toàn bộ đặt phòng này?'
+    });
+    if (!isConfirmed) return;
     try {
       await billApi.confirmPaidForRes(resId);
+      showToast('Thanh toán thành công!', 'success');
       fetchAll();
-    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    } catch(err) { showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); }
   }
 
   async function confirmPaymentForRoom(resRoomId, roomNum) {
-    if (!confirm(`Xác nhận thanh toán cho riêng phòng ${roomNum}?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Thanh Toán Phòng',
+      message: `Xác nhận thanh toán cho riêng phòng ${roomNum}?`
+    });
+    if (!isConfirmed) return;
     try {
       await billApi.confirmPaidForResRoom(resId, resRoomId);
+      showToast('Thanh toán phòng thành công!', 'success');
       fetchAll();
-    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    } catch(err) { showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); }
   }
 
   // Guest registration handler
@@ -187,10 +194,11 @@ export default function BookingDetail() {
     if (!selectedGuestId || !activeResRoomId) return;
     try {
       await reservationApi.registerGuest(activeResRoomId, Number(selectedGuestId));
+      showToast('Đăng ký khách thành công!', 'success');
       setShowAddGuestModal(false);
       reloadRoomData(activeResRoomId);
     } catch(err) {
-      alert('Lỗi đăng ký khách: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi đăng ký khách: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
@@ -199,7 +207,7 @@ export default function BookingDetail() {
     try {
       const res = await guestApi.create(guestForm);
       const newGuest = res.data;
-      alert(`Đã thêm khách hàng: ${newGuest.firstName} ${newGuest.lastName}`);
+      showToast(`Đã thêm khách hàng: ${newGuest.firstName} ${newGuest.lastName}`, 'success');
       
       const gList = await guestApi.getAll();
       setAllGuests(Array.isArray(gList.data) ? gList.data : []);
@@ -207,30 +215,38 @@ export default function BookingDetail() {
       setShowQuickGuest(false);
       setGuestForm({ firstName:'', lastName:'', phone:'', identityNum:'' });
     } catch(err) {
-      alert('Lỗi thêm khách: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi thêm khách: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
   // Guest Check-in/Check-out handlers
   async function handleCheckIn(resRoomId, guestId, name) {
-    if (!confirm(`Tiến hành check-in cho khách ${name}?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Nhận Phòng (Check-in)',
+      message: `Tiến hành check-in cho khách ${name}?`
+    });
+    if (!isConfirmed) return;
     try {
       await reservationApi.checkIn(resRoomId, guestId, null);
-      alert('Check-in thành công!');
+      showToast('Check-in thành công!', 'success');
       reloadRoomData(resRoomId);
     } catch(err) {
-      alert('Lỗi check-in: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi check-in: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
   async function handleCheckOut(resRoomId, guestId, name) {
-    if (!confirm(`Tiến hành check-out cho khách ${name}?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Trả Phòng (Check-out)',
+      message: `Tiến hành check-out cho khách ${name}?`
+    });
+    if (!isConfirmed) return;
     try {
       await reservationApi.checkOut(resRoomId, guestId, null);
-      alert('Check-out thành công!');
+      showToast('Check-out thành công!', 'success');
       reloadRoomData(resRoomId);
     } catch(err) {
-      alert('Lỗi check-out: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi check-out: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
@@ -247,7 +263,7 @@ export default function BookingDetail() {
     
     const qty = Number(serviceQty);
     if (qty < 1 || qty > 100) {
-      alert('Số lượng dịch vụ phải từ 1 đến 100');
+      showToast('Số lượng dịch vụ phải từ 1 đến 100', 'error');
       return;
     }
     
@@ -256,20 +272,26 @@ export default function BookingDetail() {
         name: selectedServiceName,
         quantity: qty
       });
+      showToast('Thêm dịch vụ thành công!', 'success');
       setShowAddServiceModal(false);
       reloadRoomData(activeResRoomId);
     } catch(err) {
-      alert('Lỗi thêm dịch vụ: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi thêm dịch vụ: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
   async function handleDeleteService(resRoomId, svcId) {
-    if (!confirm('Xóa dịch vụ này khỏi phòng?')) return;
+    const isConfirmed = await confirm({
+      title: 'Xóa Dịch Vụ',
+      message: 'Xóa dịch vụ này khỏi phòng?'
+    });
+    if (!isConfirmed) return;
     try {
       await reservationApi.deleteServiceFromResRoom(resRoomId, svcId);
+      showToast('Xóa dịch vụ thành công!', 'success');
       reloadRoomData(resRoomId);
     } catch(err) {
-      alert('Lỗi xóa dịch vụ: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi xóa dịch vụ: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
@@ -286,15 +308,13 @@ export default function BookingDetail() {
   );
 
   // Status mapping
-  const st = RESERVATION_STATUS[detail.status] || { label:detail.status, cls:'badge-secondary' };
+  const st = RESERVATION_STATUS[detail.overallRoomStatus || detail.status] || { label:detail.status, cls:'badge-secondary' };
 
 
   // Next status options for receptionist workflow
   const nextStatuses = {
     PENDING_PAYMENT: ['CONFIRMED', 'CANCELLED'],
-    CONFIRMED: ['CHECK_IN', 'CANCELLED'],
-    CHECK_IN: ['CHECK_OUT'],
-    CHECK_OUT: [],
+    CONFIRMED: ['CANCELLED'],
     CANCELLED: [],
     PENDING_EXPIRED: [],
   };
@@ -347,7 +367,7 @@ export default function BookingDetail() {
               </div>
             )}
 
-            {detail.status === 'CHECK_OUT' && (
+            {((detail.overallRoomStatus || detail.status) === 'CHECK_OUT' || detail.status === 'CONFIRMED') && bill?.totalDue > 0 && (
               <button className="btn btn-primary btn-sm" onClick={confirmPayment}>
                 <CheckCircle size={14} /> Xác Nhận Thanh Toán Toàn Bộ
               </button>
@@ -364,7 +384,7 @@ export default function BookingDetail() {
           
           <h3 style={{ fontSize:'1.1rem', fontWeight:700, color:'#111827', margin:0 }}>🚪 Chi Tiết Phòng Lưu Trú & Dịch Vụ</h3>
           
-          {resRooms.map((rr, idx) => {
+          {resRooms.map((rr) => {
             const roomInfo = roomsLookup[rr.roomId] || {};
             const registeredGuests = roomDetailsMap[rr.id] || [];
             const usedServices = roomServicesMap[rr.id] || [];
@@ -386,7 +406,7 @@ export default function BookingDetail() {
                   <div style={{ marginBottom:'1.5rem' }}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem' }}>
                       <h5 style={{ fontSize:'0.85rem', fontWeight:700, margin:0, color:'#374151' }}>👥 Khách Lưu Trú ({registeredGuests.length})</h5>
-                      {['PENDING_PAYMENT', 'CONFIRMED', 'CHECK_IN'].includes(detail.status) && (
+                      {['PENDING_PAYMENT', 'CONFIRMED', 'CHECK_IN'].includes(detail.overallRoomStatus || detail.status) && (
                         <button className="btn btn-xs" onClick={() => openAddGuest(rr.id)} style={{ fontSize:'0.72rem', padding:'0.2rem 0.4rem', border:'1px solid #cbd5e1', background:'white' }}>
                           <UserPlus size={10} style={{ display:'inline-block', marginRight:'0.15rem' }} /> Đăng Ký Khách
                         </button>
@@ -406,7 +426,7 @@ export default function BookingDetail() {
                               {rg.checkInAt ? (
                                 <span style={{ color:'#10b981' }}>{new Date(rg.checkInAt).toLocaleString('vi-VN')}</span>
                               ) : (
-                                ['CONFIRMED', 'CHECK_IN'].includes(detail.status) ? (
+                                ['CONFIRMED', 'CHECK_IN'].includes(detail.overallRoomStatus || detail.status) ? (
                                   <button className="btn btn-xs" onClick={() => handleCheckIn(rr.id, rg.guestId, rg.guestName)} style={{ background:'#d1fae5', color:'#059669', border:'none' }}>Check-In</button>
                                 ) : '-'
                               )}
@@ -415,7 +435,7 @@ export default function BookingDetail() {
                               {rg.checkOutAt ? (
                                 <span style={{ color:'#6b7280' }}>{new Date(rg.checkOutAt).toLocaleString('vi-VN')}</span>
                               ) : (
-                                rg.checkInAt && detail.status === 'CHECK_IN' ? (
+                                rg.checkInAt && (detail.overallRoomStatus || detail.status) === 'CHECK_IN' ? (
                                   <button className="btn btn-xs" onClick={() => handleCheckOut(rr.id, rg.guestId, rg.guestName)} style={{ background:'#fee2e2', color:'#dc2626', border:'none' }}>Check-Out</button>
                                 ) : '-'
                               )}
@@ -432,7 +452,7 @@ export default function BookingDetail() {
                   <div>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem' }}>
                       <h5 style={{ fontSize:'0.85rem', fontWeight:700, margin:0, color:'#374151' }}>☕ Dịch Vụ Sử Dụng ({usedServices.length})</h5>
-                      {detail.status === 'CHECK_IN' && (
+                      {(detail.overallRoomStatus || detail.status) === 'CHECK_IN' && (
                         <button className="btn btn-xs" onClick={() => openAddService(rr.id)} style={{ fontSize:'0.72rem', padding:'0.2rem 0.4rem', border:'1px solid #cbd5e1', background:'white' }}>
                           <Plus size={10} style={{ display:'inline-block', marginRight:'0.15rem' }} /> Thêm Dịch Vụ
                         </button>
@@ -451,7 +471,7 @@ export default function BookingDetail() {
                             <td style={{ fontWeight:600, color:'#4f46e5' }}>{formatVND(svc.totalAmount)}</td>
                             <td>{formatDateTime(svc.usedAt)}</td>
                             <td>
-                              {detail.status === 'CHECK_IN' ? (
+                              {(detail.overallRoomStatus || detail.status) === 'CHECK_IN' ? (
                                 <button className="action-btn delete" onClick={() => handleDeleteService(rr.id, svc.id)} title="Xóa" style={{ padding:'0.15rem' }}>
                                   <Trash2 size={12} />
                                 </button>
@@ -466,7 +486,7 @@ export default function BookingDetail() {
                   </div>
 
                   {/* Individual room billing payment confirmation */}
-                  {bill?.resRoomBill?.find(rb => rb.resRoomId === rr.id)?.totalDue > 0 && detail.status === 'CHECK_OUT' && (
+                  {bill?.resRoomBill?.find(rb => rb.resRoomId === rr.id)?.totalDue > 0 && (detail.overallRoomStatus || detail.status) === 'CHECK_OUT' && (
                     <div style={{ display:'flex', justifyContent:'flex-end', marginTop:'0.75rem' }}>
                       <button className="btn btn-xs" onClick={() => confirmPaymentForRoom(rr.id, roomInfo.roomNumber)} style={{ background:'#dbeafe', color:'#2563eb', border:'none', fontSize:'0.75rem' }}>
                         💳 Thanh Toán Riêng Phòng Này

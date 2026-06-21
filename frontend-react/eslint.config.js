@@ -2,31 +2,42 @@ import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import react from 'eslint-plugin-react'
 
-export default defineConfig([
-  globalIgnores(['dist']),
+export default [
+  {
+    ignores: ['dist', 'node_modules', 'vite.config.js'],
+  },
+  js.configs.recommended,
   {
     files: ['**/*.{js,jsx}'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
     languageOptions: {
-      globals: globals.browser,
-      parserOptions: { ecmaFeatures: { jsx: true } },
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.es2020,
+      },
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+      'react': react,
     },
     rules: {
-      'no-unused-vars': 'off',
-      'no-empty': 'off',
+      ...reactHooks.configs.recommended.rules,
+      'react/jsx-uses-react': 'warn',
+      'react/jsx-uses-vars': 'warn',
+      'no-unused-vars': 'warn',
+      'no-empty': 'warn',
+      'no-use-before-define': ['warn', { 'functions': false, 'classes': true, 'variables': true }],
+      'no-undef': 'warn',
       'react-hooks/exhaustive-deps': 'off',
       'react-refresh/only-export-components': 'off',
-      'no-use-before-define': 'off',
-      'no-undef': 'off',
       'no-constant-condition': 'off',
-      'react-hooks/set-state-in-effect': 'off',
-      'react-hooks/immutability': 'off'
-    }
+    },
   },
-])
+]

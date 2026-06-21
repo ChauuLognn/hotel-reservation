@@ -11,6 +11,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hotelreservation.common.payload.ApiResponse;
 
@@ -21,6 +23,7 @@ import com.hotelreservation.common.payload.ApiResponse;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Xử lý lỗi validation (ví dụ: @NotNull, @Size, etc.)
@@ -79,14 +82,25 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Xử lý lỗi AccessDeniedException từ Spring Security
+     */
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(
+            org.springframework.security.access.AccessDeniedException ex, WebRequest request) {
+        log.warn("Access denied: {}", ex.getMessage());
+        ApiResponse<Object> response = ApiResponse.error("Bạn không có quyền thực hiện thao tác này.", null);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    /**
      * Xử lý lỗi RuntimeException chung
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Object>> handleRuntimeException(
             RuntimeException ex, WebRequest request) {
-        
+        log.error("Runtime exception occurred: ", ex);
         ApiResponse<Object> response = ApiResponse.error(
-            "Runtime error: " + ex.getMessage(), 
+            "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.", 
             null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -98,14 +112,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGlobalException(
             Exception ex, WebRequest request) {
-        
+        log.error("Internal server error: ", ex);
         Map<String, Object> errorDetails = new HashMap<>();
         errorDetails.put("timestamp", LocalDateTime.now().toString());
         errorDetails.put("path", request.getDescription(false));
-        errorDetails.put("error", ex.getClass().getSimpleName());
         
         ApiResponse<Object> response = ApiResponse.error(
-            "Internal server error: " + ex.getMessage(), 
+            "Đã xảy ra lỗi không xác định trên máy chủ.", 
             errorDetails
         );
         

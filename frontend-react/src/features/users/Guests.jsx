@@ -2,8 +2,12 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Users } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import guestApi from '../../api/guestApi';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function Guests() {
+  const { showToast } = useToast();
+  const confirm = useConfirm();
   const [guests, setGuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -17,7 +21,6 @@ export default function Guests() {
     setLoading(true);
     try {
       const res = await guestApi.getAll();
-      // Backend trả về List<GuestDto> trực tiếp (không wrap)
       setGuests(Array.isArray(res.data) ? res.data : []);
     } catch (e) { 
       console.error('Lỗi tải khách:', e);
@@ -46,20 +49,31 @@ export default function Guests() {
     try {
       if (editGuest) { 
         await guestApi.update(editGuest.id, payload);
+        showToast('Đã cập nhật thông tin khách hàng!', 'success');
       } else { 
         await guestApi.create(payload);
+        showToast('Đã thêm khách hàng mới!', 'success');
       }
       setShowModal(false);
       fetchGuests();
     } catch (err) { 
-      alert('Lỗi: ' + (err?.response?.data?.message || err.message)); 
+      showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); 
     }
   }
 
   async function handleDelete(id) {
-    if (!confirm('Xóa khách hàng này?')) return;
-    try { await guestApi.delete(id); fetchGuests(); }
-    catch (err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    const isConfirmed = await confirm({
+      title: 'Xóa Khách Hàng',
+      message: 'Bạn có chắc chắn muốn xóa khách hàng này?'
+    });
+    if (!isConfirmed) return;
+    try { 
+      await guestApi.delete(id); 
+      showToast('Đã xóa khách hàng thành công!', 'success');
+      fetchGuests(); 
+    } catch (err) { 
+      showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); 
+    }
   }
 
   return (

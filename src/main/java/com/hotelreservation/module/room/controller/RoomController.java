@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import jakarta.validation.Valid;
 
 import com.hotelreservation.module.room.dto.request.CreateRoomRequest;
 import com.hotelreservation.module.room.dto.request.UpdateRoomRequest;
@@ -40,26 +42,31 @@ public class RoomController {
     }
 
     @PostMapping
-    public RoomResponse createRoom(@RequestBody CreateRoomRequest rq) {
+    @PreAuthorize("hasRole('MANAGER')")
+    public RoomResponse createRoom(@RequestBody @Valid CreateRoomRequest rq) {
         return rDomain.create(rq);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
     public List<RoomResponse> getAllRoom() {
         return rDomain.getAll();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
     public RoomResponse getRoomById(@PathVariable Integer id) {
         return rDomain.getById(id);
     }
 
     @PutMapping("/{id}")
-    public RoomResponse updateRoom(@PathVariable Integer id, @RequestBody UpdateRoomRequest rq) {
+    @PreAuthorize("hasRole('MANAGER')")
+    public RoomResponse updateRoom(@PathVariable Integer id, @RequestBody @Valid UpdateRoomRequest rq) {
         return rDomain.update(id, rq);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
     public String deleteRoom(@PathVariable Integer id) {
         rDomain.delete(id);
         return "Deleted room successfully";
@@ -68,7 +75,8 @@ public class RoomController {
     // ─── Room Type ────────────────────────────────────────────────────────────
 
     @PostMapping("/roomTypes")
-    public RoomTypeResponse createRoomType(@RequestBody CreateRoomTypeRequest rq) {
+    @PreAuthorize("hasRole('MANAGER')")
+    public RoomTypeResponse createRoomType(@RequestBody @Valid CreateRoomTypeRequest rq) {
         return rTDomain.create(rq);
     }
 
@@ -83,11 +91,13 @@ public class RoomController {
     }
 
     @PutMapping("/roomTypes/{name}")
-    public RoomTypeResponse updateRoomType(@PathVariable String name, @RequestBody UpdateRoomTypeRequest rq) {
+    @PreAuthorize("hasRole('MANAGER')")
+    public RoomTypeResponse updateRoomType(@PathVariable String name, @RequestBody @Valid UpdateRoomTypeRequest rq) {
         return rTDomain.update(name, rq);
     }
 
     @DeleteMapping("/roomTypes/{name}")
+    @PreAuthorize("hasRole('MANAGER')")
     public String deleteRoomType(@PathVariable String name) {
         rTDomain.delete(name);
         return "Deleted successfully";

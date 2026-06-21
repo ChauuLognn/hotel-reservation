@@ -1,0 +1,49 @@
+package com.hotelreservation.module.account.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import com.hotelreservation.module.account.dto.request.EmpCreateRequest;
+import com.hotelreservation.module.account.dto.response.EmpResponse;
+import com.hotelreservation.module.account.service.EmpService;
+import jakarta.validation.Valid;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/emps")
+public class EmpController {
+
+    @Autowired
+    private EmpService eDomain;
+
+    @PostMapping
+    @PreAuthorize("hasRole('MANAGER')")
+    public EmpResponse createEmp(@RequestBody @Valid EmpCreateRequest rq) {
+        return eDomain.create(rq);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
+    public List<EmpResponse> getAllEmps() {
+        return eDomain.getAll();
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
+    public EmpResponse getEmpById(@PathVariable Integer id) {
+        return eDomain.getById(id);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public EmpResponse updateEmp(@PathVariable Integer id, @RequestBody @Valid EmpCreateRequest rq) {
+        return eDomain.update(id, rq);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String deleteEmp(@PathVariable Integer id) {
+        eDomain.delete(id);
+        return "Deleted emp successfully";
+    }
+}

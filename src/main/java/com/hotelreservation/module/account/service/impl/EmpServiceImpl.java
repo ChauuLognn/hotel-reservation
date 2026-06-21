@@ -93,6 +93,7 @@ public class EmpServiceImpl implements EmpService {
             .orElseThrow(() -> new IllegalArgumentException("Emp not found: " + id));
 
         userRepo.unlinkEmpFromUsers(id);
+        userRepo.flush();
 
         empRepo.delete(e);
     }

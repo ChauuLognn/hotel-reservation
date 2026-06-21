@@ -26,6 +26,8 @@ const reservationApi = {
   getLatestByGuest: (guestId) => axiosClient.get(`/api/reservations/guests/${guestId}/latestRes`),
   getRoomsByResId: (resId) => axiosClient.get(`/api/reservations/${resId}`),
   getDetail: (resId) => axiosClient.get(`/api/reservations/${resId}/detail`),
+  getFullDetail: (resId) => axiosClient.get(`/api/reservations/${resId}/full-detail`),
+  getMyBookings: () => axiosClient.get('/api/reservations/my-bookings'),
   create: (data) => axiosClient.post('/api/reservations', data),
 
   // Reservation Guests

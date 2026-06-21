@@ -25,10 +25,10 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret:hotel_reservation_secret_key_2024_very_long_and_secure_at_least_256_bits_for_hs256_algorithm}")
+    @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    @Value("${jwt.expiration:86400000}")
+    @Value("${jwt.expiration}")
     private Long EXPIRATION_TIME;
 
     private Key getSigningKey() {

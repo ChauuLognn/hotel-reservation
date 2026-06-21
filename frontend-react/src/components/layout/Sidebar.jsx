@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Home, Calendar, ClipboardList,
-  Coffee, DollarSign, UserPlus, Shield, Settings, LogOut
+  Coffee, DollarSign, UserPlus, Shield, LogOut
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -31,19 +31,26 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        {navItems.map(({ path, icon: Icon, label }) => (
-          <NavLink
-            key={path}
-            to={path}
-            end={path === '/'}
-            className={({ isActive }) =>
-              `sidebar-item ${isActive ? 'active' : ''}`
+        {navItems
+          .filter(({ path }) => {
+            if (['/users', '/admin'].includes(path)) {
+              return user?.role === 'MANAGER';
             }
-          >
-            <Icon size={18} />
-            <span>{label}</span>
-          </NavLink>
-        ))}
+            return true;
+          })
+          .map(({ path, icon: Icon, label }) => (
+            <NavLink
+              key={path}
+              to={path}
+              end={path === '/'}
+              className={({ isActive }) =>
+                `sidebar-item ${isActive ? 'active' : ''}`
+              }
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+            </NavLink>
+          ))}
       </nav>
 
       <div className="sidebar-footer">

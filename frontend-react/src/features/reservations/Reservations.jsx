@@ -7,10 +7,12 @@ import guestApi from '../../api/guestApi';
 import roomApi from '../../api/roomApi';
 import { formatVND, formatDate } from '@shared/utils/format';
 import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
+import { useToast } from '../../context/ToastContext';
 
 
 export default function Reservations() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -88,7 +90,7 @@ export default function Reservations() {
     try {
       const res = await guestApi.create(guestForm);
       const newGuest = res.data;
-      alert(`Đã thêm khách hàng: ${newGuest.firstName} ${newGuest.lastName}`);
+      showToast(`Đã thêm khách hàng: ${newGuest.firstName} ${newGuest.lastName}`, 'success');
       
       // Reload guests list and select the newly created guest
       const gList = await guestApi.getAll();
@@ -98,24 +100,35 @@ export default function Reservations() {
       setShowQuickGuest(false);
       setGuestForm({ firstName:'', lastName:'', phone:'', identityNum:'' });
     } catch(err) {
-      alert('Lỗi thêm khách: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi thêm khách: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
   async function handleCreateBooking(e) {
     e.preventDefault();
     if (!selectedGuestId) {
-      alert('Vui lòng chọn khách hàng!');
+      showToast('Vui lòng chọn khách hàng!', 'error');
       return;
     }
     
     // Validate items
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
     for (let i=0; i<bookingItems.length; i++) {
       const item = bookingItems[i];
-      if (!item.roomName) { alert('Vui lòng chọn loại phòng!'); return; }
-      if (!item.checkIn || !item.checkOut) { alert('Vui lòng chọn ngày nhận/trả phòng!'); return; }
+      if (!item.roomName) { showToast('Vui lòng chọn loại phòng!', 'error'); return; }
+      if (!item.checkIn || !item.checkOut) { showToast('Vui lòng chọn ngày nhận/trả phòng!', 'error'); return; }
+      
+      const checkInDate = new Date(item.checkIn);
+      checkInDate.setHours(0, 0, 0, 0);
+      if (checkInDate < today) {
+        showToast('Ngày nhận phòng không thể ở trong quá khứ!', 'error');
+        return;
+      }
+      
       if (new Date(item.checkOut) <= new Date(item.checkIn)) {
-        alert('Ngày trả phòng phải sau ngày nhận phòng!');
+        showToast('Ngày trả phòng phải sau ngày nhận phòng!', 'error');
         return;
       }
     }
@@ -133,11 +146,11 @@ export default function Reservations() {
 
       const res = await reservationApi.create(payload);
       const resData = res.data;
-      alert(`✅ Tạo đặt giữ chỗ thành công!\nMã đặt phòng: ${resData.resId}`);
+      showToast(`Tạo đặt giữ chỗ thành công! Mã: ${resData.resId}`, 'success');
       setShowModal(false);
       navigate(`/booking-detail/${resData.resId}`);
     } catch(err) {
-      alert('Lỗi tạo đặt phòng: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi tạo đặt phòng: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
@@ -146,12 +159,12 @@ export default function Reservations() {
     const matchSearch = (r.resId||'').toLowerCase().includes(q)
       || (r.guestName||'').toLowerCase().includes(q)
       || String(r.id||'').includes(q);
-    const matchStatus = !statusFilter || r.status === statusFilter;
+    const matchStatus = !statusFilter || (r.overallRoomStatus || r.status) === statusFilter;
     return matchSearch && matchStatus;
   });
 
   const statCounts = Object.keys(RESERVATION_STATUS).reduce((acc,k) => {
-    acc[k] = reservations.filter(r => r.status === k).length;
+    acc[k] = reservations.filter(r => (r.overallRoomStatus || r.status) === k).length;
     return acc;
   }, {});
 
@@ -231,7 +244,7 @@ export default function Reservations() {
               {loading ? (
                 <tr><td colSpan={7} className="text-center text-gray" style={{padding:'2rem'}}>Đang tải...</td></tr>
               ) : filtered.length ? filtered.map(r => {
-                const st = RESERVATION_STATUS[r.status] || { label:r.status, cls:'badge-secondary' };
+                const st = RESERVATION_STATUS[r.overallRoomStatus || r.status] || { label:r.status, cls:'badge-secondary' };
                 return (
                   <tr key={r.resId||r.id}>
                     <td style={{ fontWeight:700, color:'#4f46e5' }}>{r.resId}</td>

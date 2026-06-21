@@ -77,4 +77,22 @@ public interface ReservationGuestRepository extends JpaRepository<ReservationGue
         WHERE rg.guestId = :guestId
     """, nativeQuery = true)
     Integer countReservationsByGuestId(@Param("guestId") Integer guestId);
+
+    @Query(value = """
+        SELECT COUNT(*)
+        FROM reservationGuest rg
+        JOIN reservationRoom rr ON rg.reservationRoomId = rr.id
+        JOIN reservation r ON rr.reservationId = r.id
+        WHERE rg.guestId = :guestId
+          AND rr.id != :resRoomId
+          AND r.status NOT IN ('CANCELLED', 'PENDING_EXPIRED')
+          AND rr.checkInTime < :checkOutTime
+          AND :checkInTime < rr.checkOutTime
+        """, nativeQuery = true)
+    Long countOverlappingStays(
+        @Param("guestId") Integer guestId,
+        @Param("resRoomId") String resRoomId,
+        @Param("checkInTime") java.time.LocalDate checkInTime,
+        @Param("checkOutTime") java.time.LocalDate checkOutTime
+    );
 }

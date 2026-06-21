@@ -5,14 +5,6 @@ import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
 import Layout from '../../components/layout/Layout';
 import reservationApi from '../../api/reservationApi';
 
-const STATUS_MAP = {
-  PENDING_PAYMENT: { label:'Chờ Thanh Toán', cls:'badge-warning' },
-  PENDING_EXPIRED: { label:'Hết Hạn', cls:'badge-danger' },
-  CONFIRMED: { label:'Đã Xác Nhận', cls:'badge-info' },
-  CHECK_IN: { label:'Đang Ở', cls:'badge-success' },
-  CHECK_OUT: { label:'Đã Trả Phòng', cls:'badge-secondary' },
-  CANCELLED: { label:'Đã Hủy', cls:'badge-danger' },
-};
 
 export default function ReservationGuests() {
   const [bookings, setBookings] = useState([]);
@@ -109,7 +101,7 @@ export default function ReservationGuests() {
                 <tr><td colSpan={7} className="text-center text-gray" style={{padding:'2rem'}}>Đang tải...</td></tr>
               ) : filtered.length ? filtered.map((b) => {
                 const isExpanded = expandedResId === b.resId;
-                const st = STATUS_MAP[b.status] || { label: b.status||'-', cls:'badge-secondary' };
+                const st = RESERVATION_STATUS[b.overallRoomStatus || b.status] || { label: b.status||'-', cls:'badge-secondary' };
                 const guestsList = expandedGuests[b.resId] || [];
                 const isLoadingG = loadingGuests[b.resId];
 

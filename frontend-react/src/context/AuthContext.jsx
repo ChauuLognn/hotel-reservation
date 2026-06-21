@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    try { await authApi.logout(); } catch {}
+    try { await authApi.logout(); } catch (err) { console.error(err); }
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('userId');
     localStorage.removeItem('userInfo');

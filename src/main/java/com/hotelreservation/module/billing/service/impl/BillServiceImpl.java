@@ -108,22 +108,11 @@ public class BillServiceImpl implements BillService {
     @Override
     @Transactional(readOnly = true)
     public ReservationBillResponse createReservationBillSummary(String resId) {
-        jakarta.persistence.Query query = em.createQuery(
-            "SELECT r FROM Reservation r " +
-            "LEFT JOIN FETCH r.guest " +
-            "WHERE r.id = :resId",
-            Reservation.class
-        );
-        query.setParameter("resId", resId);
-        
-        Reservation res;
-        try {
-            res = (Reservation) query.getSingleResult();
-        } catch (jakarta.persistence.NoResultException e) {
+        List<ReservationRoom> rrs = rrRepo.findByReservationId(resId);
+        if (rrs.isEmpty()) {
             throw new IllegalArgumentException("Reservation not found: " + resId);
         }
-        
-        List<ReservationRoom> rrs = rrRepo.findByReservationId(resId);
+        Reservation res = rrs.get(0).getReservation();
 
         List<ResRoomBillResponse> lst = new ArrayList<>();
 

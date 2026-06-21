@@ -19,6 +19,14 @@ public class User {
     )
     private Emp emp;
 
+    @OneToOne
+    @JoinColumn(
+        name = "guestId",
+        nullable = true,
+        foreignKey = @ForeignKey(name = "FK_user_guest")
+    )
+    private Guest guest;
+
     @Column(name = "account", nullable = false, length = 50, unique = true)
     private String account;
 
@@ -29,6 +37,8 @@ public class User {
     public void setId(Integer id){this.id = id;}
     public Emp getEmp(){return emp;}
     public void setEmp(Emp emp){this.emp = emp;}
+    public Guest getGuest(){return guest;}
+    public void setGuest(Guest guest){this.guest = guest;}
     public String getAccount(){return account;}
     public void setAccount(String account){this.account = account;}
     public String getPassword(){return password;}

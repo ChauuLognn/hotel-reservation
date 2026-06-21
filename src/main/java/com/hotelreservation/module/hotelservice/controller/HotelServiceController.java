@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.hotelreservation.module.hotelservice.dto.request.CreateServiceRequest;
 import com.hotelreservation.module.hotelservice.dto.request.UpdateServiceRequest;
@@ -23,7 +26,8 @@ public class HotelServiceController {
     @Autowired private HotelServiceManager serDomain;
 
     @PostMapping
-    public HotelServiceResponse createService(@RequestBody CreateServiceRequest rq){
+    @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
+    public HotelServiceResponse createService(@RequestBody @Valid CreateServiceRequest rq){
         return serDomain.create(rq);
     }
 
@@ -38,12 +42,14 @@ public class HotelServiceController {
     }
 
     @PutMapping("/{name}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
     public HotelServiceResponse updateService(@PathVariable String name,
-                    @RequestBody UpdateServiceRequest rq){
+                    @RequestBody @Valid UpdateServiceRequest rq){
         return serDomain.update(name, rq);
     }
 
     @DeleteMapping("/{name}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
     public String deleteService(@PathVariable String name){
         serDomain.delete(name);
         return "HotelService deleted successfully";

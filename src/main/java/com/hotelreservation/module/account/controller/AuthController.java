@@ -1,5 +1,6 @@
 package com.hotelreservation.module.account.controller;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,10 +24,14 @@ import com.hotelreservation.module.account.entity.Role;
 import com.hotelreservation.module.account.repository.EmpRepository;
 import com.hotelreservation.module.account.repository.UserRepository;
 import com.hotelreservation.module.account.repository.RoleRepository;
+import com.hotelreservation.module.account.repository.GuestRepository;
+import com.hotelreservation.module.account.entity.Guest;
 import com.hotelreservation.security.JwtUtil;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.servlet.http.HttpServletRequest;
+import com.hotelreservation.security.RateLimiterService;
 
 /**
  * Authentication Controller với JWT
@@ -60,7 +65,13 @@ public class AuthController {
     private RoleRepository roleRepository;
 
     @Autowired
+    private GuestRepository guestRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RateLimiterService rateLimiterService;
 
     /**
      * API Đăng nhập với JWT
@@ -85,7 +96,12 @@ public class AuthController {
      * }
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request, HttpServletRequest servletRequest) {
+        String ip = servletRequest.getRemoteAddr();
+        String account = request.getAccount();
+        if (rateLimiterService.isBlocked("ip:" + ip) || rateLimiterService.isBlocked("account:" + account)) {
+            throw new IllegalStateException("Quá nhiều yêu cầu đăng nhập. Vui lòng thử lại sau 1 phút.");
+        }
         try {
             // 1. AUTHENTICATE với Spring Security
             // AuthenticationManager tự động:
@@ -100,7 +116,7 @@ public class AuthController {
             );
 
             // 2. Nếu authentication thành công, lấy thông tin user
-            String account = authentication.getName();
+            account = authentication.getName();
             User user = userRepository.findByAccount(account)
                     .orElseThrow(() -> new IllegalStateException("User not found after authentication"));
 
@@ -120,6 +136,8 @@ public class AuthController {
                 }
             }
 
+            Integer guestId = user.getGuest() != null ? user.getGuest().getId() : null;
+
             // 5. Tạo response với JWT
             LoginResponse loginResponse = new LoginResponse(
                 jwtToken,                                   // JWT token
@@ -128,8 +146,12 @@ public class AuthController {
                 empId,
                 empName,
                 role,
-                jwtUtil.getExpirationTime()                // Expiration time (24h)
+                jwtUtil.getExpirationTime(),                // Expiration time (24h)
+                guestId
             );
+
+            rateLimiterService.reset("ip:" + ip);
+            rateLimiterService.reset("account:" + account);
 
             return ResponseEntity.ok(ApiResponse.success("Login successful", loginResponse));
 
@@ -174,7 +196,11 @@ public class AuthController {
      * PUBLIC endpoint - Không cần JWT token
      */
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<User>> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<User>> register(@RequestBody RegisterRequest request, HttpServletRequest servletRequest) {
+        String ip = servletRequest.getRemoteAddr();
+        if (rateLimiterService.isBlocked("ip:" + ip) || rateLimiterService.isBlocked("register:" + request.getAccount())) {
+            throw new IllegalStateException("Quá nhiều yêu cầu đăng ký. Vui lòng thử lại sau 1 phút.");
+        }
         try {
             // 1. Kiểm tra account đã tồn tại chưa
             if (userRepository.findByAccount(request.getAccount()).isPresent()) {
@@ -209,11 +235,29 @@ public class AuthController {
             
             emp = empRepository.save(emp);
 
+            // Link/create Guest Profile
+            Guest guest = null;
+            Optional<Guest> existingGuestOpt = guestRepository.findGuestByPhone(request.getPhone());
+            if (existingGuestOpt.isEmpty()) {
+                existingGuestOpt = guestRepository.findGuestByIdentityNum(request.getIdentityNum());
+            }
+            if (existingGuestOpt.isPresent()) {
+                guest = existingGuestOpt.get();
+            } else {
+                guest = new Guest();
+                guest.setFirstName(nameParts[0]);
+                guest.setLastName(nameParts.length > 1 ? nameParts[1] : "");
+                guest.setPhone(request.getPhone());
+                guest.setIdentityNum(request.getIdentityNum());
+                guest = guestRepository.save(guest);
+            }
+
             // 4. Tạo User với password đã hash
             User user = new User();
             user.setAccount(request.getAccount());
             user.setPassword(passwordEncoder.encode(request.getPassword()));  // Auto hash với BCrypt
             user.setEmp(emp);
+            user.setGuest(guest);
             user = userRepository.save(user);
 
             return ResponseEntity.ok(ApiResponse.success("User registered successfully", user));
@@ -297,5 +341,50 @@ public class AuthController {
         } catch (Exception e) {
             throw new RuntimeException("Failed to reset password: " + e.getMessage());
         }
+    }
+
+    /**
+     * API Làm mới JWT token trước khi hết hạn
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<LoginResponse>> refresh(HttpServletRequest servletRequest) {
+        String authHeader = servletRequest.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Missing or invalid Authorization header");
+        }
+        String token = authHeader.substring(7);
+        String account = jwtUtil.extractUsername(token);
+        if (!jwtUtil.validateToken(token, account)) {
+            throw new IllegalArgumentException("Invalid token to refresh");
+        }
+        
+        String newToken = jwtUtil.generateToken(account);
+        User user = userRepository.findByAccount(account)
+                .orElseThrow(() -> new IllegalStateException("User not found after token refresh"));
+
+        Emp emp = user.getEmp();
+        Integer empId = null;
+        String empName = "";
+        String role = "CUSTOMER";
+        if (emp != null) {
+            empId = emp.getId();
+            empName = emp.getFirstName() + " " + emp.getLastName();
+            if (emp.getRole() != null) {
+                role = emp.getRole().getName().name();
+            }
+        }
+
+        LoginResponse loginResponse = new LoginResponse(
+            newToken,
+            user.getId(),
+            user.getAccount(),
+            empId,
+            empName,
+            role,
+            jwtUtil.getExpirationTime(),
+            user.getGuest() != null ? user.getGuest().getId() : null
+        );
+
+        return ResponseEntity.ok(ApiResponse.success("Token refreshed successfully", loginResponse));
     }
 }

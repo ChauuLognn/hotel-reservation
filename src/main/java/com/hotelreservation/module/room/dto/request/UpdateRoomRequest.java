@@ -1,8 +1,15 @@
 package com.hotelreservation.module.room.dto.request;
 
+import jakarta.validation.constraints.*;
+
 public class UpdateRoomRequest {
+    @NotNull(message = "Số phòng không được để trống")
     private Integer id;
+
+    @NotBlank(message = "Loại phòng không được để trống")
     private String typeName;
+
+    @NotBlank(message = "Trạng thái không được để trống")
     private String status;
 
     public String getTypeName() {

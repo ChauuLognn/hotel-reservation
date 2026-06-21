@@ -3,6 +3,7 @@ package com.hotelreservation.module.account.dto.response;
 public class UserResponse {
     private Integer id;
     private Integer empId;
+    private Integer guestId;
     private String account;
     private String password;
 
@@ -20,6 +21,14 @@ public class UserResponse {
 
     public void setEmpId(Integer empId) {
         this.empId = empId;
+    }
+
+    public Integer getGuestId() {
+        return guestId;
+    }
+
+    public void setGuestId(Integer guestId) {
+        this.guestId = guestId;
     }
 
     public String getAccount() {

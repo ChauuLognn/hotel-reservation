@@ -3,14 +3,16 @@ import { Plus, Search, Home, Key, Wrench, Edit2, Trash2, Eye } from 'lucide-reac
 import Layout from '../../components/layout/Layout';
 import roomApi from '../../api/roomApi';
 import { formatVND } from '@shared/utils/format';
-
-
-const STATUS_LABELS = {
-  READY: { label:'Sẵn Sàng', cls:'badge-success' },
-  UNDER_REPAIR: { label:'Đang Sửa Chữa', cls:'badge-warning' },
-};
+import { ROOM_STATUS } from '@shared/constants/statusMaps';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function Rooms() {
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  const confirm = useConfirm();
+  const isManager = user?.role === 'MANAGER';
   const [tab, setTab] = useState('rooms');
   const [rooms, setRooms] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
@@ -62,7 +64,7 @@ export default function Rooms() {
   async function searchAvailableRooms(e) {
     e.preventDefault();
     if (availSearch.checkIn && availSearch.checkOut && new Date(availSearch.checkIn) >= new Date(availSearch.checkOut)) {
-      alert("Ngày check-out phải sau ngày check-in!");
+      showToast("Ngày check-out phải sau ngày check-in!", "warning");
       return;
     }
     setAvailLoading(true);
@@ -121,20 +123,30 @@ export default function Rooms() {
         typeName: form.roomTypeName,
         status: form.status,
       };
-      if (editRoom) await roomApi.update(editRoom.id, payload);
-      else await roomApi.create(payload);
+      if (editRoom) {
+        await roomApi.update(editRoom.id, payload);
+        showToast('Đã cập nhật thông tin phòng thành công!', 'success');
+      } else {
+        await roomApi.create(payload);
+        showToast('Đã thêm phòng mới thành công!', 'success');
+      }
       setShowModal(false);
       fetchAll();
-    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    } catch(err) { showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); }
   }
 
 
   async function handleDeleteRoom(id, roomNumber) {
-    if (!confirm(`Xóa phòng ${roomNumber}?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Xóa Phòng',
+      message: `Bạn có chắc chắn muốn xóa phòng ${roomNumber}?`
+    });
+    if (!isConfirmed) return;
     try {
       await roomApi.delete(id);
+      showToast('Đã xóa phòng thành công!', 'success');
       fetchAll();
-    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    } catch(err) { showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); }
   }
 
   // Room Types CRUD handlers
@@ -161,20 +173,27 @@ export default function Rooms() {
       };
       if (editType) {
         await roomApi.updateType(editType.name, payload);
+        showToast('Đã cập nhật loại phòng thành công!', 'success');
       } else {
         await roomApi.createType(payload);
+        showToast('Đã thêm loại phòng mới thành công!', 'success');
       }
       setShowTypeModal(false);
       fetchAll();
-    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    } catch(err) { showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); }
   }
 
   async function handleDeleteType(name) {
-    if (!confirm(`Xóa loại phòng "${name}"?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Xóa Loại Phòng',
+      message: `Bạn có chắc chắn muốn xóa loại phòng "${name}"?`
+    });
+    if (!isConfirmed) return;
     try {
       await roomApi.deleteType(name);
+      showToast('Đã xóa loại phòng thành công!', 'success');
       fetchAll();
-    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    } catch(err) { showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); }
   }
 
   return (
@@ -212,7 +231,7 @@ export default function Rooms() {
                 <Search size={16} className="search-icon" />
                 <input className="search-input" placeholder="Tìm kiếm..." value={search} onChange={e => setSearch(e.target.value)} />
               </div>
-              <button className="btn btn-primary" onClick={openAdd}><Plus size={16} /> Thêm Phòng</button>
+              {isManager && <button className="btn btn-primary" onClick={openAdd}><Plus size={16} /> Thêm Phòng</button>}
             </div>
           </div>
           <div style={{ overflowX:'auto' }}>
@@ -224,7 +243,7 @@ export default function Rooms() {
                 {loading ? (
                   <tr><td colSpan={7} className="text-center text-gray" style={{padding:'2rem'}}>Đang tải...</td></tr>
                 ) : filtered.length ? filtered.map(r => {
-                  const st = STATUS_LABELS[r.status] || { label:r.status, cls:'badge-secondary' };
+                  const st = ROOM_STATUS[r.status] || { label:r.status, cls:'badge-secondary' };
                   return (
                     <tr key={r.id}>
                       <td style={{ fontWeight:700 }}>{r.roomNumber}</td>
@@ -236,8 +255,8 @@ export default function Rooms() {
                       <td>
                         <div className="flex gap-2">
                           <button className="action-btn view" onClick={() => openViewRoom(r)} title="Xem Chi Tiết"><Eye size={15} /></button>
-                          <button className="action-btn edit" onClick={() => openEdit(r)} title="Sửa"><Edit2 size={15} /></button>
-                          <button className="action-btn delete" onClick={() => handleDeleteRoom(r.id, r.roomNumber)} title="Xóa"><Trash2 size={15} /></button>
+                          {isManager && <button className="action-btn edit" onClick={() => openEdit(r)} title="Sửa"><Edit2 size={15} /></button>}
+                          {isManager && <button className="action-btn delete" onClick={() => handleDeleteRoom(r.id, r.roomNumber)} title="Xóa"><Trash2 size={15} /></button>}
                         </div>
                       </td>
                     </tr>
@@ -256,7 +275,7 @@ export default function Rooms() {
         <div className="table-container">
           <div className="table-header">
             <h3>Loại Phòng</h3>
-            <button className="btn btn-primary" onClick={openAddType}><Plus size={16} /> Thêm Loại Phòng</button>
+            {isManager && <button className="btn btn-primary" onClick={openAddType}><Plus size={16} /> Thêm Loại Phòng</button>}
           </div>
           <div style={{ overflowX:'auto' }}>
             <table className="table">
@@ -272,8 +291,8 @@ export default function Rooms() {
                     <td style={{ color:'#6b7280' }}>{rt.description || '-'}</td>
                     <td>
                       <div className="flex gap-2">
-                        <button className="action-btn edit" onClick={() => openEditType(rt)} title="Sửa"><Edit2 size={15} /></button>
-                        <button className="action-btn delete" onClick={() => handleDeleteType(rt.name)} title="Xóa"><Trash2 size={15} /></button>
+                        {isManager && <button className="action-btn edit" onClick={() => openEditType(rt)} title="Sửa"><Edit2 size={15} /></button>}
+                        {isManager && <button className="action-btn delete" onClick={() => handleDeleteType(rt.name)} title="Xóa"><Trash2 size={15} /></button>}
                       </div>
                     </td>
                   </tr>
@@ -363,7 +382,7 @@ export default function Rooms() {
                 <div className="form-group">
                   <label className="form-label">Trạng Thái</label>
                   <select className="form-input" value={form.status} onChange={e => setForm({...form,status:e.target.value})}>
-                    {Object.entries(STATUS_LABELS).map(([k,v]) => <option key={k} value={k}>{v.label}</option>)}
+                    {Object.entries(ROOM_STATUS).map(([k,v]) => <option key={k} value={k}>{v.label}</option>)}
                   </select>
                 </div>
               </div>
@@ -388,7 +407,7 @@ export default function Rooms() {
               <div style={{marginBottom: '10px'}}><strong>Tầng:</strong> {viewRoom.floorNumber}</div>
               <div style={{marginBottom: '10px'}}><strong>Sức Chứa:</strong> {viewRoom.capacity} người</div>
               <div style={{marginBottom: '10px'}}><strong>Giá/Đêm:</strong> {formatVND(viewRoom.basePrice)}</div>
-              <div style={{marginBottom: '10px'}}><strong>Trạng Thái:</strong> {STATUS_LABELS[viewRoom.status]?.label || viewRoom.status}</div>
+              <div style={{marginBottom: '10px'}}><strong>Trạng Thái:</strong> {ROOM_STATUS[viewRoom.status]?.label || viewRoom.status}</div>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn" onClick={() => setShowViewModal(false)}>Đóng</button>

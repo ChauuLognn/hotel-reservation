@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, UserPlus, Key, Settings, ClipboardList } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, UserPlus, Key } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import userApi from '../../api/userApi';
 import { ROLE_BADGE } from '@shared/constants/statusMaps';
 import { ROLE_LABELS, ROLE_IDS } from '@shared/constants/roleConstants';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 
 
 export default function Users() {
+  const { showToast } = useToast();
+  const confirm = useConfirm();
   const [tab, setTab] = useState('employees'); // 'employees' or 'accounts'
   const [employees, setEmployees] = useState([]);
   const [userAccounts, setUserAccounts] = useState([]);
@@ -93,20 +97,25 @@ export default function Users() {
       }
       setShowEmpModal(false);
       fetchData();
+      showToast('Đã lưu hồ sơ nhân viên thành công!', 'success');
     } catch(err) {
-      alert('Lỗi: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
   async function handleEmpDelete(id, name) {
-    if (!confirm(`Xóa hồ sơ nhân viên "${name}"?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Xóa Hồ Sơ Nhân Viên',
+      message: `Bạn có chắc muốn xóa hồ sơ nhân viên "${name}"?`
+    });
+    if (!isConfirmed) return;
     try {
       await userApi.deleteEmp(id);
-      alert('Đã xóa nhân viên thành công!');
+      showToast('Đã xóa nhân viên thành công!', 'success');
       fetchData();
     } catch(err) {
       const msg = err?.response?.data?.message || err.message;
-      alert('Lỗi xóa nhân viên: ' + msg);
+      showToast('Lỗi xóa nhân viên: ' + msg, 'error');
     }
   }
 
@@ -152,20 +161,25 @@ export default function Users() {
       }
       setShowUserModal(false);
       fetchData();
+      showToast('Đã lưu tài khoản thành công!', 'success');
     } catch(err) {
-      alert('Lỗi: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
   async function handleUserDelete(id, account) {
-    if (!confirm(`Xóa tài khoản đăng nhập "${account}"?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Xóa Tài Khoản',
+      message: `Bạn có chắc muốn xóa tài khoản đăng nhập "${account}"?`
+    });
+    if (!isConfirmed) return;
     try {
       await userApi.deleteUser(id);
-      alert('Đã xóa tài khoản thành công!');
+      showToast('Đã xóa tài khoản thành công!', 'success');
       fetchData();
     } catch(err) {
       const msg = err?.response?.data?.message || err.message;
-      alert('Lỗi xóa tài khoản: ' + msg);
+      showToast('Lỗi xóa tài khoản: ' + msg, 'error');
     }
   }
 
@@ -181,10 +195,10 @@ export default function Users() {
     if (!newPassword) return;
     try {
       await userApi.resetUserPassword(resetUserId, newPassword);
-      alert('Đã đặt lại mật khẩu thành công!');
+      showToast('Đã đặt lại mật khẩu thành công!', 'success');
       setShowResetModal(false);
     } catch(err) {
-      alert('Lỗi đặt lại mật khẩu: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi đặt lại mật khẩu: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 

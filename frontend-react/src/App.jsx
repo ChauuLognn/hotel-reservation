@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import { ConfirmProvider } from './context/ConfirmContext';
 
 // Pages
 import Login from './features/auth/Login';
@@ -35,6 +37,15 @@ function AdminRoute({ children }) {
   return children;
 }
 
+// Manager Route - chỉ MANAGER được truy cập
+function ManagerRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="loading-spinner"><div className="spinner" />Đang tải...</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'MANAGER') return <Navigate to="/" replace />;
+  return children;
+}
+
 function AppRoutes() {
   return (
     <Routes>
@@ -52,8 +63,9 @@ function AppRoutes() {
       <Route path="/reservations" element={<AdminRoute><ReservationGuests /></AdminRoute>} />
       <Route path="/services" element={<AdminRoute><Services /></AdminRoute>} />
       <Route path="/bills" element={<AdminRoute><Bills /></AdminRoute>} />
-      <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
-      <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />      <Route path="/booking-detail/:resId" element={<AdminRoute><BookingDetail /></AdminRoute>} />
+      <Route path="/users" element={<ManagerRoute><Users /></ManagerRoute>} />
+      <Route path="/admin" element={<ManagerRoute><Admin /></ManagerRoute>} />
+      <Route path="/booking-detail/:resId" element={<AdminRoute><BookingDetail /></AdminRoute>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -65,7 +77,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ToastProvider>
+          <ConfirmProvider>
+            <AppRoutes />
+          </ConfirmProvider>
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   );

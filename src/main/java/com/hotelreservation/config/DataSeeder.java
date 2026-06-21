@@ -24,19 +24,10 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        allowNullableUserEmployee();
         seedRoleIfMissing(RoleName.MANAGER);
         seedRoleIfMissing(RoleName.EMPLOYEE);
         seedRoleIfMissing(RoleName.CUSTOMER);
         System.out.println("[DataSeeder] Roles seeded successfully.");
-    }
-
-    private void allowNullableUserEmployee() {
-        try {
-            jdbcTemplate.execute("ALTER TABLE `user` MODIFY COLUMN `empId` INT NULL");
-        } catch (Exception e) {
-            System.out.println("[DataSeeder] Skip user.empId nullable migration: " + e.getMessage());
-        }
     }
 
     private void seedRoleIfMissing(RoleName roleName) {

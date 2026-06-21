@@ -2,15 +2,7 @@ import { useState, useEffect } from 'react';
 import { DollarSign, Users, Home, Coffee, RefreshCw } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import reportApi from '../../api/reportApi';
-
-function formatVND(amount) {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
-}
-function formatDate(str) {
-  if (!str) return '-';
-  const d = new Date(str);
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-}
+import { formatVND, formatDate } from '@shared/utils/format';
 
 export default function Dashboard() {
   const today = new Date();

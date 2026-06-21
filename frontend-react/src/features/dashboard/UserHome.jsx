@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Calendar, DollarSign, LogOut, User, Menu, X } from 'lucide-react';
+import { Home, Calendar, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import roomApi from '../../api/roomApi';
 import reservationApi from '../../api/reservationApi';
@@ -9,12 +9,15 @@ import guestApi from '../../api/guestApi';
 import { formatVND, formatDate } from '@shared/utils/format';
 import { getTodayString, getTomorrowString } from '@shared/utils/date';
 import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
-
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 
 
 export default function UserHome() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const confirm = useConfirm();
   const [section, setSection] = useState('home');
   const [rooms, setRooms] = useState([]);
   const [bookings, setBookings] = useState([]);
@@ -68,11 +71,11 @@ export default function UserHome() {
 
   async function searchRooms() {
     if (!checkIn || !checkOut) {
-      alert('Vui lòng chọn đầy đủ ngày nhận và trả phòng!');
+      showToast('Vui lòng chọn đầy đủ ngày nhận và trả phòng!', 'warning');
       return;
     }
     if (new Date(checkIn) >= new Date(checkOut)) {
-      alert('Ngày trả phòng phải sau ngày nhận phòng!');
+      showToast('Ngày trả phòng phải sau ngày nhận phòng!', 'warning');
       return;
     }
     setLoading(true);
@@ -94,7 +97,7 @@ export default function UserHome() {
       }));
       setRooms(enriched);
     } catch (err) {
-      alert('Lỗi tải phòng trống: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi tải phòng trống: ' + (err?.response?.data?.message || err.message), 'error');
     } finally {
       setLoading(false);
     }
@@ -104,30 +107,11 @@ export default function UserHome() {
   async function loadBookings() {
     if (!user?.userId) return;
     try {
-      let guestId = localStorage.getItem(`currentGuestId_${user.userId}`);
-      
-      if (!guestId && user.empId) {
-        const empRes = await userApi.getEmpById(user.empId);
-        const emp = empRes.data?.data || empRes.data || {};
-        
-        if (emp.identityNum || emp.phone) {
-          const guestsRes = await guestApi.getAll();
-          const guestsList = guestsRes.data?.data || guestsRes.data || [];
-          const guest = guestsList.find(g => g.identityNum === emp.identityNum || g.phone === emp.phone);
-          if (guest) {
-            guestId = guest.id;
-            localStorage.setItem(`currentGuestId_${user.userId}`, guestId);
-          }
-        }
-      }
-      
-      if (guestId) {
-        const res = await reservationApi.getByGuestId(guestId);
-        setBookings(res.data?.data || res.data || []);
-      } else {
-        setBookings([]);
-      }
-    } catch {}
+      const res = await reservationApi.getMyBookings();
+      setBookings(res.data?.data || res.data || []);
+    } catch {
+      setBookings([]);
+    }
   }
 
   const handleOpenBooking = async (room) => {
@@ -160,20 +144,21 @@ export default function UserHome() {
     if (!selectedRoom) return;
 
     if (!guestForm.firstName || !guestForm.lastName || !guestForm.phone || !guestForm.identityNum) {
-      alert('Vui lòng điền đầy đủ các thông tin bắt buộc!');
+      showToast('Vui lòng điền đầy đủ các thông tin bắt buộc!', 'warning');
+      return;
+    }
+
+    const todayStr = getTodayString();
+    if (checkIn < todayStr) {
+      showToast('Ngày nhận phòng không thể ở trong quá khứ!', 'error');
       return;
     }
 
     setIsBooking(true);
     try {
-      // 1. Tìm hoặc tạo Guest Profile
-      const guestsRes = await guestApi.getAll();
-      const guestsList = guestsRes.data?.data || guestsRes.data || [];
-      let guest = guestsList.find(g => g.identityNum === guestForm.identityNum || g.phone === guestForm.phone);
-      
-      let guestId;
-      if (guest) {
-        guestId = guest.id;
+      // 1. Sử dụng guestId gắn liền với tài khoản đăng nhập hoặc tạo mới nếu chưa có
+      let guestId = user?.guestId;
+      if (guestId) {
         // Cập nhật thông tin khách hàng nếu cần
         await guestApi.update(guestId, {
           firstName: guestForm.firstName,
@@ -183,7 +168,7 @@ export default function UserHome() {
           dateOfBirth: guestForm.dateOfBirth || null
         });
       } else {
-        // Tạo guest mới
+        // Tạo guest mới nếu tài khoản chưa có guestId liên kết
         const newGuestRes = await guestApi.create({
           firstName: guestForm.firstName,
           lastName: guestForm.lastName,
@@ -193,6 +178,10 @@ export default function UserHome() {
         });
         const newGuest = newGuestRes.data?.data || newGuestRes.data || {};
         guestId = newGuest.id;
+        if (guestId && user) {
+          user.guestId = guestId;
+          localStorage.setItem('userInfo', JSON.stringify(user));
+        }
       }
 
       if (!guestId) {
@@ -212,7 +201,7 @@ export default function UserHome() {
 
       const res = await reservationApi.create(payload);
       const resData = res.data;
-      alert(`✅ Đặt phòng thành công!\nMã đặt phòng của bạn là: ${resData.resId}`);
+      showToast(`Đặt phòng thành công! Mã đặt phòng: ${resData.resId}`, 'success');
       
       // Lưu guestId
       localStorage.setItem(`currentGuestId_${user.userId}`, guestId);
@@ -221,31 +210,39 @@ export default function UserHome() {
       setSection('bookings');
       await loadBookings();
     } catch (err) {
-      alert('Lỗi đặt phòng: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi đặt phòng: ' + (err?.response?.data?.message || err.message), 'error');
     } finally {
       setIsBooking(false);
     }
   };
 
   async function handleCancelBooking(resId) {
-    if (!confirm('Bạn có chắc muốn hủy đặt phòng này?')) return;
+    const isConfirmed = await confirm({
+      title: 'Hủy Đặt Phòng',
+      message: 'Bạn có chắc chắn muốn hủy đặt phòng này?'
+    });
+    if (!isConfirmed) return;
     try {
       await reservationApi.updateStatus(resId, { newStatus: 'CANCELLED', reason: 'Khách hàng tự hủy' });
-      alert('Đã hủy đặt phòng thành công!');
+      showToast('Đã hủy đặt phòng thành công!', 'success');
       await loadBookings();
     } catch (err) {
-      alert('Lỗi hủy đặt phòng: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi hủy đặt phòng: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 
   async function handleConfirmPayment(resId) {
-    if (!confirm('Xác nhận bạn đã thanh toán cho đặt phòng này?')) return;
+    const isConfirmed = await confirm({
+      title: 'Xác Nhận Thanh Toán',
+      message: 'Xác nhận bạn đã thanh toán cho đặt phòng này?'
+    });
+    if (!isConfirmed) return;
     try {
       await reservationApi.updateStatus(resId, { newStatus: 'CONFIRMED', reason: 'Khách hàng xác nhận thanh toán' });
-      alert('Xác nhận thanh toán thành công!');
+      showToast('Xác nhận thanh toán thành công!', 'success');
       await loadBookings();
     } catch (err) {
-      alert('Lỗi xác nhận thanh toán: ' + (err?.response?.data?.message || err.message));
+      showToast('Lỗi xác nhận thanh toán: ' + (err?.response?.data?.message || err.message), 'error');
     }
   }
 

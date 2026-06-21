@@ -30,4 +30,6 @@ public interface ReservationService {
     void createReservationService(String resRoomId, AddReservationServiceRequest rq, Integer userId);
     List<ReservationServiceResponse> getAllServicesOfResRoom(String resRoomId);
     void deleteReservationService(String id);
+    ReservationFullDetailResponse getReservationFullDetail(String resId);
+    List<ReservationResponse> getMyBookings();
 }

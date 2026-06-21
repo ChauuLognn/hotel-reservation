@@ -1,5 +1,5 @@
 import Layout from '../../components/layout/Layout';
-import { Shield, Key, Clock } from 'lucide-react';
+import { Shield, Key } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Admin() {

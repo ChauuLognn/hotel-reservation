@@ -3,9 +3,12 @@ import { Plus, Search, Edit2, Trash2, Coffee } from 'lucide-react';
 import Layout from '../../components/layout/Layout';
 import serviceApi from '../../api/serviceApi';
 import { formatVND } from '@shared/utils/format';
-
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 
 export default function Services() {
+  const { showToast } = useToast();
+  const confirm = useConfirm();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -51,23 +54,29 @@ export default function Services() {
         status: form.status
       };
       if (editSvc) {
-        // Service uses name for update
         await serviceApi.update(editSvc.serviceName, payload);
+        showToast('Đã cập nhật dịch vụ!', 'success');
       } else {
         await serviceApi.create(payload);
+        showToast('Đã thêm dịch vụ mới!', 'success');
       }
       setShowModal(false);
       fetchServices();
-    } catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    } catch(err) { showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); }
   }
 
   async function handleDelete(name) {
-    if (!confirm(`Xóa dịch vụ "${name}"?`)) return;
+    const isConfirmed = await confirm({
+      title: 'Xóa Dịch Vụ',
+      message: `Bạn có chắc chắn muốn xóa dịch vụ "${name}"?`
+    });
+    if (!isConfirmed) return;
     try { 
       await serviceApi.delete(name); 
+      showToast('Đã xóa dịch vụ thành công!', 'success');
       fetchServices(); 
     }
-    catch(err) { alert('Lỗi: ' + (err?.response?.data?.message || err.message)); }
+    catch(err) { showToast('Lỗi: ' + (err?.response?.data?.message || err.message), 'error'); }
   }
 
   const avgPrice = services.length 

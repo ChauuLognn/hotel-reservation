@@ -9,6 +9,7 @@ public class LoginResponse {
     private String empName;
     private String role;
     private Long expiresIn;
+    private Integer guestId;
 
     public LoginResponse() {
     }
@@ -30,6 +31,17 @@ public class LoginResponse {
         this.empName = empName;
         this.role = role;
         this.expiresIn = expiresIn;
+    }
+
+    public LoginResponse(String token, Integer userId, String account, Integer empId, String empName, String role, Long expiresIn, Integer guestId) {
+        this.token = token;
+        this.userId = userId;
+        this.account = account;
+        this.empId = empId;
+        this.empName = empName;
+        this.role = role;
+        this.expiresIn = expiresIn;
+        this.guestId = guestId;
     }
 
     public String getToken() {
@@ -94,5 +106,13 @@ public class LoginResponse {
 
     public void setExpiresIn(Long expiresIn) {
         this.expiresIn = expiresIn;
+    }
+
+    public Integer getGuestId() {
+        return guestId;
+    }
+
+    public void setGuestId(Integer guestId) {
+        this.guestId = guestId;
     }
 }
