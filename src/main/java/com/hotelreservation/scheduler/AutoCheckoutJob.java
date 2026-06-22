@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.hotelreservation.modules.reservation.entity.ReservationRoom;
 import com.hotelreservation.modules.reservation.entity.ReservationGuest;
 import com.hotelreservation.modules.reservation.repository.ReservationGuestRepository;
@@ -19,6 +21,8 @@ import com.hotelreservation.modules.reservation.service.ReservationService;
 // task tự động checkOut cho khách khi đến giờ resId.checkOutTime 
 @Component
 public class AutoCheckoutJob {
+    private static final Logger log = LoggerFactory.getLogger(AutoCheckoutJob.class);
+
     @Autowired private ReservationGuestRepository rgRepo;
     @Autowired private ReservationStatusHistoryRepository rshRepo;
     @Autowired private ReservationRoomRepository rrRepo;
@@ -49,7 +53,7 @@ public class AutoCheckoutJob {
                     );
                 } catch (Exception e) {
                     // đối với khách đã checkOut từ trước thì sẽ in ra lời nhắn
-                    System.err.println(e.getMessage());
+                    log.warn("[AutoCheckoutJob] Failed auto checkout for room {}, guest {}: {}", resRoomId, x.getGuest().getId(), e.getMessage());
                 }
             }   
         }

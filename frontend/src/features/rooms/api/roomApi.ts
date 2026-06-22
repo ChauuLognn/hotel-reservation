@@ -1,25 +1,46 @@
 import axiosClient from '@shared/api/axiosClient';
 
-interface AvailableRoomsParams {
+export interface AvailableRoomsParams {
   name?: string;
   checkIn: string;
   checkOut: string;
 }
 
+export interface Room {
+  id: number;
+  typeName: string;
+  status: string;
+}
+
+export interface RoomType {
+  name: string;
+  capacity: number;
+  basePrice: number;
+  description: string;
+}
+
+export interface AvailableRoom {
+  roomId: number;
+  name: string;
+  capacity: number;
+  baseprice: number;
+}
+
 const roomApi = {
-  getAll: () => axiosClient.get('/api/rooms'),
-  getById: (id: number | string) => axiosClient.get(`/api/rooms/${id}`),
-  create: (data: any) => axiosClient.post('/api/rooms', data),
-  update: (id: number | string, data: any) => axiosClient.put(`/api/rooms/${id}`, data),
-  delete: (id: number | string) => axiosClient.delete(`/api/rooms/${id}`),
-  findAvailable: (params: AvailableRoomsParams) => axiosClient.get('/api/rooms/available', { params }),
+  getAll: (signal?: AbortSignal) => axiosClient.get<Room[]>('/api/rooms', { signal }),
+  getById: (id: number | string, signal?: AbortSignal) => axiosClient.get<Room>(`/api/rooms/${id}`, { signal }),
+  create: (data: Partial<Room>) => axiosClient.post<Room>('/api/rooms', data),
+  update: (id: number | string, data: Partial<Room>) => axiosClient.put<Room>(`/api/rooms/${id}`, data),
+  delete: (id: number | string) => axiosClient.delete<string>(`/api/rooms/${id}`),
+  findAvailable: (params: AvailableRoomsParams, signal?: AbortSignal) =>
+    axiosClient.get<AvailableRoom[]>('/api/rooms/available', { params, signal }),
 
   // Room Types
-  getAllTypes: () => axiosClient.get('/api/rooms/roomTypes'),
-  getTypeByName: (name: string) => axiosClient.get(`/api/rooms/roomTypes/${name}`),
-  createType: (data: any) => axiosClient.post('/api/rooms/roomTypes', data),
-  updateType: (name: string, data: any) => axiosClient.put(`/api/rooms/roomTypes/${name}`, data),
-  deleteType: (name: string) => axiosClient.delete(`/api/rooms/roomTypes/${name}`),
+  getAllTypes: (signal?: AbortSignal) => axiosClient.get<RoomType[]>('/api/rooms/roomTypes', { signal }),
+  getTypeByName: (name: string, signal?: AbortSignal) => axiosClient.get<RoomType>(`/api/rooms/roomTypes/${name}`, { signal }),
+  createType: (data: RoomType) => axiosClient.post<RoomType>('/api/rooms/roomTypes', data),
+  updateType: (name: string, data: RoomType) => axiosClient.put<RoomType>(`/api/rooms/roomTypes/${name}`, data),
+  deleteType: (name: string) => axiosClient.delete<string>(`/api/rooms/roomTypes/${name}`),
 };
 
 export default roomApi;

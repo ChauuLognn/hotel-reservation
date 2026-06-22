@@ -28,10 +28,7 @@ export function useFetch<T, Args extends any[]>(
     setError(null);
     try {
       const res = await apiFn(...args);
-      // Handle axios client interceptor mapping
-      const result = (res.data && typeof res.data === 'object' && 'data' in res.data)
-        ? (res.data.data as T)
-        : (res.data as T);
+      const result = res.data as T;
       setData(result);
       onSuccess?.(result);
       return result;

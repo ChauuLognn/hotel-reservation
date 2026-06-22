@@ -23,14 +23,18 @@ public class CorsConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
-            @Value("${cors.allowed-origins:http://localhost:5173,http://localhost:5174}")
-            List<String> allowedOrigins) {
+            @Value("${CORS_ALLOWED_ORIGINS:}") List<String> allowedOrigins) {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(allowedOrigins);
+        if (allowedOrigins != null && !allowedOrigins.isEmpty() && !(allowedOrigins.size() == 1 && allowedOrigins.get(0).isEmpty())) {
+            configuration.setAllowedOrigins(allowedOrigins);
+            configuration.setAllowCredentials(true);
+        } else {
+            configuration.setAllowedOrigins(List.of("*"));
+            configuration.setAllowCredentials(false);
+        }
         configuration.setAllowedMethods(ALLOWED_METHODS);
         configuration.setAllowedHeaders(ALLOWED_HEADERS);
         configuration.setExposedHeaders(EXPOSED_HEADERS);
-        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

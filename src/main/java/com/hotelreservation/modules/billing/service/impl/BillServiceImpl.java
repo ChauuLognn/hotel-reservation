@@ -21,7 +21,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 import java.util.stream.Collectors;
+import com.hotelreservation.modules.reservation.entity.ReservationGuest;
 
 @Service
 @Transactional
@@ -62,8 +65,14 @@ public class BillServiceImpl implements BillService {
     @Override
     @Transactional(readOnly = true)
     public ResRoomBillResponse createResRoomBillSummary(String resRoomId) {
+        ReservationRoom rr = rrRepo.getByResRoomId(resRoomId)
+            .orElseThrow(() -> new IllegalArgumentException("ReservationRoom not found: " + resRoomId));
         List<Bill> items = billRepo.getByResRoomId(resRoomId);
+        List<ReservationGuest> guests = resGuestRepo.findByIdReservationRoomId(resRoomId);
+        return createResRoomBillSummary(rr, items, guests);
+    }
 
+    private ResRoomBillResponse createResRoomBillSummary(ReservationRoom rr, List<Bill> items, List<ReservationGuest> guests) {
         List<BillResponse> billDtos = items.stream()
                 .map(BillMapper::toResponse)
                 .collect(Collectors.toList());
@@ -80,21 +89,17 @@ public class BillServiceImpl implements BillService {
                 totalDue = totalDue.add(dto.getTotalAmount());
         }
 
-        ReservationRoom rr = rrRepo.getByResRoomId(resRoomId)
-            .orElseThrow(() -> new IllegalArgumentException("ReservationRoom not found: " + resRoomId));
-        
-        List<ReservationGuestResponse> guests = resGuestRepo.findByIdReservationRoomId(resRoomId)
-            .stream()
-            .map(ReservationMapper::toGuestResponse)
-            .collect(Collectors.toList());
-        
+        List<ReservationGuestResponse> guestResponses = guests.stream()
+                .map(ReservationMapper::toGuestResponse)
+                .collect(Collectors.toList());
+
         ResRoomBillResponse summary = new ResRoomBillResponse();
         summary.setRoomId(rr.getRoom().getId());
-        summary.setResRoomId(resRoomId);
+        summary.setResRoomId(rr.getId());
         summary.setCheckInTime(rr.getCheckInTime());
         summary.setCheckOutTime(rr.getCheckOutTime());
         summary.setRoomBills(billDtos);
-        summary.setGuests(guests);
+        summary.setGuests(guestResponses);
         summary.setTotal(total);
         summary.setTotalPaid(totalPaid);
         summary.setTotalDue(totalDue);
@@ -111,13 +116,28 @@ public class BillServiceImpl implements BillService {
         }
         Reservation res = rrs.get(0).getReservation();
 
+        // Batch load all bills and guests of the reservation to resolve N+1 queries
+        List<Bill> allBills = billRepo.getByResId(resId);
+        List<ReservationGuest> allGuests = resGuestRepo.findByReservationId(resId);
+
+        Map<String, List<Bill>> billsByRoom = allBills.stream()
+                .filter(b -> b.getReservationRoom() != null)
+                .collect(Collectors.groupingBy(b -> b.getReservationRoom().getId()));
+
+        Map<String, List<ReservationGuest>> guestsByRoom = allGuests.stream()
+                .filter(g -> g.getReservationRoom() != null)
+                .collect(Collectors.groupingBy(g -> g.getReservationRoom().getId()));
+
         List<ResRoomBillResponse> lst = new ArrayList<>();
 
         LocalDate earliestCheckIn = null;
         LocalDate latestCheckOut = null;
 
         for(ReservationRoom rr : rrs){
-            ResRoomBillResponse x = createResRoomBillSummary(rr.getId());
+            List<Bill> roomBills = billsByRoom.getOrDefault(rr.getId(), Collections.emptyList());
+            List<ReservationGuest> roomGuests = guestsByRoom.getOrDefault(rr.getId(), Collections.emptyList());
+            
+            ResRoomBillResponse x = createResRoomBillSummary(rr, roomBills, roomGuests);
             lst.add(x);
             
             if(earliestCheckIn == null || rr.getCheckInTime().isBefore(earliestCheckIn)) {

@@ -95,4 +95,30 @@ public interface ReservationGuestRepository extends JpaRepository<ReservationGue
         @Param("checkInTime") java.time.LocalDate checkInTime,
         @Param("checkOutTime") java.time.LocalDate checkOutTime
     );
+
+    @Query(value = """
+        select rg.*
+        from reservationGuest rg
+        join reservationRoom rr on rr.id = rg.reservationRoomId
+        where rr.reservationId = :resId
+    """, nativeQuery = true)
+    List<ReservationGuest> findByReservationId(@Param("resId") String resId);
+
+    @Query(value = """
+        select rg.*
+        from reservationGuest rg
+        where rg.reservationRoomId in (:resRoomIds)
+    """, nativeQuery = true)
+    List<ReservationGuest> findByReservationRoomIdIn(@Param("resRoomIds") List<String> resRoomIds);
+
+    @Query(value = """
+        select rg.*
+        from reservationGuest rg
+        where rg.reservationRoomId = :resRoomId
+          and rg.guestId = :guestId
+        for update
+    """, nativeQuery = true)
+    Optional<ReservationGuest> findByResRoomIdAndGuestIdForUpdate(
+        @Param("resRoomId") String resRoomId,
+        @Param("guestId") Integer guestId);
 }

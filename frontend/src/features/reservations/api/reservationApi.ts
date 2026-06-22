@@ -1,37 +1,38 @@
 import axiosClient from '@shared/api/axiosClient';
 
 const reservationApi = {
-  getAll: () => axiosClient.get('/api/reservations/all'),
-  getById: (resId: string) => axiosClient.get('/api/reservations', { params: { resId } }),
-  getByGuestId: (guestId: number | string) => axiosClient.get(`/api/reservations/guests/${guestId}`),
-  getLatestByGuest: (guestId: number | string) => axiosClient.get(`/api/reservations/guests/${guestId}/latestRes`),
-  getRoomsByResId: (resId: string) => axiosClient.get(`/api/reservations/${resId}`),
-  getDetail: (resId: string) => axiosClient.get(`/api/reservations/${resId}/detail`),
-  getFullDetail: (resId: string) => axiosClient.get(`/api/reservations/${resId}/full-detail`),
-  getMyBookings: () => axiosClient.get('/api/reservations/my-bookings'),
-  create: (data: any) => axiosClient.post('/api/reservations', data),
+  getAll: (signal?: AbortSignal) => axiosClient.get<any[]>('/api/reservations/all', { signal }),
+  getById: (resId: string, signal?: AbortSignal) => axiosClient.get<any>('/api/reservations', { params: { resId }, signal }),
+  getByGuestId: (guestId: number | string, signal?: AbortSignal) => axiosClient.get<any[]>(`/api/reservations/guests/${guestId}`, { signal }),
+  getLatestByGuest: (guestId: number | string, signal?: AbortSignal) => axiosClient.get<any>(`/api/reservations/guests/${guestId}/latestRes`, { signal }),
+  getRoomsByResId: (resId: string, signal?: AbortSignal) => axiosClient.get<any[]>(`/api/reservations/${resId}`, { signal }),
+  getDetail: (resId: string, signal?: AbortSignal) => axiosClient.get<any>(`/api/reservations/${resId}/detail`, { signal }),
+  getFullDetail: (resId: string, signal?: AbortSignal) => axiosClient.get<any>(`/api/reservations/${resId}/full-detail`, { signal }),
+  getMyBookings: (signal?: AbortSignal) => axiosClient.get<any[]>('/api/reservations/my-bookings', { signal }),
+  create: (data: any) => axiosClient.post<any>('/api/reservations', data),
 
   // Reservation Guests
-  getGuestsByResRoom: (resRoomId: string) => axiosClient.get(`/api/reservation-guests/reservation-room/${resRoomId}`),
+  getGuestsByResRoom: (resRoomId: string, signal?: AbortSignal) => axiosClient.get<any[]>(`/api/reservation-guests/reservation-room/${resRoomId}`, { signal }),
   registerGuest: (resRoomId: string, guestId: number | string) =>
-    axiosClient.post('/api/reservation-guests/register', null, { params: { resRoomId, guestId } }),
+    axiosClient.post<any>('/api/reservation-guests/register', null, { params: { resRoomId, guestId } }),
   checkIn: (resRoomId: string, guestId: number | string, checkInAt?: string) =>
-    axiosClient.post(`/api/reservation-guests/rooms/${resRoomId}/guests/${guestId}/check-in`, checkInAt),
+    axiosClient.post<any>(`/api/reservation-guests/rooms/${resRoomId}/guests/${guestId}/check-in`, checkInAt),
   checkOut: (resRoomId: string, guestId: number | string, checkOutAt?: string) =>
-    axiosClient.post(`/api/reservation-guests/rooms/${resRoomId}/guests/${guestId}/check-out`, checkOutAt),
+    axiosClient.post<any>(`/api/reservation-guests/rooms/${resRoomId}/guests/${guestId}/check-out`, checkOutAt),
 
   // Status History
-  getStatusHistory: (resId: string) => axiosClient.get(`/api/reservationStatus/${resId}`),
-  getStatusHistoryByResRoom: (resId: string, resRoomId: string) =>
-    axiosClient.get(`/api/reservationStatus/${resId}/resRooms/${resRoomId}`),
-  updateStatus: (resId: string, data: any) => axiosClient.post(`/api/reservationStatus/${resId}/status`, data),
+  getStatusHistory: (resId: string, signal?: AbortSignal) => axiosClient.get<any[]>(`/api/reservationStatus/${resId}`, { signal }),
+  getStatusHistoryByResRoom: (resId: string, resRoomId: string, signal?: AbortSignal) =>
+    axiosClient.get<any[]>(`/api/reservationStatus/${resId}/resRooms/${resRoomId}`, { signal }),
+  updateStatus: (resId: string, data: { newStatus: string; reason?: string }) =>
+    axiosClient.post<any>(`/api/reservationStatus/${resId}/status`, data),
 
   // Room Services
-  getServicesOfResRoom: (resRoomId: string) => axiosClient.get(`/api/reservation-rooms/${resRoomId}/services`),
+  getServicesOfResRoom: (resRoomId: string, signal?: AbortSignal) => axiosClient.get<any[]>(`/api/reservation-rooms/${resRoomId}/services`, { signal }),
   addServiceToResRoom: (resRoomId: string, data: any) =>
-    axiosClient.post(`/api/reservation-rooms/${resRoomId}/services`, data),
+    axiosClient.post<any>(`/api/reservation-rooms/${resRoomId}/services`, data),
   deleteServiceFromResRoom: (resRoomId: string, serId: number | string) =>
-    axiosClient.delete(`/api/reservation-rooms/${resRoomId}/services/${serId}`),
+    axiosClient.delete<any>(`/api/reservation-rooms/${resRoomId}/services/${serId}`),
 };
 
 export default reservationApi;

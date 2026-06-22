@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.hotelreservation.modules.reservation.repository.ReservationRepository;
 import com.hotelreservation.modules.reservation.service.ReservationService;
 import com.hotelreservation.modules.reservation.dto.ReservationRequests.ChangeStatusRequest;
@@ -19,6 +21,8 @@ import com.hotelreservation.common.enums.ReservationStatus;
  */
 @Component
 public class AutoPendingExpiredJob {
+
+    private static final Logger log = LoggerFactory.getLogger(AutoPendingExpiredJob.class);
 
     @Autowired
     private ReservationRepository resRepo;
@@ -47,9 +51,9 @@ public class AutoPendingExpiredJob {
                     "Tự động hết hạn do không thanh toán trong thời gian quy định"
                 );
                 resDomain.updateReservationStatus(resId, req, null);
-                System.out.println("[AutoPendingExpiredJob] Expired reservation: " + resId);
+                log.info("[AutoPendingExpiredJob] Expired reservation: {}", resId);
             } catch (Exception e) {
-                System.err.println("[AutoPendingExpiredJob] Error expiring " + resId + ": " + e.getMessage());
+                log.error("[AutoPendingExpiredJob] Error expiring reservation {}: {}", resId, e.getMessage(), e);
             }
         }
     }

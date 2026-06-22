@@ -77,4 +77,16 @@ public interface ReservationStatusHistoryRepository extends JpaRepository<Reserv
         where timestamp(rr.checkOutTime, '14:00:00') <= :now
     """,nativeQuery=true)
     List<String> findResRoomThatOverCheckOutTime(@Param("now") LocalDateTime now);
+
+    @Query(value = """
+        SELECT rsh.*
+        FROM reservationStatusHistory rsh
+        INNER JOIN (
+            SELECT reservationRoomId, MAX(id) as maxId
+            FROM reservationStatusHistory
+            WHERE reservationRoomId IN (:resRoomIds)
+            GROUP BY reservationRoomId
+        ) latest ON rsh.id = latest.maxId
+    """, nativeQuery = true)
+    List<ReservationStatusHistory> findLatestByResRoomIds(@Param("resRoomIds") List<String> resRoomIds);
 }

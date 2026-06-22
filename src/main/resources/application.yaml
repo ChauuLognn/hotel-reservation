@@ -4,36 +4,12 @@ server:
     context-path: /hotel_reservation_premium
 
 spring:
-  datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3308/hotel_reservation_premium?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Bangkok&zeroDateTimeBehavior=convertToNull}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:1011}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    open-in-view: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-    hibernate.naming:
-      physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-      implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-
-  sql:
-    init:
-      mode: never
+  profiles:
+    active: dev
 
 jwt:
-  secret: ${JWT_SECRET:hotel_reservation_secret_key_2024_very_long_and_secure_at_least_256_bits_for_hs256_algorithm}
+  secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000}
 
-cors:
-  allowed-origins:
-    - http://localhost:5173
-    - http://localhost:5174
+system-user-id: ${SYSTEM_USER_ID:}
 
-system-user-id: 9

@@ -2,6 +2,7 @@ package com.hotelreservation.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +16,20 @@ import com.hotelreservation.modules.account.repository.GuestRepository;
 import com.hotelreservation.modules.account.repository.RoleRepository;
 import com.hotelreservation.modules.account.repository.UserRepository;
 
+import org.springframework.core.annotation.Order;
+
 /**
- * Seeds required roles and demo accounts for local development.
+ * Seeds demo accounts for local development ONLY.
+ * This component only runs when spring.profiles.active=dev.
  * Idempotent: safe to run on every startup.
  */
 @Component
+@Profile("dev")
+@Order(2)
 public class DataSeeder implements CommandLineRunner {
 
+    // WARNING: Demo password is only for development environments.
+    // NEVER use these credentials in production.
     private static final String DEMO_PASSWORD = "123456";
 
     @Autowired
@@ -41,9 +49,7 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        seedRoleIfMissing(RoleName.MANAGER);
-        seedRoleIfMissing(RoleName.EMPLOYEE);
-        seedRoleIfMissing(RoleName.CUSTOMER);
+        System.out.println("[DataSeeder] Running in DEVELOPMENT mode - seeding demo data.");
         seedSystemUserIfMissing();
         seedDemoUserIfMissing(
                 "admin",
@@ -75,16 +81,7 @@ public class DataSeeder implements CommandLineRunner {
                 "0900000003",
                 "3 Guest Street",
                 "333333333333");
-        System.out.println("[DataSeeder] Roles and demo users seeded successfully.");
-    }
-
-    private void seedRoleIfMissing(RoleName roleName) {
-        if (roleRepository.findByName(roleName).isEmpty()) {
-            Role role = new Role();
-            role.setName(roleName);
-            roleRepository.save(role);
-            System.out.println("[DataSeeder] Created role: " + roleName);
-        }
+        System.out.println("[DataSeeder] Demo users seeded successfully (development mode).");
     }
 
     private void seedSystemUserIfMissing() {

@@ -81,21 +81,26 @@ export default function Employees() {
   const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
-    fetchData();
+    const controller = new AbortController();
+    fetchData(controller.signal);
+    return () => {
+      controller.abort();
+    };
   }, [tab]);
 
-  async function fetchData() {
+  async function fetchData(signal?: AbortSignal) {
     setLoading(true);
     try {
       if (tab === 'employees') {
-        const res = await userApi.getAllEmps();
+        const res = await userApi.getAllEmps(signal);
         setEmployees(Array.isArray(res.data) ? res.data : []);
       } else {
-        const res = await userApi.getAllUsers();
-        const accountsList = res.data?.data || res.data || [];
+        const res = await userApi.getAllUsers(signal);
+        const accountsList = res.data || [];
         setUserAccounts(Array.isArray(accountsList) ? accountsList : []);
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e.name === 'CanceledError' || e.name === 'AbortError') return;
       console.error(e);
       setEmployees([]);
       setUserAccounts([]);

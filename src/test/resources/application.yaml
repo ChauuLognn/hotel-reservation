@@ -12,6 +12,10 @@ spring:
   sql:
     init:
       mode: never
+
 jwt:
-  secret: hotel_reservation_secret_key_2024_very_long_and_secure_at_least_256_bits_for_hs256_algorithm
+  secret: test_jwt_secret_key_2024_at_least_256_bits_for_hs256_test_purposes_only
   expiration: 86400000
+
+system-user-id: 9
+

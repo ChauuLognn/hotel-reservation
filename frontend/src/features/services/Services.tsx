@@ -28,13 +28,17 @@ export default function Services() {
   const [form, setForm] = useState({ serviceName: '', price: '', status: 'ACTIVE' });
 
   useEffect(() => {
-    fetchServices();
+    const controller = new AbortController();
+    fetchServices(controller.signal);
+    return () => {
+      controller.abort();
+    };
   }, []);
 
-  async function fetchServices() {
+  async function fetchServices(signal?: AbortSignal) {
     setLoading(true);
     try {
-      const res = await serviceApi.getAll();
+      const res = await serviceApi.getAll(signal);
       const rawServices = Array.isArray(res.data) ? res.data : [];
       const mapped = rawServices.map((s: any) => ({
         name: s.name,

@@ -66,15 +66,22 @@ export default function Rooms() {
   const [availLoading, setAvailLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchAll();
+    const controller = new AbortController();
+    fetchAll(controller.signal);
+    return () => {
+      controller.abort();
+    };
   }, []);
 
-  async function fetchAll() {
+  async function fetchAll(signal?: AbortSignal) {
     setLoading(true);
     try {
-      const [rRes, rtRes] = await Promise.all([roomApi.getAll(), roomApi.getAllTypes()]);
-      const rawRooms = rRes.data?.data || rRes.data || [];
-      const rawTypes = rtRes.data?.data || rtRes.data || [];
+      const [rRes, rtRes] = await Promise.all([
+        roomApi.getAll(signal),
+        roomApi.getAllTypes(signal),
+      ]);
+      const rawRooms = rRes.data || [];
+      const rawTypes = rtRes.data || [];
 
       const mappedRooms: Room[] = rawRooms.map((r: any) => {
         const typeInfo = rawTypes.find((t: any) => t.name === r.typeName);
@@ -90,7 +97,8 @@ export default function Rooms() {
       });
       setRooms(mappedRooms);
       setRoomTypes(rawTypes);
-    } catch (e) {
+    } catch (e: any) {
+      if (e.name === 'CanceledError' || e.name === 'AbortError') return;
       console.error(e);
     } finally {
       setLoading(false);
@@ -110,7 +118,7 @@ export default function Rooms() {
       if (availSearch.checkIn) params.checkIn = availSearch.checkIn;
       if (availSearch.checkOut) params.checkOut = availSearch.checkOut;
       const res = await roomApi.findAvailable(params);
-      const list = res.data?.data || res.data || [];
+      const list = res.data || [];
       setAvailRooms(Array.isArray(list) ? list : []);
     } catch (e) {
       console.error(e);

@@ -66,20 +66,28 @@ export default function Bills() {
   const [selectedBill, setSelectedBill] = useState<ReservationBillSummary | null>(null);
 
   useEffect(() => {
-    fetchData();
+    const controller = new AbortController();
+    fetchData(controller.signal);
+    return () => {
+      controller.abort();
+    };
   }, []);
 
-  async function fetchData() {
+  async function fetchData(signal?: AbortSignal) {
     setLoading(true);
     try {
       const [resList, roomsRes, summariesRes] = await Promise.all([
-        reservationApi.getAll(),
-        roomApi.getAll(),
-        billApi.getSummaries(),
+        reservationApi.getAll(signal),
+        roomApi.getAll(signal),
+        billApi.getSummaries(signal),
       ]);
       const bookingsList = Array.isArray(resList.data) ? resList.data : [];
       setBookings(bookingsList);
-      setRoomsList(Array.isArray(roomsRes.data) ? roomsRes.data : []);
+      setRoomsList(
+        Array.isArray(roomsRes.data)
+          ? roomsRes.data.map((r: any) => ({ id: r.id, roomNumber: String(r.id) }))
+          : []
+      );
 
       const summariesData = Array.isArray(summariesRes.data) ? summariesRes.data : [];
       const summaries: Record<string, ReservationBillSummary> = {};

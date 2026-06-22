@@ -1,39 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, LogOut, CheckCircle, HelpCircle, Star, Sparkles, MapPin } from 'lucide-react';
+import { Calendar, HelpCircle, Star, Sparkles, MapPin } from 'lucide-react';
 import { useAuth } from '@app/AuthContext';
-import roomApi from '@features/rooms/api/roomApi';
 import reservationApi from '@features/reservations/api/reservationApi';
 import userApi from '@features/employees/api/userApi';
 import guestApi from '@features/guests/api/guestApi';
 import { formatVND, formatDate } from '@shared/utils/format';
-import { getTodayString, getTomorrowString } from '@shared/utils/date';
+import { getTodayString } from '@shared/utils/date';
 import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
 import { useToast } from '@context/ToastContext';
-import { useConfirm } from '@context/ConfirmContext';
 import CustomerLayout from '@layout/CustomerLayout';
 import Button from '@shared/ui/Button';
 import Badge from '@shared/ui/Badge';
 
-interface Room {
-  id: number;
-  roomNumber: number;
-  floorNumber: number;
-  status: string;
-  roomType: {
-    name: string;
-    basePrice: number;
-    capacity: number;
-  };
-}
-
-interface Booking {
-  resId: string;
-  checkIn: string;
-  checkOut: string;
-  total: number;
-  status: string;
-}
+import { useRoomSearch, Room } from './hooks/useRoomSearch';
+import { useBookings } from './hooks/useBookings';
+import RoomCard from './components/RoomCard';
+import BookingModal from './components/BookingModal';
 
 interface GuestForm {
   firstName: string;
@@ -43,7 +26,6 @@ interface GuestForm {
   dateOfBirth: string;
 }
 
-// Local mock reviews for SaaS 2026 aesthetics
 interface Review {
   id: number;
   guestName: string;
@@ -63,23 +45,33 @@ export default function UserHome() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const confirm = useConfirm();
   const [section, setSection] = useState<string>('home');
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+
+  const {
+    rooms,
+    loading,
+    checkIn,
+    setCheckIn,
+    checkOut,
+    setCheckOut,
+    isSearching,
+    setIsSearching,
+    loadRooms,
+    searchRooms,
+  } = useRoomSearch();
+
+  const {
+    bookings,
+    loadBookings,
+    handleCancelBooking,
+    handleConfirmPayment,
+  } = useBookings();
 
   // Search & Booking States
-  const [checkIn, setCheckIn] = useState<string>(getTodayString());
-  const [checkOut, setCheckOut] = useState<string>(getTomorrowString());
-  const [isSearching, setIsSearching] = useState<boolean>(false);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isBooking, setIsBooking] = useState<boolean>(false);
-
-  // Configurator options in Booking flow (Apple Style option chips)
   const [includeBreakfast, setIncludeBreakfast] = useState<boolean>(true);
   const [airportPickup, setAirportPickup] = useState<boolean>(false);
-
   const [guestForm, setGuestForm] = useState<GuestForm>({
     firstName: '',
     lastName: '',
@@ -89,79 +81,15 @@ export default function UserHome() {
   });
 
   useEffect(() => {
-    loadRooms();
-    if (user?.userId) loadBookings();
+    const controller = new AbortController();
+    loadRooms(controller.signal);
+    if (user?.userId) {
+      loadBookings(controller.signal);
+    }
+    return () => {
+      controller.abort();
+    };
   }, [user]);
-
-  async function loadRooms() {
-    setLoading(true);
-    setIsSearching(false);
-    try {
-      const availRes = await roomApi.findAvailable({ checkIn: getTodayString(), checkOut: getTomorrowString() });
-      const availList = availRes.data?.data || availRes.data || [];
-
-      const enriched: Room[] = availList.map((av: any) => ({
-        id: av.roomId,
-        roomNumber: av.roomId,
-        floorNumber: Math.floor(av.roomId / 100) || 1,
-        status: 'READY',
-        roomType: {
-          name: av.name,
-          basePrice: av.baseprice,
-          capacity: av.capacity,
-        },
-      }));
-      setRooms(enriched);
-    } catch (err) {
-      console.error('Lỗi tải phòng:', err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function searchRooms() {
-    if (!checkIn || !checkOut) {
-      showToast('Vui lòng chọn đầy đủ ngày nhận và trả phòng!', 'warning');
-      return;
-    }
-    if (new Date(checkIn) >= new Date(checkOut)) {
-      showToast('Ngày trả phòng phải sau ngày nhận phòng!', 'warning');
-      return;
-    }
-    setLoading(true);
-    setIsSearching(true);
-    try {
-      const availRes = await roomApi.findAvailable({ checkIn, checkOut });
-      const availList = availRes.data?.data || availRes.data || [];
-
-      const enriched: Room[] = availList.map((av: any) => ({
-        id: av.roomId,
-        roomNumber: av.roomId,
-        floorNumber: Math.floor(av.roomId / 100) || 1,
-        status: 'AVAILABLE',
-        roomType: {
-          name: av.name,
-          basePrice: av.baseprice,
-          capacity: av.capacity,
-        },
-      }));
-      setRooms(enriched);
-    } catch (err: any) {
-      showToast('Lỗi tải phòng trống: ' + (err?.response?.data?.message || err.message), 'error');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadBookings() {
-    if (!user?.userId) return;
-    try {
-      const res = await reservationApi.getMyBookings();
-      setBookings(res.data?.data || res.data || []);
-    } catch {
-      setBookings([]);
-    }
-  }
 
   const handleOpenBooking = async (room: Room) => {
     if (!user) {
@@ -170,11 +98,10 @@ export default function UserHome() {
     }
     setSelectedRoom(room);
 
-    // Tự động điền thông tin cá nhân
     try {
       if (user.empId) {
         const empRes = await userApi.getEmpById(user.empId);
-        const emp = empRes.data?.data || empRes.data || {};
+        const emp = empRes.data || {};
         setGuestForm({
           firstName: emp.firstName || '',
           lastName: emp.lastName || '',
@@ -190,7 +117,7 @@ export default function UserHome() {
 
   const handleConfirmBooking = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedRoom) return;
+    if (!selectedRoom || !user) return;
 
     if (!guestForm.firstName || !guestForm.lastName || !guestForm.phone || !guestForm.identityNum) {
       showToast('Vui lòng điền đầy đủ các thông tin bắt buộc!', 'warning');
@@ -205,7 +132,7 @@ export default function UserHome() {
 
     setIsBooking(true);
     try {
-      let guestId = user?.guestId;
+      let guestId = user.guestId;
       if (guestId) {
         await guestApi.update(guestId, {
           firstName: guestForm.firstName,
@@ -222,9 +149,9 @@ export default function UserHome() {
           phone: guestForm.phone,
           dateOfBirth: guestForm.dateOfBirth || null,
         });
-        const newGuest = newGuestRes.data?.data || newGuestRes.data || {};
+        const newGuest = newGuestRes.data || {};
         guestId = newGuest.id;
-        if (guestId && user) {
+        if (guestId) {
           user.guestId = guestId;
           localStorage.setItem('userInfo', JSON.stringify(user));
         }
@@ -234,7 +161,6 @@ export default function UserHome() {
         throw new Error('Không thể tạo hoặc xác định hồ sơ khách hàng.');
       }
 
-      // Tạo đặt phòng (confirmHold)
       const payload = {
         guestId: Number(guestId),
         items: [
@@ -263,55 +189,8 @@ export default function UserHome() {
     }
   };
 
-  async function handleCancelBooking(resId: string) {
-    const isConfirmed = await confirm({
-      title: 'Hủy Đặt Phòng',
-      message: 'Bạn có chắc chắn muốn hủy đặt phòng này?',
-    });
-    if (!isConfirmed) return;
-    try {
-      await reservationApi.updateStatus(resId, { newStatus: 'CANCELLED', reason: 'Khách hàng tự hủy' });
-      showToast('Đã hủy đặt phòng thành công!', 'success');
-      await loadBookings();
-    } catch (err: any) {
-      showToast('Lỗi hủy đặt phòng: ' + (err?.response?.data?.message || err.message), 'error');
-    }
-  }
-
-  async function handleConfirmPayment(resId: string) {
-    const isConfirmed = await confirm({
-      title: 'Xác Nhận Thanh Toán',
-      message: 'Xác nhận bạn đã thanh toán cho đặt phòng này?',
-    });
-    if (!isConfirmed) return;
-    try {
-      await reservationApi.updateStatus(resId, { newStatus: 'CONFIRMED', reason: 'Khách hàng xác nhận thanh toán' });
-      showToast('Xác nhận thanh toán thành công!', 'success');
-      await loadBookings();
-    } catch (err: any) {
-      showToast('Lỗi xác nhận thanh toán: ' + (err?.response?.data?.message || err.message), 'error');
-    }
-  }
-
-  // Calculate total nights
-  const getNights = () => {
-    if (!checkIn || !checkOut) return 1;
-    const diff = new Date(checkOut).getTime() - new Date(checkIn).getTime();
-    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    return days > 0 ? days : 1;
-  };
-
-  const getSubtotal = () => {
-    if (!selectedRoom) return 0;
-    let price = selectedRoom.roomType.basePrice * getNights();
-    if (includeBreakfast) price += 150000 * getNights();
-    if (airportPickup) price += 350000;
-    return price;
-  };
-
   return (
     <CustomerLayout activeSection={section} onSectionChange={setSection}>
-      {/* 1. Hero Section (Alternate band: Dark Canvas) */}
       {section === 'home' && (
         <section className="bg-apple-surface-tile-1 text-white py-24 px-6 select-none relative overflow-hidden">
           <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
@@ -336,7 +215,6 @@ export default function UserHome() {
         </section>
       )}
 
-      {/* 2. Hotel Amenities & Features (Alternate band: White Canvas) */}
       {section === 'home' && (
         <section id="amenities" className="bg-white py-20 px-6 border-b border-apple-divider-soft">
           <div className="max-w-7xl mx-auto">
@@ -366,7 +244,6 @@ export default function UserHome() {
         </section>
       )}
 
-      {/* 3. Rooms Searching & Grid Section (Alternate band: Parchment Canvas) */}
       {(section === 'home' || section === 'rooms') && (
         <section className="bg-apple-canvas-parchment py-16 px-6">
           <div className="max-w-7xl mx-auto">
@@ -383,7 +260,6 @@ export default function UserHome() {
               </div>
             </div>
 
-            {/* Premium Date Search Bar */}
             <div className="bg-white rounded-apple-lg border border-apple-hairline shadow-sm p-6 mb-10 flex flex-col lg:flex-row gap-6 items-end">
               <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
@@ -411,9 +287,9 @@ export default function UserHome() {
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-3 w-full lg:w-auto">
-                <Button variant="primary" onClick={searchRooms} className="flex-1 lg:flex-none h-11 !px-8 font-semibold">
+                <Button variant="primary" onClick={() => searchRooms()} className="flex-1 lg:flex-none h-11 !px-8 font-semibold">
                   Tìm Phòng Trống
                 </Button>
                 {isSearching && (
@@ -424,7 +300,6 @@ export default function UserHome() {
               </div>
             </div>
 
-            {/* Room Cards Grid (Standard store card style) */}
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20 text-apple-ink-muted-48">
                 <div className="w-8 h-8 border-4 border-apple-divider-soft border-t-apple-primary rounded-full animate-spin-custom mb-3" />
@@ -434,49 +309,7 @@ export default function UserHome() {
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {(section === 'home' ? rooms.slice(0, 6) : rooms).map((r) => (
-                    <div
-                      key={r.id}
-                      className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden hover:shadow-md transition-all duration-200 flex flex-col group"
-                    >
-                      {/* Room photography space */}
-                      <div className="relative aspect-[16/10] bg-apple-surface-tile-1 flex items-center justify-center text-[72px] select-none text-white/10 group-hover:scale-102 transition-transform duration-300">
-                        🏨
-                        <div className="absolute top-4 left-4 bg-apple-surface-black/60 text-white text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full backdrop-blur-[2px]">
-                          Phòng {r.roomNumber}
-                        </div>
-                      </div>
-                      <div className="p-6 flex-grow flex flex-col justify-between">
-                        <div>
-                          <div className="flex justify-between items-start gap-2 mb-2">
-                            <h3 className="font-display font-semibold text-lg text-apple-ink tracking-apple-tight">
-                              {r.roomType?.name || 'Standard Room'}
-                            </h3>
-                            <span className="text-[12px] bg-green-50 text-green-700 px-2 py-0.5 rounded font-semibold border border-green-100">
-                              Có Sẵn
-                            </span>
-                          </div>
-                          
-                          <div className="text-[13px] text-apple-ink-muted-80 flex items-center gap-4 mb-4 select-none">
-                            <span>👤 Tối đa: <strong>{r.roomType?.capacity || '?'} khách</strong></span>
-                            <span className="text-apple-divider-soft">|</span>
-                            <span>🏢 Vị trí: <strong>Tầng {r.floorNumber || '?'}</strong></span>
-                          </div>
-                        </div>
-
-                        <div className="pt-4 border-t border-apple-divider-soft flex items-center justify-between">
-                          <div>
-                            <span className="text-xs text-apple-ink-muted-48 block">Giá mỗi đêm</span>
-                            <span className="text-[17px] font-bold text-apple-ink font-display">
-                              {formatVND(r.roomType?.basePrice)}
-                              <span className="text-xs text-apple-ink-muted-48 font-normal">/đêm</span>
-                            </span>
-                          </div>
-                          <Button variant="primary" onClick={() => handleOpenBooking(r)} className="!py-2 text-xs font-semibold">
-                            Đặt Phòng
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                    <RoomCard key={r.id} room={r} onBook={handleOpenBooking} />
                   ))}
                 </div>
 
@@ -493,7 +326,6 @@ export default function UserHome() {
         </section>
       )}
 
-      {/* 4. Local Ratings & Reviews Mock Section (Airbnb Style) */}
       {section === 'home' && (
         <section className="bg-white py-20 px-6">
           <div className="max-w-7xl mx-auto">
@@ -539,12 +371,11 @@ export default function UserHome() {
         </section>
       )}
 
-      {/* 5. Customer Booking History List */}
       {section === 'bookings' && (
         <section className="bg-apple-canvas-parchment py-16 px-6 min-h-[60vh]">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-2xl font-display font-semibold tracking-apple-tight mb-8 select-none">📋 Đặt Phòng Của Tôi</h2>
-            
+
             {!user ? (
               <div className="bg-white border border-apple-hairline rounded-apple-lg p-16 text-center select-none text-apple-ink-muted-48 shadow-sm">
                 <p className="mb-4">Vui lòng đăng nhập để xem lịch sử đặt phòng của bạn</p>
@@ -554,7 +385,7 @@ export default function UserHome() {
               <div className="bg-white rounded-apple-lg border border-apple-hairline shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
-                    <thead>
+                     <thead>
                       <tr className="bg-apple-surface-pearl border-b border-apple-divider-soft text-[12px] uppercase font-semibold text-apple-ink-muted-48 tracking-wider">
                         <th className="px-6 py-4">Mã Đặt</th>
                         <th className="px-6 py-4">Check-in</th>
@@ -625,150 +456,21 @@ export default function UserHome() {
         </section>
       )}
 
-      {/* 6. Checkout Modal (Booking Info collection) */}
       {selectedRoom && (
-        <div
-          className="fixed inset-0 bg-apple-surface-black/40 backdrop-blur-[4px] flex items-center justify-center z-[1000] p-4 transition-opacity duration-200"
-          onClick={(e) => e.target === e.currentTarget && setSelectedRoom(null)}
-        >
-          <div className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden w-full max-w-[640px] flex flex-col max-h-[85vh] shadow-lg animate-slide-up">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-apple-divider-soft select-none">
-              <h3 className="font-display font-semibold text-lg text-apple-ink">Xác Nhận Đặt Phòng</h3>
-              <button
-                className="w-8 h-8 rounded-full flex items-center justify-center text-apple-ink-muted-80 hover:bg-apple-divider-soft transition-all active-scale"
-                onClick={() => setSelectedRoom(null)}
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleConfirmBooking} className="flex-1 flex flex-col overflow-hidden">
-              <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
-                
-                {/* Select Room Summary Box */}
-                <div className="bg-apple-canvas-parchment p-4 rounded-apple-md border border-apple-divider-soft flex flex-col gap-1.5 text-sm select-none">
-                  <h4 className="font-semibold text-apple-ink mb-1">Thông tin phòng chọn:</h4>
-                  <p>🏢 Phòng: <strong>{selectedRoom.roomNumber}</strong> ({selectedRoom.roomType?.name})</p>
-                  <p>💵 Đơn giá: <strong>{formatVND(selectedRoom.roomType?.basePrice)}/đêm</strong></p>
-                  <p>📅 Thời gian: <strong>{formatDate(checkIn)}</strong> đến <strong>{formatDate(checkOut)}</strong> ({getNights()} đêm)</p>
-                </div>
-
-                {/* Apple Style Option Chips (Configurators) */}
-                <div className="flex flex-col gap-2.5 select-none">
-                  <h4 className="text-[13px] font-semibold text-apple-ink uppercase tracking-wider">Dịch vụ đi kèm tự chọn:</h4>
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      type="button"
-                      className={`px-4 py-2.5 rounded-full text-xs font-semibold transition-all active-scale border ${
-                        includeBreakfast
-                          ? 'border-apple-primary bg-apple-primary/5 text-apple-primary'
-                          : 'border-apple-hairline bg-apple-canvas text-apple-ink-muted-80 hover:bg-apple-surface-pearl'
-                      }`}
-                      onClick={() => setIncludeBreakfast(!includeBreakfast)}
-                    >
-                      🥞 Buffet Ăn Sáng (+150k/đêm) {includeBreakfast && '✓'}
-                    </button>
-                    <button
-                      type="button"
-                      className={`px-4 py-2.5 rounded-full text-xs font-semibold transition-all active-scale border ${
-                        airportPickup
-                          ? 'border-apple-primary bg-apple-primary/5 text-apple-primary'
-                          : 'border-apple-hairline bg-apple-canvas text-apple-ink-muted-80 hover:bg-apple-surface-pearl'
-                      }`}
-                      onClick={() => setAirportPickup(!airportPickup)}
-                    >
-                      🚗 Đưa Đón Sân Bay (+350k) {airportPickup && '✓'}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Guest Personal Form */}
-                <div className="flex flex-col gap-4">
-                  <h4 className="font-semibold text-apple-ink border-b border-apple-divider-soft pb-2 text-[15px] select-none">
-                    Thông Tin Khách Lưu Trú:
-                  </h4>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[13px] font-semibold text-apple-ink-muted-80">Họ và đệm *</label>
-                      <input
-                        type="text"
-                        className="bg-apple-surface-pearl text-apple-ink text-[14px] border border-apple-hairline rounded-apple-sm px-3.5 py-2.5 focus:outline-none focus:border-apple-primary focus:ring-2 focus:ring-apple-primary/10 transition-all"
-                        required
-                        value={guestForm.firstName}
-                        onChange={(e) => setGuestForm({ ...guestForm, firstName: e.target.value })}
-                        placeholder="Ví dụ: Nguyễn Văn"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[13px] font-semibold text-apple-ink-muted-80">Tên *</label>
-                      <input
-                        type="text"
-                        className="bg-apple-surface-pearl text-apple-ink text-[14px] border border-apple-hairline rounded-apple-sm px-3.5 py-2.5 focus:outline-none focus:border-apple-primary focus:ring-2 focus:ring-apple-primary/10 transition-all"
-                        required
-                        value={guestForm.lastName}
-                        onChange={(e) => setGuestForm({ ...guestForm, lastName: e.target.value })}
-                        placeholder="Ví dụ: Anh"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[13px] font-semibold text-apple-ink-muted-80">Số Điện Thoại *</label>
-                      <input
-                        type="tel"
-                        className="bg-apple-surface-pearl text-apple-ink text-[14px] border border-apple-hairline rounded-apple-sm px-3.5 py-2.5 focus:outline-none focus:border-apple-primary focus:ring-2 focus:ring-apple-primary/10 transition-all"
-                        required
-                        value={guestForm.phone}
-                        onChange={(e) => setGuestForm({ ...guestForm, phone: e.target.value })}
-                        placeholder="Ví dụ: 0912345678"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[13px] font-semibold text-apple-ink-muted-80">Số CMND / CCCD *</label>
-                      <input
-                        type="text"
-                        className="bg-apple-surface-pearl text-apple-ink text-[14px] border border-apple-hairline rounded-apple-sm px-3.5 py-2.5 focus:outline-none focus:border-apple-primary focus:ring-2 focus:ring-apple-primary/10 transition-all"
-                        required
-                        value={guestForm.identityNum}
-                        onChange={(e) => setGuestForm({ ...guestForm, identityNum: e.target.value })}
-                        placeholder="CCCD/CMND 12 số"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-semibold text-apple-ink-muted-80">Ngày Sinh</label>
-                    <input
-                      type="date"
-                      className="bg-apple-surface-pearl text-apple-ink text-[14px] border border-apple-hairline rounded-apple-sm px-3.5 py-2.5 focus:outline-none focus:border-apple-primary focus:ring-2 focus:ring-apple-primary/10 transition-all"
-                      value={guestForm.dateOfBirth}
-                      onChange={(e) => setGuestForm({ ...guestForm, dateOfBirth: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* 7. Persistent/Sticky Booking Summary Bar inside checkout */}
-              <div className="px-6 py-4 border-t border-apple-divider-soft bg-apple-canvas-parchment flex items-center justify-between select-none">
-                <div>
-                  <span className="text-xs text-apple-ink-muted-48 block">Tổng cộng:</span>
-                  <span className="text-lg font-bold text-apple-primary font-display">{formatVND(getSubtotal())}</span>
-                </div>
-                <div className="flex gap-3">
-                  <Button type="button" variant="pearl-capsule" onClick={() => setSelectedRoom(null)}>
-                    Hủy
-                  </Button>
-                  <Button type="submit" variant="primary" disabled={isBooking}>
-                    {isBooking ? 'Đang Xử Lý...' : 'Đặt Phòng'}
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
+        <BookingModal
+          room={selectedRoom}
+          checkIn={checkIn}
+          checkOut={checkOut}
+          onClose={() => setSelectedRoom(null)}
+          guestForm={guestForm}
+          setGuestForm={setGuestForm}
+          includeBreakfast={includeBreakfast}
+          setIncludeBreakfast={setIncludeBreakfast}
+          airportPickup={airportPickup}
+          setAirportPickup={setAirportPickup}
+          isBooking={isBooking}
+          onSubmit={handleConfirmBooking}
+        />
       )}
     </CustomerLayout>
   );

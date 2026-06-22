@@ -7,7 +7,7 @@ import com.hotelreservation.modules.reservation.entity.ReservationStatusHistory;
 import com.hotelreservation.modules.reservation.repository.ReservationGuestRepository;
 import com.hotelreservation.modules.reservation.repository.ReservationRoomRepository;
 import com.hotelreservation.modules.reservation.repository.ReservationStatusHistoryRepository;
-import com.hotelreservation.modules.reservation.service.impl.ReservationServiceImpl;
+import com.hotelreservation.modules.reservation.service.impl.ReservationCommandServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +33,7 @@ class ReservationServiceTest {
     private ReservationGuestRepository resGuestRepo;
 
     @InjectMocks
-    private ReservationServiceImpl reservationService;
+    private ReservationCommandServiceImpl reservationService;
 
     @Test
     void createReservationGuest_overlapStays_throwsException() {

@@ -90,4 +90,19 @@ public interface ReservationRoomRepository extends  JpaRepository<ReservationRoo
         @Param("fromDate") LocalDate fromDate,
         @Param("toDate") LocalDate toDate
     );
+
+    @Query(value = """
+        select *
+        from reservationRoom rr
+        where rr.reservationId in (:resIds)
+    """, nativeQuery = true)
+    List<ReservationRoom> findByReservationIdIn(@Param("resIds") List<String> resIds);
+
+    @Query(value = """
+        select *
+        from reservationRoom rr
+        where rr.id = :resRoomId
+        for update
+    """, nativeQuery = true)
+    Optional<ReservationRoom> getByResRoomIdForUpdate(@Param("resRoomId") String resRoomId);
 }
