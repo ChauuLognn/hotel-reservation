@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.hotelreservation.module.reservation.entity.ReservationRoom;
-import com.hotelreservation.module.reservation.entity.ReservationGuest;
-import com.hotelreservation.module.reservation.repository.ReservationGuestRepository;
-import com.hotelreservation.module.reservation.repository.ReservationRoomRepository;
-import com.hotelreservation.module.reservation.repository.ReservationStatusHistoryRepository;
-import com.hotelreservation.module.reservation.service.ReservationService;
+import com.hotelreservation.modules.reservation.entity.ReservationRoom;
+import com.hotelreservation.modules.reservation.entity.ReservationGuest;
+import com.hotelreservation.modules.reservation.repository.ReservationGuestRepository;
+import com.hotelreservation.modules.reservation.repository.ReservationRoomRepository;
+import com.hotelreservation.modules.reservation.repository.ReservationStatusHistoryRepository;
+import com.hotelreservation.modules.reservation.service.ReservationService;
 
 
 // task tự động checkOut cho khách khi đến giờ resId.checkOutTime 

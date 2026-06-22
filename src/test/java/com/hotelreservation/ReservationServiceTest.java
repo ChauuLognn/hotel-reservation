@@ -1,13 +1,13 @@
 package com.hotelreservation;
 
 import com.hotelreservation.common.enums.ReservationStatus;
-import com.hotelreservation.module.reservation.entity.Reservation;
-import com.hotelreservation.module.reservation.entity.ReservationRoom;
-import com.hotelreservation.module.reservation.entity.ReservationStatusHistory;
-import com.hotelreservation.module.reservation.repository.ReservationGuestRepository;
-import com.hotelreservation.module.reservation.repository.ReservationRoomRepository;
-import com.hotelreservation.module.reservation.repository.ReservationStatusHistoryRepository;
-import com.hotelreservation.module.reservation.service.impl.ReservationServiceImpl;
+import com.hotelreservation.modules.reservation.entity.Reservation;
+import com.hotelreservation.modules.reservation.entity.ReservationRoom;
+import com.hotelreservation.modules.reservation.entity.ReservationStatusHistory;
+import com.hotelreservation.modules.reservation.repository.ReservationGuestRepository;
+import com.hotelreservation.modules.reservation.repository.ReservationRoomRepository;
+import com.hotelreservation.modules.reservation.repository.ReservationStatusHistoryRepository;
+import com.hotelreservation.modules.reservation.service.impl.ReservationServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

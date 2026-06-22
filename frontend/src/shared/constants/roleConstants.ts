@@ -1,0 +1,14 @@
+export const ROLE_LABELS: Record<string | number, string> = {
+  1: 'MANAGER',
+  2: 'EMPLOYEE',
+  3: 'CUSTOMER',
+  MANAGER:  'MANAGER',
+  EMPLOYEE: 'EMPLOYEE',
+  CUSTOMER: 'CUSTOMER',
+};
+
+export const ROLE_IDS = {
+  MANAGER:  1,
+  EMPLOYEE: 2,
+  CUSTOMER: 3,
+} as const;

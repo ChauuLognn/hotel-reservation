@@ -1,13 +1,13 @@
 package com.hotelreservation;
 
 import com.hotelreservation.common.enums.RoomStatus;
-import com.hotelreservation.module.room.dto.request.CreateRoomRequest;
-import com.hotelreservation.module.room.dto.response.RoomResponse;
-import com.hotelreservation.module.room.entity.Room;
-import com.hotelreservation.module.room.entity.RoomType;
-import com.hotelreservation.module.room.repository.RoomRepository;
-import com.hotelreservation.module.room.repository.RoomTypeRepository;
-import com.hotelreservation.module.room.service.impl.RoomServiceImpl;
+import static com.hotelreservation.modules.room.dto.RoomRequests.*;
+import static com.hotelreservation.modules.room.dto.RoomResponses.*;
+import com.hotelreservation.modules.room.entity.Room;
+import com.hotelreservation.modules.room.entity.RoomType;
+import com.hotelreservation.modules.room.repository.RoomRepository;
+import com.hotelreservation.modules.room.repository.RoomTypeRepository;
+import com.hotelreservation.modules.room.service.impl.RoomServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

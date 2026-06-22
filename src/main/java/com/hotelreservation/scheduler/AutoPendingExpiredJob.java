@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.hotelreservation.module.reservation.repository.ReservationRepository;
-import com.hotelreservation.module.reservation.service.ReservationService;
-import com.hotelreservation.module.reservation.dto.request.ChangeStatusRequest;
+import com.hotelreservation.modules.reservation.repository.ReservationRepository;
+import com.hotelreservation.modules.reservation.service.ReservationService;
+import com.hotelreservation.modules.reservation.dto.ReservationRequests.ChangeStatusRequest;
 import com.hotelreservation.common.enums.ReservationStatus;
 
 /**
