@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, User } from 'lucide-react';
 import { formatDate } from '@shared/utils/format';
 import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
 import Layout from '@layout/Layout';
-import reservationApi from '@features/reservations/api/reservationApi';
+import reservationApi from '@features/reservations/reservationApi';
 import SearchBox from '@shared/ui/SearchBox';
 
 interface RegisteredGuest {

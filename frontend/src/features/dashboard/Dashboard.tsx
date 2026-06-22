@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, Users, Home, Coffee, RefreshCw } from 'lucide-react';
 import Layout from '@layout/Layout';
-import reportApi from '@features/dashboard/api/reportApi';
+import reportApi from '@features/dashboard/reportApi';
 import { formatVND, formatDate } from '@shared/utils/format';
 import StatCard from '@shared/ui/StatCard';
 import Button from '@shared/ui/Button';

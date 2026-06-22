@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Home, Key, Wrench, Edit2, Trash2, Eye } from 'lucide-react';
 import Layout from '@layout/Layout';
-import roomApi from '@features/rooms/api/roomApi';
+import roomApi from '@features/rooms/roomApi';
 import { formatVND } from '@shared/utils/format';
 import { ROOM_STATUS } from '@shared/constants/statusMaps';
 import { useAuth } from '@app/AuthContext';

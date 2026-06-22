@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Coffee } from 'lucide-react';
 import Layout from '@layout/Layout';
-import serviceApi from '@features/services/api/serviceApi';
+import serviceApi from '@features/services/serviceApi';
 import { formatVND } from '@shared/utils/format';
 import { useToast } from '@context/ToastContext';
 import { useConfirm } from '@context/ConfirmContext';

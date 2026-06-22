@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Users } from 'lucide-react';
 import Layout from '@layout/Layout';
-import guestApi from './api/guestApi';
+import guestApi from './guestApi';
 import { useToast } from '@context/ToastContext';
 import { useConfirm } from '@context/ConfirmContext';
 import Button from '@shared/ui/Button';

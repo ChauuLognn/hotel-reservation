@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, UserPlus, Key } from 'lucide-react';
 import Layout from '@layout/Layout';
-import userApi from './api/userApi';
+import userApi from './userApi';
 import { ROLE_BADGE } from '@shared/constants/statusMaps';
 import { ROLE_LABELS, ROLE_IDS } from '@shared/constants/roleConstants';
 import { useAuth } from '@app/AuthContext';

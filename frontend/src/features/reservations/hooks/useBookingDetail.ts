@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import reservationApi from '@features/reservations/api/reservationApi';
-import guestApi from '@features/guests/api/guestApi';
-import roomApi from '@features/rooms/api/roomApi';
-import serviceApi from '@features/services/api/serviceApi';
-import billApi from '@features/billing/api/billApi';
+import reservationApi from '@features/reservations/reservationApi';
+import guestApi from '@features/guests/guestApi';
+import roomApi from '@features/rooms/roomApi';
+import serviceApi from '@features/services/serviceApi';
+import billApi from '@features/billing/billApi';
 import { useToast } from '@context/ToastContext';
 import { useConfirm } from '@context/ConfirmContext';
 

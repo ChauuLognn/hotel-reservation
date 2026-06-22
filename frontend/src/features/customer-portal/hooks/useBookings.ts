@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import reservationApi from '@features/reservations/api/reservationApi';
+import reservationApi from '@features/reservations/reservationApi';
 import { useAuth } from '@app/AuthContext';
 import { useToast } from '@context/ToastContext';
 import { useConfirm } from '@context/ConfirmContext';

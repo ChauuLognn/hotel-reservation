@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import roomApi from '@features/rooms/api/roomApi';
+import roomApi from '@features/rooms/roomApi';
 import { getTodayString, getTomorrowString } from '@shared/utils/date';
 import { useToast } from '@context/ToastContext';
 
