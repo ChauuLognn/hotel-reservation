@@ -43,7 +43,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (account: string, password: string): Promise<User> => {
     const res = await authApi.login({ account, password });
-    const data = (res.data?.data || res.data) as User;
+    const data = res.data as User;
+    if (!data?.token) {
+      throw new Error('Phản hồi đăng nhập không hợp lệ');
+    }
     localStorage.setItem('jwtToken', data.token);
     localStorage.setItem('userId', String(data.userId));
     localStorage.setItem('userInfo', JSON.stringify(data));

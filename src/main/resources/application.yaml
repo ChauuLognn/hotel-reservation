@@ -6,8 +6,8 @@ server:
 spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3308/hotel_reservation_premium?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Bangkok&zeroDateTimeBehavior=convertToNull}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:1011}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -28,7 +28,7 @@ spring:
       mode: never
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:hotel_reservation_secret_key_2024_very_long_and_secure_at_least_256_bits_for_hs256_algorithm}
   expiration: ${JWT_EXPIRATION:86400000}
 
 cors:
@@ -37,5 +37,3 @@ cors:
     - http://localhost:5174
 
 system-user-id: 9
-
-

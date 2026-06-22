@@ -48,7 +48,7 @@ export default function Login() {
         }
       }
     } catch (err: any) {
-      const msg = err?.response?.data?.message || 'Sai tên đăng nhập hoặc mật khẩu!';
+      const msg = err?.response?.data?.message || err?.message || 'Sai tên đăng nhập hoặc mật khẩu!';
       setError(msg);
     } finally {
       setLoading(false);

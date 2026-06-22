@@ -17,6 +17,7 @@ import static com.hotelreservation.modules.account.dto.AccountRequests.*;
 import static com.hotelreservation.modules.account.dto.AccountResponses.*;
 import com.hotelreservation.modules.account.entity.Emp;
 import com.hotelreservation.modules.account.entity.User;
+import com.hotelreservation.modules.account.mapper.AccountMapper;
 import com.hotelreservation.common.enums.RoleName;
 import com.hotelreservation.modules.account.entity.Role;
 import com.hotelreservation.modules.account.repository.EmpRepository;
@@ -148,6 +149,9 @@ public class AuthController {
                 guestId
             );
 
+            String userEmail = user.getEmp() != null ? user.getEmp().getEmail() : "";
+            loginResponse.setUser(new LoginResponse.UserInfo(user.getId(), userEmail, role));
+
             rateLimiterService.reset("ip:" + ip);
             rateLimiterService.reset("account:" + account);
 
@@ -155,7 +159,7 @@ public class AuthController {
 
         } catch (AuthenticationException e) {
             // Authentication failed (wrong password or user not found)
-            throw new IllegalArgumentException("Invalid account or password");
+            throw new org.springframework.security.authentication.BadCredentialsException("Invalid account or password");
         }
     }
 
@@ -194,7 +198,7 @@ public class AuthController {
      * PUBLIC endpoint - Không cần JWT token
      */
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<User>> register(@RequestBody RegisterRequest request, HttpServletRequest servletRequest) {
+    public ResponseEntity<ApiResponse<UserResponse>> register(@RequestBody RegisterRequest request, HttpServletRequest servletRequest) {
         String ip = servletRequest.getRemoteAddr();
         if (rateLimiterService.isBlocked("ip:" + ip) || rateLimiterService.isBlocked("register:" + request.getAccount())) {
             throw new IllegalStateException("Quá nhiều yêu cầu đăng ký. Vui lòng thử lại sau 1 phút.");
@@ -202,18 +206,18 @@ public class AuthController {
         try {
             // 1. Kiểm tra account đã tồn tại chưa
             if (userRepository.findByAccount(request.getAccount()).isPresent()) {
-                throw new IllegalArgumentException("Account already exists");
+                throw new IllegalStateException("Account already exists");
             }
 
             // 2. Kiểm tra email, phone, identityNum đã tồn tại chưa
             if (empRepository.findByEmail(request.getEmail()).isPresent()) {
-                throw new IllegalArgumentException("Email already exists");
+                throw new IllegalStateException("Email already exists");
             }
             if (empRepository.findByPhone(request.getPhone()).isPresent()) {
-                throw new IllegalArgumentException("Phone already exists");
+                throw new IllegalStateException("Phone already exists");
             }
             if (empRepository.findByIdentityNum(request.getIdentityNum()).isPresent()) {
-                throw new IllegalArgumentException("Identity number already exists");
+                throw new IllegalStateException("Identity number already exists");
             }
 
             // 3. Tạo Employee mới
@@ -258,9 +262,9 @@ public class AuthController {
             user.setGuest(guest);
             user = userRepository.save(user);
 
-            return ResponseEntity.ok(ApiResponse.success("User registered successfully", user));
+            return ResponseEntity.ok(ApiResponse.success("User registered successfully", AccountMapper.toResponse(user)));
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Failed to register user: " + e.getMessage());
@@ -382,6 +386,9 @@ public class AuthController {
             JwtTokenProvider.getExpirationTime(),
             user.getGuest() != null ? user.getGuest().getId() : null
         );
+
+        String userEmail = user.getEmp() != null ? user.getEmp().getEmail() : "";
+        loginResponse.setUser(new LoginResponse.UserInfo(user.getId(), userEmail, role));
 
         return ResponseEntity.ok(ApiResponse.success("Token refreshed successfully", loginResponse));
     }

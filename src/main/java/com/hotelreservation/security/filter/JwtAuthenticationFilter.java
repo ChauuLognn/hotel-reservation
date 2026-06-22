@@ -20,7 +20,6 @@ import com.hotelreservation.security.jwt.JwtTokenProvider;
 /**
  * JWT Authentication Filter
  *
- * Runs before controllers to validate JWT tokens on protected routes.
  * Public auth endpoints and OPTIONS preflight requests bypass token validation.
  */
 @Component
@@ -47,10 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String servletPath = request.getServletPath();
-        if (servletPath.equals("/api/auth/login") ||
-            servletPath.equals("/api/auth/register") ||
-            servletPath.equals("/api/auth/reset-password") ||
-            servletPath.equals("/api/auth/logout")) {
+        if (isPublicAuthEndpoint(servletPath)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -84,5 +80,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPublicAuthEndpoint(String servletPath) {
+        if (!servletPath.startsWith("/api/auth/")) {
+            return false;
+        }
+        return servletPath.equals("/api/auth/login")
+                || servletPath.equals("/api/auth/register")
+                || servletPath.equals("/api/auth/logout")
+                || servletPath.equals("/api/auth/reset-password");
     }
 }

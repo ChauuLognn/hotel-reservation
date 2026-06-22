@@ -2,24 +2,27 @@ package com.hotelreservation.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.hotelreservation.common.enums.RoleName;
-import com.hotelreservation.modules.account.entity.Role;
 import com.hotelreservation.modules.account.entity.Emp;
+import com.hotelreservation.modules.account.entity.Guest;
+import com.hotelreservation.modules.account.entity.Role;
 import com.hotelreservation.modules.account.entity.User;
-import com.hotelreservation.modules.account.repository.RoleRepository;
 import com.hotelreservation.modules.account.repository.EmpRepository;
+import com.hotelreservation.modules.account.repository.GuestRepository;
+import com.hotelreservation.modules.account.repository.RoleRepository;
 import com.hotelreservation.modules.account.repository.UserRepository;
 
 /**
- * Tự động khởi tạo dữ liệu cần thiết khi ứng dụng start.
- * Idempotent: chạy lại nhiều lần không tạo trùng.
+ * Seeds required roles and demo accounts for local development.
+ * Idempotent: safe to run on every startup.
  */
 @Component
 public class DataSeeder implements CommandLineRunner {
+
+    private static final String DEMO_PASSWORD = "123456";
 
     @Autowired
     private RoleRepository roleRepository;
@@ -31,10 +34,10 @@ public class DataSeeder implements CommandLineRunner {
     private EmpRepository empRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private GuestRepository guestRepository;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
@@ -42,7 +45,37 @@ public class DataSeeder implements CommandLineRunner {
         seedRoleIfMissing(RoleName.EMPLOYEE);
         seedRoleIfMissing(RoleName.CUSTOMER);
         seedSystemUserIfMissing();
-        System.out.println("[DataSeeder] Roles and System User seeded successfully.");
+        seedDemoUserIfMissing(
+                "admin",
+                DEMO_PASSWORD,
+                RoleName.MANAGER,
+                "Admin",
+                "Manager",
+                "admin@hotelhaven.com",
+                "0900000001",
+                "1 Admin Street",
+                "111111111111");
+        seedDemoUserIfMissing(
+                "employee",
+                DEMO_PASSWORD,
+                RoleName.EMPLOYEE,
+                "Hotel",
+                "Staff",
+                "employee@hotelhaven.com",
+                "0900000002",
+                "2 Staff Street",
+                "222222222222");
+        seedDemoUserIfMissing(
+                "customer",
+                DEMO_PASSWORD,
+                RoleName.CUSTOMER,
+                "Demo",
+                "Customer",
+                "customer@hotelhaven.com",
+                "0900000003",
+                "3 Guest Street",
+                "333333333333");
+        System.out.println("[DataSeeder] Roles and demo users seeded successfully.");
     }
 
     private void seedRoleIfMissing(RoleName roleName) {
@@ -55,26 +88,72 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedSystemUserIfMissing() {
-        if (userRepository.findByAccount("system").isEmpty()) {
-            Role managerRole = roleRepository.findByName(RoleName.MANAGER)
+        if (userRepository.findByAccount("system").isPresent()) {
+            return;
+        }
+
+        Role managerRole = roleRepository.findByName(RoleName.MANAGER)
                 .orElseThrow(() -> new IllegalStateException("MANAGER role not found"));
 
-            Emp emp = new Emp();
-            emp.setFirstName("System");
-            emp.setLastName("Robot");
-            emp.setEmail("system@hotelhaven.com");
-            emp.setPhone("0000000000");
-            emp.setAddress("System");
-            emp.setIdentityNum("000000000000");
-            emp.setRole(managerRole);
-            emp = empRepository.save(emp);
+        Emp emp = new Emp();
+        emp.setFirstName("System");
+        emp.setLastName("Robot");
+        emp.setEmail("system@hotelhaven.com");
+        emp.setPhone("0000000000");
+        emp.setAddress("System");
+        emp.setIdentityNum("000000000000");
+        emp.setRole(managerRole);
+        emp = empRepository.save(emp);
 
-            User user = new User();
-            user.setAccount("system");
-            user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
-            user.setEmp(emp);
-            userRepository.save(user);
-            System.out.println("[DataSeeder] Created system user 'system'.");
+        User user = new User();
+        user.setAccount("system");
+        user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
+        user.setEmp(emp);
+        userRepository.save(user);
+        System.out.println("[DataSeeder] Created system user 'system'.");
+    }
+
+    private void seedDemoUserIfMissing(
+            String account,
+            String rawPassword,
+            RoleName roleName,
+            String firstName,
+            String lastName,
+            String email,
+            String phone,
+            String address,
+            String identityNum) {
+        if (userRepository.findByAccount(account).isPresent()) {
+            return;
         }
+
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new IllegalStateException(roleName + " role not found"));
+
+        Emp emp = new Emp();
+        emp.setFirstName(firstName);
+        emp.setLastName(lastName);
+        emp.setEmail(email);
+        emp.setPhone(phone);
+        emp.setAddress(address);
+        emp.setIdentityNum(identityNum);
+        emp.setRole(role);
+        emp = empRepository.save(emp);
+
+        Guest guest = new Guest();
+        guest.setFirstName(firstName);
+        guest.setLastName(lastName);
+        guest.setPhone(phone);
+        guest.setIdentityNum(identityNum);
+        guest = guestRepository.save(guest);
+
+        User user = new User();
+        user.setAccount(account);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setEmp(emp);
+        user.setGuest(guest);
+        userRepository.save(user);
+
+        System.out.println("[DataSeeder] Created demo user '" + account + "' with role " + roleName);
     }
 }

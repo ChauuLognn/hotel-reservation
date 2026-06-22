@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiResponse<Object>> handleAuthentication(AuthenticationException ex) {
         log.warn("Authentication failed: {}", ex.getMessage());
-        return error(HttpStatus.UNAUTHORIZED, "Authentication failed");
+        return error(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)

@@ -44,7 +44,6 @@ public class AccountMapper {
         dto.setEmpId(u.getEmp() != null ? u.getEmp().getId() : null);
         dto.setGuestId(u.getGuest() != null ? u.getGuest().getId() : null);
         dto.setAccount(u.getAccount());
-        dto.setPassword(u.getPassword());
         return dto;
     }
 

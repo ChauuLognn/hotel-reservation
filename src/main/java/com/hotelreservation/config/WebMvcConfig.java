@@ -10,14 +10,14 @@ import java.nio.file.Paths;
 
 /**
  * Web MVC Configuration
- * Cấu hình để serve static files (HTML, CSS, JS) từ thư mục frontend-react
+ * Serve static files from the frontend directory (React + Vite build output).
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        String frontendPath = Paths.get("frontend-react").toAbsolutePath().toUri().toString();
+        String frontendPath = Paths.get("frontend").toAbsolutePath().toUri().toString();
 
         registry.addResourceHandler("/frontend/**")
                 .addResourceLocations(frontendPath + "/")
@@ -34,7 +34,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // registry.addRedirectViewController("/", "/frontend/index.html");
     }
 
-    // CORS is configured centrally in SecurityConfig.corsConfigurationSource()
-    // Do NOT add addCorsMappings here to avoid conflicting CORS configuration.
-
+    // CORS is configured centrally in CorsConfig.corsConfigurationSource()
 }

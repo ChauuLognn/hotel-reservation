@@ -51,7 +51,7 @@ export default function Register() {
         navigate('/login');
       }, 2500);
     } catch (err: any) {
-      const msg = err?.response?.data?.message || 'Đăng ký thất bại, vui lòng thử lại!';
+      const msg = err?.response?.data?.message || err?.message || 'Đăng ký thất bại, vui lòng thử lại!';
       setError(msg);
     } finally {
       setLoading(false);

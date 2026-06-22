@@ -132,6 +132,12 @@ axiosClient.interceptors.response.use(
       localStorage.removeItem('currentGuestId');
       window.location.href = '/login';
     }
+
+    const payload = error.response?.data;
+    if (payload && typeof payload === 'object' && payload.message) {
+      error.message = payload.message;
+    }
+
     return Promise.reject(error);
   }
 );

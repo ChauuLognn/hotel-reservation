@@ -85,6 +85,7 @@ public class AccountResponses {
         private String role;
         private Long expiresIn;
         private Integer guestId;
+        private UserInfo user;
 
         public LoginResponse() {}
 
@@ -144,6 +145,31 @@ public class AccountResponses {
 
         public Integer getGuestId() { return guestId; }
         public void setGuestId(Integer guestId) { this.guestId = guestId; }
+
+        public UserInfo getUser() { return user; }
+        public void setUser(UserInfo user) { this.user = user; }
+
+        public static class UserInfo {
+            private Integer id;
+            private String email;
+            private String role;
+
+            public UserInfo() {}
+            public UserInfo(Integer id, String email, String role) {
+                this.id = id;
+                this.email = email;
+                this.role = role;
+            }
+
+            public Integer getId() { return id; }
+            public void setId(Integer id) { this.id = id; }
+
+            public String getEmail() { return email; }
+            public void setEmail(String email) { this.email = email; }
+
+            public String getRole() { return role; }
+            public void setRole(String role) { this.role = role; }
+        }
     }
 
     public static class UserResponse {
