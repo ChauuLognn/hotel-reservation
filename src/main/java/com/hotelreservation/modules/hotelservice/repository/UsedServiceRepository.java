@@ -83,13 +83,13 @@ public interface UsedServiceRepository extends JpaRepository<UsedService, String
         JOIN reservationRoom rr ON rs.reservationRoomId = rr.id
         JOIN reservation res    ON rr.reservationId = res.id
         WHERE rr.checkOutTime >= :from
-          AND rr.checkOutTime < :to
+          AND rr.checkOutTime <= :to
           AND res.status <> 'CANCELLED'
         GROUP BY s.id, s.name
         ORDER BY totalRevenue DESC
         """, nativeQuery = true)
     List<ServiceUsageProjection> getServiceUsage(
-        @Param("from") LocalDateTime from,
-        @Param("to") LocalDateTime to
+        @Param("from") java.time.LocalDate from,
+        @Param("to") java.time.LocalDate to
     );    
 }

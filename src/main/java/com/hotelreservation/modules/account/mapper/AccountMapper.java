@@ -47,5 +47,14 @@ public class AccountMapper {
         return dto;
     }
 
+    public static AccountResponses.AdminUserResponse toAdminUserResponse(User u) {
+        if (u == null) return null;
+        AccountResponses.AdminUserResponse dto = new AccountResponses.AdminUserResponse();
+        dto.setId(u.getId());
+        dto.setAccount(u.getAccount());
+        dto.setEmp(toResponse(u.getEmp()));
+        return dto;
+    }
+
     private AccountMapper() {}
 }

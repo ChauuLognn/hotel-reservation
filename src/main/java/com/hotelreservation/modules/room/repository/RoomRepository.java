@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -51,6 +53,30 @@ public interface RoomRepository extends JpaRepository<Room, Integer>{
 
     @Query(value = "SELECT * FROM room WHERE id = :id", nativeQuery = true)
     Optional<Room> findRoom(@Param("id") Integer id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT r FROM Room r WHERE r.id = :id")
+    Optional<Room> findByIdForUpdate(@Param("id") Integer id);
+
+    @Query(value = """
+        SELECT COUNT(1)
+        FROM reservationRoom rr
+        WHERE rr.roomId = :roomId
+          AND rr.checkInTime < :checkOut
+          AND (rr.checkOutTime IS NULL OR rr.checkOutTime > :checkIn)
+          AND (
+              SELECT h.newStatus
+              FROM reservationStatusHistory h
+              WHERE h.reservationRoomId = rr.id
+              ORDER BY h.updatedAt DESC, h.historySeq DESC
+              LIMIT 1
+              ) NOT IN ('CHECK_OUT', 'CANCELLED')
+        """, nativeQuery = true)
+    long countOverlappingBookings(
+        @Param("roomId") Integer roomId,
+        @Param("checkIn") LocalDate checkIn,
+        @Param("checkOut") LocalDate checkOut
+    );
 
     @Query(value = "SELECT * FROM room", nativeQuery = true)
     List<Room> takeAll();

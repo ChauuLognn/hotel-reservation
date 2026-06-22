@@ -23,7 +23,7 @@ export interface AvailableRoom {
   roomId: number;
   name: string;
   capacity: number;
-  baseprice: number;
+  basePrice: number;
 }
 
 const roomApi = {

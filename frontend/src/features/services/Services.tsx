@@ -47,7 +47,8 @@ export default function Services() {
         status: s.status,
       }));
       setServices(mapped);
-    } catch (e) {
+    } catch (e: any) {
+      if (e.name === 'CanceledError' || e.name === 'AbortError') return;
       console.error(e);
       setServices([]);
     } finally {

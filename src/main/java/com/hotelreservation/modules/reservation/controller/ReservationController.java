@@ -116,7 +116,7 @@ public class ReservationController {
     @PostMapping("/api/reservationStatus/{resId}/status")
     @PreAuthorize("@securityEval.hasReservationAccess(#resId)")
     public ResponseEntity<Void> updateReservationStatus(@PathVariable("resId") String resId,
-                                                        @RequestBody ChangeStatusRequest req,
+                                                        @RequestBody @Valid ChangeStatusRequest req,
                                                         @RequestHeader(value = "X-User-Id", required = false) Integer userId) {
         if (userId == null) {
             org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();

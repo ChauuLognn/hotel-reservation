@@ -27,11 +27,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, String
                         @Param("totalAmount") BigDecimal totalAmount, @Param("createdBy") Integer createdBy,
                         @Param("status") String status, @Param("bookingDate") LocalDateTime bookingDate);
 
-    @Query(value= """
-        select *
-        from reservation r
-        where r.guestId = :guestId
-    """, nativeQuery=true)
+    @Query("""
+        SELECT r
+        FROM Reservation r
+        JOIN FETCH r.guest
+        JOIN FETCH r.createdBy
+        WHERE r.guest.id = :guestId
+    """)
     List<Reservation> getAllResByGuestId(@Param("guestId") Integer guestId);
 
     @Query(value="""

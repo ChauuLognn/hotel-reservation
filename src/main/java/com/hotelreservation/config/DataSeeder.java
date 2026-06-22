@@ -25,7 +25,7 @@ import org.springframework.core.annotation.Order;
  */
 @Component
 @Profile("dev")
-@Order(2)
+@Order(3)
 public class DataSeeder implements CommandLineRunner {
 
     // WARNING: Demo password is only for development environments.
@@ -50,7 +50,6 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
         System.out.println("[DataSeeder] Running in DEVELOPMENT mode - seeding demo data.");
-        seedSystemUserIfMissing();
         seedDemoUserIfMissing(
                 "admin",
                 DEMO_PASSWORD,
@@ -82,32 +81,6 @@ public class DataSeeder implements CommandLineRunner {
                 "3 Guest Street",
                 "333333333333");
         System.out.println("[DataSeeder] Demo users seeded successfully (development mode).");
-    }
-
-    private void seedSystemUserIfMissing() {
-        if (userRepository.findByAccount("system").isPresent()) {
-            return;
-        }
-
-        Role managerRole = roleRepository.findByName(RoleName.MANAGER)
-                .orElseThrow(() -> new IllegalStateException("MANAGER role not found"));
-
-        Emp emp = new Emp();
-        emp.setFirstName("System");
-        emp.setLastName("Robot");
-        emp.setEmail("system@hotelhaven.com");
-        emp.setPhone("0000000000");
-        emp.setAddress("System");
-        emp.setIdentityNum("000000000000");
-        emp.setRole(managerRole);
-        emp = empRepository.save(emp);
-
-        User user = new User();
-        user.setAccount("system");
-        user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
-        user.setEmp(emp);
-        userRepository.save(user);
-        System.out.println("[DataSeeder] Created system user 'system'.");
     }
 
     private void seedDemoUserIfMissing(

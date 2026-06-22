@@ -70,8 +70,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Integer id) {
-        userRepo.findUserById(id)
+        User userToDelete = userRepo.findUserById(id)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+
+        if ("system".equals(userToDelete.getAccount())) {
+            throw new IllegalArgumentException("Không thể xóa tài khoản hệ thống 'system'.");
+        }
+
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName().equals(userToDelete.getAccount())) {
+            throw new IllegalArgumentException("Bạn không thể tự xóa tài khoản của chính mình.");
+        }
 
         Long referenceCount = userRepo.countBusinessReferencesByUserId(id);
         if (referenceCount != null && referenceCount > 0) {

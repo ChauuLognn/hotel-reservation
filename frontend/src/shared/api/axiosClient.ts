@@ -47,7 +47,8 @@ function onRefreshed(token: string) {
 // Request interceptor: tự động thêm JWT token và làm mới nếu gần hết hạn
 axiosClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    if (config.url === '/api/auth/refresh') {
+    const publicPaths = ['/api/auth/login', '/api/auth/register', '/api/auth/reset-password', '/api/auth/logout', '/api/auth/refresh'];
+    if (publicPaths.some(p => config.url === p)) {
       return config;
     }
 
@@ -55,8 +56,8 @@ axiosClient.interceptors.request.use(
     if (token) {
       const exp = getJwtExp(token);
       const now = Date.now();
-      // Nếu token hết hạn trong vòng 5 phút, thực hiện làm mới
-      if (exp && exp - now < 5 * 60 * 1000 && exp - now > 0) {
+      // Nếu token hết hạn trong vòng 5 phút (hoặc đã hết hạn), thực hiện làm mới
+      if (exp && exp - now < 5 * 60 * 1000) {
         if (!isRefreshing) {
           isRefreshing = true;
           axios
@@ -75,6 +76,7 @@ axiosClient.interceptors.request.use(
                 localStorage.setItem('userInfo', JSON.stringify(data));
                 isRefreshing = false;
                 onRefreshed(newToken);
+                window.dispatchEvent(new CustomEvent('tokenRefreshed', { detail: data }));
               }
             })
             .catch(() => {
@@ -114,23 +116,25 @@ axiosClient.interceptors.response.use(
     if (
       payload &&
       typeof payload === 'object' &&
-      Object.prototype.hasOwnProperty.call(payload, 'success') &&
-      Object.prototype.hasOwnProperty.call(payload, 'data')
+      Object.prototype.hasOwnProperty.call(payload, 'success')
     ) {
       return {
         ...response,
-        data: payload.data,
+        data: Object.prototype.hasOwnProperty.call(payload, 'data') ? payload.data : null,
       } as any;
     }
     return response;
   },
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('jwtToken');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('userInfo');
-      localStorage.removeItem('currentGuestId');
-      window.location.href = '/login';
+      const requestUrl = error.config?.url || '';
+      if (!requestUrl.includes('/api/auth/login')) {
+        localStorage.removeItem('jwtToken');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userInfo');
+        localStorage.removeItem('currentGuestId');
+        window.location.href = '/login';
+      }
     }
 
     const payload = error.response?.data;

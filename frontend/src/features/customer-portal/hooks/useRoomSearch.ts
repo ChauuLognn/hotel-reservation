@@ -40,7 +40,7 @@ export function useRoomSearch() {
         status: 'READY',
         roomType: {
           name: av.name,
-          basePrice: av.baseprice,
+          basePrice: av.basePrice,
           capacity: av.capacity,
         },
       }));
@@ -72,10 +72,10 @@ export function useRoomSearch() {
         id: av.roomId,
         roomNumber: av.roomId,
         floorNumber: Math.floor(av.roomId / 100) || 1,
-        status: 'AVAILABLE',
+        status: 'READY',
         roomType: {
           name: av.name,
-          basePrice: av.baseprice,
+          basePrice: av.basePrice,
           capacity: av.capacity,
         },
       }));

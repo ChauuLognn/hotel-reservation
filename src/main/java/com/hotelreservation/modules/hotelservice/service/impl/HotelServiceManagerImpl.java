@@ -21,7 +21,7 @@ public class HotelServiceManagerImpl implements HotelServiceManager {
 
     @Override
     public HotelServiceResponse create(CreateServiceRequest rq) {
-        serRepo.insertService(rq.getName(), rq.getPrice());
+        serRepo.insertService(rq.getName(), rq.getPrice(), rq.getStatus());
         HotelService s = serRepo.findByName(rq.getName())
             .orElseThrow(() -> new IllegalArgumentException("HotelService not found"));
         return HotelserviceMapper.toResponse(s);

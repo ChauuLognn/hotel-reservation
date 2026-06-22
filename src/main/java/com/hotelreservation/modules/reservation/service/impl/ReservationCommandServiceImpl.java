@@ -106,8 +106,15 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
             }
 
             for (Integer roomId : candidate) {
-                Room r = roomRepo.findRoom(roomId)
+                // Concurrency Safety: Lock candidate room with PESSIMISTIC_WRITE
+                Room r = roomRepo.findByIdForUpdate(roomId)
                     .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomId));
+
+                // Double Check: Recheck availability after locking to prevent race conditions
+                long overlaps = roomRepo.countOverlappingBookings(roomId, it.getCheckIn(), it.getCheckOut());
+                if (overlaps > 0) {
+                    throw new IllegalStateException("Phòng " + roomId + " đã được đặt bởi giao dịch khác trong thời gian này.");
+                }
 
                 BigDecimal basePrice = r.getRoomType().getBasePrice();
                 BigDecimal discount = (nights >= 7) ? new BigDecimal("0.10") : BigDecimal.ZERO;

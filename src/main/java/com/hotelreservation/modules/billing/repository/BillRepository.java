@@ -127,13 +127,13 @@ public interface BillRepository extends JpaRepository<Bill, String> {
         FROM bill b
         join reservationRoom rr on rr.id = b.reservationRoomId
         WHERE rr.checkOutTime >= :from
-          AND rr.checkOutTime < :to
+          AND rr.checkOutTime <= :to
         GROUP BY DATE(rr.checkOutTime)
         ORDER BY DATE(rr.checkOutTime)
         """, nativeQuery = true)
     List<DailyRevenueProjection> getDailyRevenue(
-        @Param("from") LocalDateTime from,
-        @Param("to") LocalDateTime to
+        @Param("from") java.time.LocalDate from,
+        @Param("to") java.time.LocalDate to
     );    
 
 }

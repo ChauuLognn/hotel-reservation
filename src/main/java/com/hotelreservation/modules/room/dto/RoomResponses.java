@@ -8,12 +8,12 @@ public class RoomResponses {
         private Integer roomId;
         private String name;
         private Byte capacity;
-        private BigDecimal baseprice;
+        private BigDecimal basePrice;
 
         public AvailableRoomResponse() {}
 
-        public AvailableRoomResponse(Integer roomId, String name, Byte capacity, BigDecimal baseprice) {
-            this.baseprice = baseprice;
+        public AvailableRoomResponse(Integer roomId, String name, Byte capacity, BigDecimal basePrice) {
+            this.basePrice = basePrice;
             this.capacity = capacity;
             this.name = name;
             this.roomId = roomId;
@@ -25,8 +25,8 @@ public class RoomResponses {
         public void setName(String name) { this.name = name; }
         public Byte getCapacity() { return capacity; }
         public void setCapacity(Byte capacity) { this.capacity = capacity; }
-        public BigDecimal getBaseprice() { return baseprice; }
-        public void setBaseprice(BigDecimal baseprice) { this.baseprice = baseprice; }
+        public BigDecimal getBasePrice() { return basePrice; }
+        public void setBasePrice(BigDecimal basePrice) { this.basePrice = basePrice; }
     }
 
     public static class RoomResponse {

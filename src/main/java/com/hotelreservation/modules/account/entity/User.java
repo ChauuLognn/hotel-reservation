@@ -1,5 +1,6 @@
 package com.hotelreservation.modules.account.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -35,6 +36,7 @@ public class User {
     private String account;
 
     @Column(name = "password", nullable = false, length = 255)
+    @JsonIgnore
     private String password;
 
     public Integer getId(){return id;}

@@ -5,6 +5,7 @@ import reportApi from '@features/dashboard/api/reportApi';
 import { formatVND, formatDate } from '@shared/utils/format';
 import StatCard from '@shared/ui/StatCard';
 import Button from '@shared/ui/Button';
+import { useToast } from '@context/ToastContext';
 
 interface DailyRevenue {
   date: string;
@@ -41,6 +42,7 @@ interface ServiceUsageData {
 }
 
 export default function Dashboard() {
+  const { showToast } = useToast();
   const today = new Date();
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
   const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
@@ -48,6 +50,7 @@ export default function Dashboard() {
   const [dateFrom, setDateFrom] = useState<string>(firstDay);
   const [dateTo, setDateTo] = useState<string>(lastDay);
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
   const [revenue, setRevenue] = useState<RevenueData | null>(null);
   const [roomUsage, setRoomUsage] = useState<RoomUsageData | null>(null);
   const [serviceUsage, setServiceUsage] = useState<ServiceUsageData | null>(null);
@@ -58,6 +61,7 @@ export default function Dashboard() {
 
   async function fetchData() {
     setLoading(true);
+    setError(false);
     try {
       const [revRes, roomRes, svcRes] = await Promise.all([
         reportApi.getRevenue(dateFrom, dateTo),
@@ -67,8 +71,10 @@ export default function Dashboard() {
       setRevenue(revRes.data as any);
       setRoomUsage(roomRes.data as any);
       setServiceUsage(svcRes.data as any);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Dashboard fetch error:', err);
+      setError(true);
+      showToast('Lỗi tải dữ liệu báo cáo: ' + (err?.response?.data?.message || err.message || err), 'error');
     } finally {
       setLoading(false);
     }
@@ -76,6 +82,18 @@ export default function Dashboard() {
 
   return (
     <Layout title="Bảng Điều Khiển">
+      {error && (
+        <div className="bg-red-50 text-red-700 p-4 border border-red-200 rounded-apple-lg mb-6 flex justify-between items-center select-none shadow-sm animate-fade-in">
+          <div>
+            <span className="font-semibold text-sm">⚠️ Không thể tải dữ liệu báo cáo</span>
+            <p className="text-xs text-red-600 mt-0.5">Vui lòng kiểm tra lại kết nối mạng hoặc thử lại.</p>
+          </div>
+          <Button onClick={fetchData} variant="pearl-capsule" className="!py-1.5 !px-4 hover:bg-red-100 border-red-300">
+            Thử Lại
+          </Button>
+        </div>
+      )}
+
       {/* Welcome + Filter Panel */}
       <div className="bg-white rounded-apple-lg border border-apple-hairline p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm select-none">
         <div>

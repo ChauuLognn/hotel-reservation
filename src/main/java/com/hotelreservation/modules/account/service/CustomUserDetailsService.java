@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import com.hotelreservation.modules.account.entity.User;
 import com.hotelreservation.modules.account.repository.UserRepository;
 
@@ -41,6 +42,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      * @throws UsernameNotFoundException nếu không tìm thấy user
      */
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Tìm user trong database
         User user = userRepository.findByAccount(username)

@@ -94,11 +94,11 @@ export default function Admin() {
             {[
               ['POST', '/api/auth/login', 'Đăng nhập'],
               ['POST', '/api/auth/register', 'Đăng ký khách'],
-              ['GET', '/api/rooms/all', 'Tất cả phòng'],
-              ['GET', '/api/guests/all', 'Tất cả khách'],
+              ['GET', '/api/rooms', 'Tất cả phòng'],
+              ['GET', '/api/guests', 'Tất cả khách'],
               ['GET', '/api/reservations/all', 'Tất cả đặt phòng'],
-              ['GET', '/api/bills/all', 'Tất cả hóa đơn'],
-              ['GET', '/api/services/all', 'Tất cả dịch vụ'],
+              ['GET', '/api/bills/summaries', 'Tất cả hóa đơn'],
+              ['GET', '/api/services', 'Tất cả dịch vụ'],
               ['GET', '/api/reports/revenue', 'Báo cáo doanh thu'],
             ].map(([method, path, desc], i) => (
               <div

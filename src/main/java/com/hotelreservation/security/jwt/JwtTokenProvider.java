@@ -62,6 +62,20 @@ public class JwtTokenProvider {
         }
     }
 
+    public Boolean validateTokenForRefresh(String token, String username) {
+        try {
+            String tokenUsername;
+            try {
+                tokenUsername = extractUsername(token);
+            } catch (io.jsonwebtoken.ExpiredJwtException e) {
+                tokenUsername = e.getClaims().getSubject();
+            }
+            return (tokenUsername != null && tokenUsername.equals(username));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();
     }

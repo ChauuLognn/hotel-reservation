@@ -1,6 +1,8 @@
 package com.hotelreservation.modules.reservation.dto;
 
 import com.hotelreservation.common.enums.ReservationStatus;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -9,6 +11,7 @@ import java.util.List;
 public class ReservationRequests {
 
     public static class ChangeStatusRequest {
+        @NotNull(message = "newStatus is required")
         private ReservationStatus newStatus;
         private String reason;
 
@@ -28,11 +31,11 @@ public class ReservationRequests {
     public static class CreateReservationRequest {
         @NotNull private Integer guestId;
 
-        @NotNull @Size(min = 1) private List<RoomItem> items;
+        @NotNull @Size(min = 1) @Valid private List<RoomItem> items;
 
         public static class RoomItem {
             @NotNull private String roomName;
-            @NotNull private Integer rooms;
+            @NotNull @Min(1) private Integer rooms;
             @NotNull private LocalDate checkIn;
             @NotNull private LocalDate checkOut;
 

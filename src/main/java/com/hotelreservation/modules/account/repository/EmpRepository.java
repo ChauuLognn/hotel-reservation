@@ -20,7 +20,7 @@ public interface EmpRepository extends JpaRepository<Emp, Integer> {
     @Query(value="select * from emp where identityNum = :identityNum", nativeQuery=true)
     Optional<Emp> findEmpByIdentityNum(@Param("identityNum") String identityNum);
 
-    @Query(value = "SELECT * FROM emp", nativeQuery = true)
+    @Query("SELECT e FROM Emp e JOIN FETCH e.role")
     List<Emp> takeAll();
 
     // Thêm methods để check duplicate khi register

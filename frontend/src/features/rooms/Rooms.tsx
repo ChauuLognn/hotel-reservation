@@ -34,7 +34,7 @@ interface AvailRoom {
   roomId: number;
   name: string;
   capacity: number;
-  baseprice: number;
+  basePrice: number;
 }
 
 export default function Rooms() {
@@ -551,7 +551,7 @@ export default function Rooms() {
                         <td className="px-6 py-3.5 font-bold text-apple-ink">{r.roomId}</td>
                         <td className="px-6 py-3.5">{r.name}</td>
                         <td className="px-6 py-3.5">{r.capacity} khách</td>
-                        <td className="px-6 py-3.5 font-semibold text-apple-primary">{formatVND(r.baseprice)}</td>
+                        <td className="px-6 py-3.5 font-semibold text-apple-primary">{formatVND(r.basePrice)}</td>
                         <td className="px-6 py-3.5">
                           <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-100">
                             Khả Dụng

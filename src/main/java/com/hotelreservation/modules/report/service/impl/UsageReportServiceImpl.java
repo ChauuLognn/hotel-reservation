@@ -52,10 +52,7 @@ public class UsageReportServiceImpl implements UsageReportService {
         if(toDate.isBefore(fromDate))
             throw new IllegalArgumentException("toDate must be after or equal fromDate");
 
-        LocalDateTime from = fromDate.atStartOfDay();
-        LocalDateTime to   = toDate.plusDays(1).atStartOfDay();
-
-        List<ServiceUsageProjection> rows = rsRepo.getServiceUsage(from, to);
+        List<ServiceUsageProjection> rows = rsRepo.getServiceUsage(fromDate, toDate);
 
         List<ServiceUsageItemResponse> items = rows.stream()
             .map(ServiceUsageItemResponse::fromProjection)

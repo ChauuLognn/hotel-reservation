@@ -1,11 +1,10 @@
 package com.hotelreservation.common.responses;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
     private boolean success;
     private String message;
+
+    @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS)
     private T data;
 
     public ApiResponse() {

@@ -2,9 +2,16 @@ package com.hotelreservation.modules.account.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 import com.hotelreservation.modules.account.dto.AccountRequests.GuestCreateRequest;
 import com.hotelreservation.modules.account.dto.AccountResponses.GuestResponse;
+import com.hotelreservation.modules.account.entity.Guest;
+import com.hotelreservation.modules.account.entity.User;
+import com.hotelreservation.modules.account.mapper.AccountMapper;
+import com.hotelreservation.modules.account.repository.GuestRepository;
+import com.hotelreservation.modules.account.repository.UserRepository;
 import com.hotelreservation.modules.account.service.GuestService;
 import com.hotelreservation.modules.reservation.service.ReservationService;
 import static com.hotelreservation.modules.reservation.dto.ReservationResponses.GuestStayResponse;
@@ -13,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/guests")
+@Transactional
 public class GuestController {
 
     @Autowired 
@@ -21,10 +29,47 @@ public class GuestController {
     @Autowired 
     private ReservationService resDomain;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private GuestRepository guestRepository;
+
     @PostMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
     public GuestResponse createGuest(@RequestBody @Valid GuestCreateRequest rq) {
         return gDomain.create(rq);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public GuestResponse getMyGuestProfile() {
+        User user = currentUser();
+        if (user.getGuest() == null) {
+            throw new IllegalArgumentException("Guest profile not found");
+        }
+        return AccountMapper.toResponse(user.getGuest());
+    }
+
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public GuestResponse upsertMyGuestProfile(@RequestBody @Valid GuestCreateRequest rq) {
+        User user = currentUser();
+        Guest guest = user.getGuest();
+        if (guest == null) {
+            guest = new Guest();
+        }
+        guest.setFirstName(rq.getFirstName());
+        guest.setLastName(rq.getLastName());
+        guest.setIdentityNum(rq.getIdentityNum());
+        guest.setPhone(rq.getPhone());
+        guest.setDateOfBirth(rq.getDateOfBirth());
+        guest = guestRepository.save(guest);
+        if (user.getGuest() == null) {
+            user.setGuest(guest);
+            userRepository.save(user);
+        }
+        return AccountMapper.toResponse(guest);
     }
 
     @GetMapping
@@ -56,5 +101,11 @@ public class GuestController {
     @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
     public GuestStayResponse getStaysOfGuest(@PathVariable Integer guestId) {
         return resDomain.getStaysOfGuest(guestId);
+    }
+
+    private User currentUser() {
+        String account = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByAccount(account)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 }

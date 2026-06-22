@@ -6,13 +6,28 @@ import jakarta.validation.constraints.*;
 public class AccountRequests {
 
     public static class AdminCreateUserRequest {
+        @NotBlank(message = "Account khong duoc de trong")
         private String account;
+
+        @Size(min = 6, message = "Password phai co it nhat 6 ky tu")
         private String password;
+
+        @NotBlank(message = "Ho ten khong duoc de trong")
         private String fullName;
+
+        @NotBlank(message = "Email khong duoc de trong")
+        @Email(message = "Email khong dung dinh dang")
         private String email;
+
+        @NotBlank(message = "So dien thoai khong duoc de trong")
         private String phone;
         private String address;
+
+        @NotBlank(message = "CMND/CCCD khong duoc de trong")
+        @Size(min = 9, max = 12, message = "CMND/CCCD phai tu 9 den 12 so")
         private String identityNum;
+
+        @NotBlank(message = "Vai tro khong duoc de trong")
         private String roleName;
 
         public AdminCreateUserRequest() {}
@@ -55,7 +70,11 @@ public class AccountRequests {
     }
 
     public static class ChangePasswordRequest {
+        @NotBlank(message = "Mat khau cu khong duoc de trong")
         private String oldPassword;
+
+        @NotBlank(message = "Mat khau moi khong duoc de trong")
+        @Size(min = 6, message = "Mat khau moi phai co it nhat 6 ky tu")
         private String newPassword;
 
         public ChangePasswordRequest() {}
@@ -97,6 +116,7 @@ public class AccountRequests {
 
         @NotNull(message = "Mã vai trò không được để trống")
         private Integer role;
+        private String roleName;
 
         public String getFirstName() { return firstName; }
         public void setFirstName(String firstName) { this.firstName = firstName; }
@@ -121,6 +141,8 @@ public class AccountRequests {
 
         public Integer getRole() { return role; }
         public void setRole(Integer role) { this.role = role; }
+        public String getRoleName() { return roleName; }
+        public void setRoleName(String roleName) { this.roleName = roleName; }
     }
 
     public static class GuestCreateRequest {
@@ -156,7 +178,10 @@ public class AccountRequests {
     }
 
     public static class LoginRequest {
+        @NotBlank(message = "Account khong duoc de trong")
         private String account;
+
+        @NotBlank(message = "Password khong duoc de trong")
         private String password;
 
         public LoginRequest() {}
@@ -174,12 +199,26 @@ public class AccountRequests {
     }
 
     public static class RegisterRequest {
+        @NotBlank(message = "Account khong duoc de trong")
         private String account;
+
+        @NotBlank(message = "Password khong duoc de trong")
+        @Size(min = 6, message = "Password phai co it nhat 6 ky tu")
         private String password;
+
+        @NotBlank(message = "Ho ten khong duoc de trong")
         private String fullName;
+
+        @NotBlank(message = "Email khong duoc de trong")
+        @Email(message = "Email khong dung dinh dang")
         private String email;
+
+        @NotBlank(message = "So dien thoai khong duoc de trong")
         private String phone;
         private String address;
+
+        @NotBlank(message = "CMND/CCCD khong duoc de trong")
+        @Size(min = 9, max = 12, message = "CMND/CCCD phai tu 9 den 12 so")
         private String identityNum;
 
         public RegisterRequest() {}
@@ -218,8 +257,14 @@ public class AccountRequests {
     }
 
     public static class ResetPasswordRequest {
+        @NotBlank(message = "Account khong duoc de trong")
         private String account;
+
+        @NotBlank(message = "CMND/CCCD khong duoc de trong")
         private String identityNum;
+
+        @NotBlank(message = "Mat khau moi khong duoc de trong")
+        @Size(min = 6, message = "Mat khau moi phai co it nhat 6 ky tu")
         private String newPassword;
 
         public ResetPasswordRequest() {}
@@ -256,6 +301,8 @@ public class AccountRequests {
     }
 
     public static class AdminResetPasswordRequest {
+        @NotBlank(message = "Mat khau moi khong duoc de trong")
+        @Size(min = 6, message = "Mat khau moi phai co it nhat 6 ky tu")
         private String newPassword;
 
         public String getNewPassword() { return newPassword; }

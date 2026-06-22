@@ -37,9 +37,8 @@ export default function CustomerLayout({ children, activeSection, onSectionChang
               <button
                 key={item.id}
                 onClick={() => onSectionChange(item.id)}
-                className={`text-[12px] transition-colors duration-150 hover:text-white ${
-                  activeSection === item.id ? 'text-white font-semibold' : 'text-apple-body-muted'
-                }`}
+                className={`text-[12px] transition-colors duration-150 hover:text-white ${activeSection === item.id ? 'text-white font-semibold' : 'text-apple-body-muted'
+                  }`}
               >
                 {item.label}
               </button>
@@ -86,9 +85,8 @@ export default function CustomerLayout({ children, activeSection, onSectionChang
                   onSectionChange(item.id);
                   setMobileMenuOpen(false);
                 }}
-                className={`text-left text-lg pb-2 border-b border-white/5 transition-colors ${
-                  activeSection === item.id ? 'text-apple-primary-on-dark font-semibold' : 'text-apple-body-muted'
-                }`}
+                className={`text-left text-lg pb-2 border-b border-white/5 transition-colors ${activeSection === item.id ? 'text-apple-primary-on-dark font-semibold' : 'text-apple-body-muted'
+                  }`}
               >
                 {item.label}
               </button>
@@ -132,9 +130,6 @@ export default function CustomerLayout({ children, activeSection, onSectionChang
             Haven Premium
           </h2>
           <div className="flex items-center gap-4">
-            <span className="hidden sm:inline text-xs text-apple-ink-muted-80 font-normal">
-              Trải nghiệm dịch vụ 5 sao chuẩn Apple
-            </span>
             <Button variant="primary" onClick={() => onSectionChange('rooms')} className="h-[32px] !py-1 text-xs font-semibold">
               Xem phòng trống
             </Button>

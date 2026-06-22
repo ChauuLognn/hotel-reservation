@@ -177,7 +177,6 @@ public class AccountResponses {
         private Integer empId;
         private Integer guestId;
         private String account;
-        private String password;
 
         public Integer getId() { return id; }
         public void setId(Integer id) { this.id = id; }
@@ -191,7 +190,20 @@ public class AccountResponses {
         public String getAccount() { return account; }
         public void setAccount(String account) { this.account = account; }
 
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
+    }
+
+    public static class AdminUserResponse {
+        private Integer id;
+        private String account;
+        private EmpResponse emp;
+
+        public Integer getId() { return id; }
+        public void setId(Integer id) { this.id = id; }
+
+        public String getAccount() { return account; }
+        public void setAccount(String account) { this.account = account; }
+
+        public EmpResponse getEmp() { return emp; }
+        public void setEmp(EmpResponse emp) { this.emp = emp; }
     }
 }

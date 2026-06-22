@@ -104,7 +104,8 @@ export default function Bills() {
 
       setBillDetails(summaries);
       setStats({ paidSum, unpaidCount });
-    } catch (e) {
+    } catch (e: any) {
+      if (e.name === 'CanceledError' || e.name === 'AbortError') return;
       console.error(e);
       setBookings([]);
     } finally {

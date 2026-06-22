@@ -41,6 +41,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    const handleRefresh = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setUser(customEvent.detail);
+    };
+    window.addEventListener('tokenRefreshed', handleRefresh);
+    return () => {
+      window.removeEventListener('tokenRefreshed', handleRefresh);
+    };
+  }, []);
+
   const login = async (account: string, password: string): Promise<User> => {
     const res = await authApi.login({ account, password });
     const data = res.data as User;
@@ -59,6 +70,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authApi.logout();
     } catch (err) {
       console.error(err);
+    }
+    if (user?.userId) {
+      localStorage.removeItem(`currentGuestId_${user.userId}`);
     }
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('userId');

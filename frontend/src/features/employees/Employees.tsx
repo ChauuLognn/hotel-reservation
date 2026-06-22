@@ -4,6 +4,7 @@ import Layout from '@layout/Layout';
 import userApi from './api/userApi';
 import { ROLE_BADGE } from '@shared/constants/statusMaps';
 import { ROLE_LABELS, ROLE_IDS } from '@shared/constants/roleConstants';
+import { useAuth } from '@app/AuthContext';
 import { useToast } from '@context/ToastContext';
 import { useConfirm } from '@context/ConfirmContext';
 import Button from '@shared/ui/Button';
@@ -39,6 +40,7 @@ interface UserAccount {
 }
 
 export default function Employees() {
+  const { user: currentUser } = useAuth();
   const { showToast } = useToast();
   const confirm = useConfirm();
   const [tab, setTab] = useState<'employees' | 'accounts'>('employees');
@@ -145,10 +147,11 @@ export default function Employees() {
   async function handleEmpSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
+      const roleName = Number(empForm.role) === 1 ? 'MANAGER' : 'EMPLOYEE';
       const payload = {
         ...empForm,
         dateOfBirth: empForm.dateOfBirth || null,
-        role: Number(empForm.role),
+        roleName: roleName,
       };
       if (editEmp) {
         await userApi.updateEmp(editEmp.id, payload);
@@ -217,6 +220,7 @@ export default function Employees() {
     try {
       if (editUser) {
         await userApi.updateUser(editUser.id, {
+          account: userForm.account,
           fullName: userForm.fullName,
           email: userForm.email,
           phone: userForm.phone,
@@ -407,20 +411,26 @@ export default function Employees() {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">
-                            <button
-                              className="p-1.5 rounded-full text-apple-primary hover:bg-apple-primary/10 transition-colors active-scale"
-                              onClick={() => openEditEmp(u)}
-                              title="Sửa"
-                            >
-                              <Edit2 size={15} />
-                            </button>
-                            <button
-                              className="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors active-scale"
-                              onClick={() => handleEmpDelete(u.id, u.firstName + ' ' + u.lastName)}
-                              title="Xóa"
-                            >
-                              <Trash2 size={15} />
-                            </button>
+                            {u.email !== 'system@hotelhaven.com' ? (
+                              <>
+                                <button
+                                  className="p-1.5 rounded-full text-apple-primary hover:bg-apple-primary/10 transition-colors active-scale"
+                                  onClick={() => openEditEmp(u)}
+                                  title="Sửa"
+                                >
+                                  <Edit2 size={15} />
+                                </button>
+                                <button
+                                  className="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors active-scale"
+                                  onClick={() => handleEmpDelete(u.id, u.firstName + ' ' + u.lastName)}
+                                  title="Xóa"
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              </>
+                            ) : (
+                              <span className="text-xs text-apple-ink-muted-48 italic pr-2">Hệ thống</span>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -505,27 +515,37 @@ export default function Employees() {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">
-                            <button
-                              className="p-1.5 rounded-full text-apple-primary hover:bg-apple-primary/10 transition-colors active-scale"
-                              onClick={() => openEditUser(u)}
-                              title="Sửa"
-                            >
-                              <Edit2 size={15} />
-                            </button>
-                            <button
-                              className="p-1.5 rounded-full text-apple-ink-muted-80 hover:bg-apple-divider-soft transition-colors active-scale"
-                              onClick={() => openResetPassword(u.id)}
-                              title="Đổi Mật Khẩu"
-                            >
-                              <Key size={15} />
-                            </button>
-                            <button
-                              className="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors active-scale"
-                              onClick={() => handleUserDelete(u.id, u.account)}
-                              title="Xóa"
-                            >
-                              <Trash2 size={15} />
-                            </button>
+                            {u.account === 'system' ? (
+                              <span className="text-xs text-apple-ink-muted-48 italic pr-2">Hệ thống</span>
+                            ) : (
+                              <>
+                                <button
+                                  className="p-1.5 rounded-full text-apple-primary hover:bg-apple-primary/10 transition-colors active-scale"
+                                  onClick={() => openEditUser(u)}
+                                  title="Sửa"
+                                >
+                                  <Edit2 size={15} />
+                                </button>
+                                {currentUser && currentUser.account !== u.account && (
+                                  <>
+                                    <button
+                                      className="p-1.5 rounded-full text-apple-ink-muted-80 hover:bg-apple-divider-soft transition-colors active-scale"
+                                      onClick={() => openResetPassword(u.id)}
+                                      title="Đổi Mật Khẩu"
+                                    >
+                                      <Key size={15} />
+                                    </button>
+                                    <button
+                                      className="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors active-scale"
+                                      onClick={() => handleUserDelete(u.id, u.account)}
+                                      title="Xóa"
+                                    >
+                                      <Trash2 size={15} />
+                                    </button>
+                                  </>
+                                )}
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>

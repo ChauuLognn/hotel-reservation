@@ -29,10 +29,11 @@ public interface HotelServiceRepository extends JpaRepository<HotelService, Inte
     @Modifying
     @Query(value="""
         insert into service (name, price, status)
-            values (:name, :price, 'ACTIVE')
+            values (:name, :price, :status)
     """,nativeQuery=true)
     void insertService(@Param("name") String name,
-        @Param("price") BigDecimal price);
+        @Param("price") BigDecimal price,
+        @Param("status") String status);
 
     @Modifying
     @Query(value="""

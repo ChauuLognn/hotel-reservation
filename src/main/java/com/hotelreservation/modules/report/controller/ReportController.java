@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import com.hotelreservation.modules.report.dto.ReportResponses.*;
 import com.hotelreservation.modules.report.service.RevenueReportService;
 import com.hotelreservation.modules.report.service.UsageReportService;
 
 @RestController
 @RequestMapping("/api/reports")
+@PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
 public class ReportController {
 
     @Autowired private RevenueReportService revenueDomain;

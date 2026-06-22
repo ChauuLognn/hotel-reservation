@@ -10,6 +10,7 @@ import com.hotelreservation.modules.account.repository.UserRepository;
 import com.hotelreservation.modules.account.service.EmpService;
 import com.hotelreservation.modules.account.entity.Role;
 import com.hotelreservation.modules.account.repository.RoleRepository;
+import com.hotelreservation.common.enums.RoleName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +38,7 @@ public class EmpServiceImpl implements EmpService {
         e.setPhone(rq.getPhone());
         e.setAddress(rq.getAddress());
         
-        Role role = roleRepo.findById(rq.getRole())
-            .orElseThrow(() -> new IllegalArgumentException("Role not found: " + rq.getRole()));
+        Role role = resolveRole(rq);
         e.setRole(role);
 
         e = empRepo.save(e);
@@ -68,6 +68,10 @@ public class EmpServiceImpl implements EmpService {
         Emp e = empRepo.findEmpById(id)
             .orElseThrow(() -> new IllegalArgumentException("Emp not found: " + id));
 
+        if ("system@hotelhaven.com".equals(e.getEmail())) {
+            throw new IllegalArgumentException("Không thể cập nhật thông tin nhân sự của tài khoản hệ thống 'system'.");
+        }
+
         validateUniqueFields(id, rq);
 
         e.setFirstName(rq.getFirstName());
@@ -78,8 +82,7 @@ public class EmpServiceImpl implements EmpService {
         e.setPhone(rq.getPhone());
         e.setAddress(rq.getAddress());
         
-        Role role = roleRepo.findById(rq.getRole())
-            .orElseThrow(() -> new IllegalArgumentException("Role not found: " + rq.getRole()));
+        Role role = resolveRole(rq);
         e.setRole(role);
 
         e = empRepo.save(e);
@@ -92,6 +95,10 @@ public class EmpServiceImpl implements EmpService {
         Emp e = empRepo.findEmpById(id)
             .orElseThrow(() -> new IllegalArgumentException("Emp not found: " + id));
 
+        if ("system@hotelhaven.com".equals(e.getEmail())) {
+            throw new IllegalArgumentException("Không thể xóa thông tin nhân sự của tài khoản hệ thống 'system'.");
+        }
+
         userRepo.unlinkEmpFromUsers(id);
         userRepo.flush();
 
@@ -100,6 +107,16 @@ public class EmpServiceImpl implements EmpService {
 
     private void validateUniqueFields(Integer id, EmpCreateRequest rq) {
         int safeId = id == null ? -1 : id;
+
+        if ("system@hotelhaven.com".equals(rq.getEmail())) {
+            if (id == null) {
+                throw new IllegalArgumentException("Không thể sử dụng email hệ thống 'system@hotelhaven.com'.");
+            }
+            Emp existing = empRepo.findEmpById(id).orElse(null);
+            if (existing == null || !"system@hotelhaven.com".equals(existing.getEmail())) {
+                throw new IllegalArgumentException("Không thể sử dụng email hệ thống 'system@hotelhaven.com'.");
+            }
+        }
 
         if (empRepo.countByIdentityNumUsedByOtherEmp(rq.getIdentityNum(), safeId) > 0) {
             throw new IllegalArgumentException("CMND/CCCD đã được sử dụng bởi nhân viên khác");
@@ -110,5 +127,20 @@ public class EmpServiceImpl implements EmpService {
         if (empRepo.countByPhoneUsedByOtherEmp(rq.getPhone(), safeId) > 0) {
             throw new IllegalArgumentException("Số điện thoại đã được sử dụng bởi nhân viên khác");
         }
+    }
+
+    private Role resolveRole(EmpCreateRequest rq) {
+        if (rq.getRoleName() != null && !rq.getRoleName().isBlank()) {
+            RoleName roleName;
+            try {
+                roleName = RoleName.valueOf(rq.getRoleName().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Role not found: " + rq.getRoleName());
+            }
+            return roleRepo.findByName(roleName)
+                .orElseThrow(() -> new IllegalArgumentException("Role not found: " + rq.getRoleName()));
+        }
+        return roleRepo.findById(rq.getRole())
+            .orElseThrow(() -> new IllegalArgumentException("Role not found: " + rq.getRole()));
     }
 }

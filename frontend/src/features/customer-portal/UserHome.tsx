@@ -132,29 +132,19 @@ export default function UserHome() {
 
     setIsBooking(true);
     try {
-      let guestId = user.guestId;
-      if (guestId) {
-        await guestApi.update(guestId, {
-          firstName: guestForm.firstName,
-          lastName: guestForm.lastName,
-          identityNum: guestForm.identityNum,
-          phone: guestForm.phone,
-          dateOfBirth: guestForm.dateOfBirth || null,
-        });
-      } else {
-        const newGuestRes = await guestApi.create({
-          firstName: guestForm.firstName,
-          lastName: guestForm.lastName,
-          identityNum: guestForm.identityNum,
-          phone: guestForm.phone,
-          dateOfBirth: guestForm.dateOfBirth || null,
-        });
-        const newGuest = newGuestRes.data || {};
-        guestId = newGuest.id;
-        if (guestId) {
-          user.guestId = guestId;
-          localStorage.setItem('userInfo', JSON.stringify(user));
-        }
+      // Create or update current user's guest profile via /api/guests/me
+      const guestRes = await guestApi.updateMe({
+        firstName: guestForm.firstName,
+        lastName: guestForm.lastName,
+        identityNum: guestForm.identityNum,
+        phone: guestForm.phone,
+        dateOfBirth: guestForm.dateOfBirth || null,
+      });
+      const savedGuest = guestRes.data || {};
+      const guestId = savedGuest.id;
+      if (guestId && user.guestId !== guestId) {
+        user.guestId = guestId;
+        localStorage.setItem('userInfo', JSON.stringify(user));
       }
 
       if (!guestId) {

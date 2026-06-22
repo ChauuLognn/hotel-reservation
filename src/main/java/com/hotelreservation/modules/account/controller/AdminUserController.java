@@ -9,15 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hotelreservation.common.responses.ApiResponse;
 import com.hotelreservation.common.enums.RoleName;
 import static com.hotelreservation.modules.account.dto.AccountRequests.*;
+import com.hotelreservation.modules.account.dto.AccountResponses.AdminUserResponse;
 import com.hotelreservation.modules.account.entity.Emp;
 import com.hotelreservation.modules.account.entity.User;
 import com.hotelreservation.modules.account.entity.Role;
+import com.hotelreservation.modules.account.mapper.AccountMapper;
 import com.hotelreservation.modules.account.repository.EmpRepository;
 import com.hotelreservation.modules.account.repository.UserRepository;
 import com.hotelreservation.modules.account.repository.RoleRepository;
 import com.hotelreservation.modules.account.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/users")
@@ -31,8 +34,12 @@ public class AdminUserController {
 
     @PostMapping
     @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<ApiResponse<User>> createAdminUser(@RequestBody @Valid AdminCreateUserRequest request) {
+    @Transactional
+    public ResponseEntity<ApiResponse<AdminUserResponse>> createAdminUser(@RequestBody @Valid AdminCreateUserRequest request) {
         try {
+            if (request.getPassword() == null || request.getPassword().isBlank()) {
+                throw new IllegalArgumentException("Password is required");
+            }
             if (userRepository.findByAccount(request.getAccount()).isPresent()) {
                 throw new IllegalArgumentException("Account already exists");
             }
@@ -74,7 +81,7 @@ public class AdminUserController {
             user.setEmp(emp);
             user = userRepository.save(user);
 
-            return ResponseEntity.ok(ApiResponse.success("User created successfully", user));
+            return ResponseEntity.ok(ApiResponse.success("User created successfully", AccountMapper.toAdminUserResponse(user)));
 
         } catch (IllegalArgumentException e) {
             throw e;
@@ -86,27 +93,35 @@ public class AdminUserController {
     @GetMapping
     @PreAuthorize("hasRole('MANAGER')")
     @Transactional(readOnly = true)
-    public ResponseEntity<ApiResponse<List<User>>> getAllAdminUsers() {
+    public ResponseEntity<ApiResponse<List<AdminUserResponse>>> getAllAdminUsers() {
         List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(ApiResponse.success("Users retrieved successfully", users));
+        List<AdminUserResponse> response = users.stream()
+            .map(AccountMapper::toAdminUserResponse)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(ApiResponse.success("Users retrieved successfully", response));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<ApiResponse<User>> getAdminUserById(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<AdminUserResponse>> getAdminUserById(@PathVariable Integer id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return ResponseEntity.ok(ApiResponse.success("User retrieved successfully", user));
+        return ResponseEntity.ok(ApiResponse.success("User retrieved successfully", AccountMapper.toAdminUserResponse(user)));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<ApiResponse<User>> updateAdminUser(
+    @Transactional
+    public ResponseEntity<ApiResponse<AdminUserResponse>> updateAdminUser(
             @PathVariable Integer id,
             @RequestBody @Valid AdminCreateUserRequest request) {
         try {
             User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            
+            if ("system".equals(user.getAccount())) {
+                throw new IllegalArgumentException("Không thể cập nhật thông tin tài khoản hệ thống 'system'.");
+            }
             
             Emp emp = user.getEmp();
             
@@ -136,7 +151,7 @@ public class AdminUserController {
             
             empRepository.save(emp);
             
-            return ResponseEntity.ok(ApiResponse.success("User updated successfully", user));
+            return ResponseEntity.ok(ApiResponse.success("User updated successfully", AccountMapper.toAdminUserResponse(user)));
             
         } catch (IllegalArgumentException e) {
             throw e;
@@ -160,6 +175,15 @@ public class AdminUserController {
         
         User user = userRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
+        if ("system".equals(user.getAccount())) {
+            throw new IllegalArgumentException("Không thể đặt lại mật khẩu cho tài khoản hệ thống 'system'.");
+        }
+
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName().equals(user.getAccount())) {
+            throw new IllegalArgumentException("Không thể tự đặt lại mật khẩu của chính mình tại đây. Vui lòng dùng chức năng Đổi mật khẩu.");
+        }
         
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);

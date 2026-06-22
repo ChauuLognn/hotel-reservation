@@ -43,23 +43,15 @@ public class ReservationStatusServiceImpl implements ReservationStatusService {
     @Autowired private ReservationGuestRepository resGuestRepo;
     @Autowired private BillRepository billRepo;
 
+    @Autowired private com.hotelreservation.modules.account.repository.UserRepository userRepo;
+
     @PersistenceContext
     private EntityManager em;
 
-    @Value("${system-user-id:}")
-    private String systemUserIdRaw;
-
-    private Integer systemUserId;
-
-    @PostConstruct
-    public void init() {
-        if (systemUserIdRaw != null && !systemUserIdRaw.trim().isEmpty()) {
-            try {
-                this.systemUserId = Integer.parseInt(systemUserIdRaw.trim());
-            } catch (NumberFormatException e) {
-                log.warn("Failed to parse system-user-id '{}' as integer", systemUserIdRaw);
-            }
-        }
+    private Integer getSystemUserId() {
+        return userRepo.findByAccount("system")
+            .map(User::getId)
+            .orElseThrow(() -> new IllegalStateException("System user 'system' not found in database."));
     }
 
     private static final Map<ReservationStatus, Set<ReservationStatus>> Allowed;
@@ -118,7 +110,7 @@ public class ReservationStatusServiceImpl implements ReservationStatusService {
             rrRepo.getByResRoomIdForUpdate(resRoomId);
             
             statusHistoryRepo.insertResStatusHistory(resRoomId, rsh.getNewStatus().name(), 
-                ReservationStatus.CHECK_IN.name(), now, systemUserId, "automatically");
+                ReservationStatus.CHECK_IN.name(), now, getSystemUserId(), "automatically");
             
             // Automatically propagate CHECK_IN status to parent reservation
             ReservationRoom rr = rrRepo.getByResRoomId(resRoomId)
@@ -160,7 +152,7 @@ public class ReservationStatusServiceImpl implements ReservationStatusService {
         if(resGuestRepo.cntGuestHasNotCheckOutInResRoom(resRoomId) == 0 &&
             rsh.getNewStatus() == ReservationStatus.CHECK_IN) {
             this.updateResRoomStatus(resRoomId, 
-                new ChangeStatusRequest(ReservationStatus.CHECK_OUT, "automatically"), systemUserId);
+                new ChangeStatusRequest(ReservationStatus.CHECK_OUT, "automatically"), getSystemUserId());
         }
             
         return ReservationMapper.toGuestResponse(rg);
@@ -197,7 +189,7 @@ public class ReservationStatusServiceImpl implements ReservationStatusService {
             billRepo.insertRefundBills(resRoomId, now);
         }
 
-        Integer effectiveUserId = updatedByUserId != null? updatedByUserId : systemUserId;
+        Integer effectiveUserId = updatedByUserId != null? updatedByUserId : getSystemUserId();
         User by = em.getReference(User.class, effectiveUserId);
 
         statusHistoryRepo.insertResStatusHistory(resRoomId, oldSt.name(), 
@@ -228,6 +220,10 @@ public class ReservationStatusServiceImpl implements ReservationStatusService {
 
     @Override
     public void updateReservationStatus(String resId, ChangeStatusRequest req, Integer updatedBy) {
+        if (req == null || req.getNewStatus() == null) {
+            throw new IllegalArgumentException("New status is required");
+        }
+
         Reservation r = resRepo.findById(resId)
             .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
 
@@ -247,24 +243,18 @@ public class ReservationStatusServiceImpl implements ReservationStatusService {
             billRepo.insertRoomChargeBills(resId, LocalDateTime.now());
         }
 
-        Integer effectiveUserId = updatedBy != null? updatedBy : systemUserId;
+        Integer effectiveUserId = updatedBy != null? updatedBy : getSystemUserId();
         User by = em.getReference(User.class, effectiveUserId);
 
         List<ReservationRoom> rooms = rrRepo.findByReservationId(resId);
-        boolean noRoomHasChangeStatus = true;
 
         for(ReservationRoom rr : rooms){
             String resRoomId = rr.getId();
-            try{
+            try {
                 updateResRoomStatus(resRoomId, req, by.getId());
-                noRoomHasChangeStatus = false;
-            } catch(IllegalStateException | IllegalArgumentException e){
-                log.warn("Could not transition resRoom status for room {} to {}: {}", resRoomId, newSt, e.getMessage());
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to transition room " + resRoomId + " to " + newSt + ": " + e.getMessage(), e);
             }
-        }
-
-        if(noRoomHasChangeStatus){
-            throw new IllegalStateException("Cannot change status because no rooms could transition");
         }
     }
 }

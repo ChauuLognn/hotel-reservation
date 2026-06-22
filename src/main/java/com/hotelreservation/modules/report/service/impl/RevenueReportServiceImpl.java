@@ -32,7 +32,7 @@ public class RevenueReportServiceImpl implements RevenueReportService {
         LocalDateTime from = fromDate.atStartOfDay();
         LocalDateTime to = toDate.plusDays(1).atStartOfDay(); 
 
-        List<DailyRevenueProjection> lst = billRepo.getDailyRevenue(from, to);
+        List<DailyRevenueProjection> lst = billRepo.getDailyRevenue(fromDate, toDate);
 
         List<DailyRevenueResponse> days = lst.stream()
             .map(DailyRevenueResponse::fromProjection)
