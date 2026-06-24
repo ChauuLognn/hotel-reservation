@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, Users, Home, Coffee, RefreshCw } from 'lucide-react';
-import Layout from '@layout/Layout';
-import reportApi from '@features/dashboard/reportApi';
-import { formatVND, formatDate } from '@shared/utils/format';
-import StatCard from '@shared/ui/StatCard';
-import Button from '@shared/ui/Button';
-import { useToast } from '@context/ToastContext';
+import Layout from '@layouts/Layout';
+import reportApi from '@services/reportApi';
+import { formatVND, formatDate } from '@utils/format';
+import StatCard from '@components/ui/StatCard';
+import Button from '@components/ui/Button';
+import { useToast } from '@contexts/ToastContext';
 
 interface DailyRevenue {
   date: string;
@@ -95,7 +95,7 @@ export default function Dashboard() {
       )}
 
       {/* Welcome + Filter Panel */}
-      <div className="bg-white rounded-apple-lg border border-apple-hairline p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm select-none">
+      <div className="bg-white rounded-apple-lg border border-apple-hairline p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm select-none animate-slide-up">
         <div>
           <h1 className="font-display font-semibold text-xl text-apple-ink tracking-apple-tight">Chào mừng trở lại! 👋</h1>
           <p className="text-apple-ink-muted-48 text-sm mt-0.5">Đây là báo cáo hiệu suất khách sạn của bạn.</p>
@@ -156,7 +156,7 @@ export default function Dashboard() {
       {/* Content Layout: 2 Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Daily Revenue Table */}
-        <div className="lg:col-span-2 bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm">
+        <div className="lg:col-span-2 bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm animate-slide-up">
           <div className="px-5 py-4 border-b border-apple-divider-soft">
             <h3 className="font-display font-semibold text-[16px] text-apple-ink">Báo Cáo Doanh Thu Hàng Ngày</h3>
           </div>
@@ -201,7 +201,7 @@ export default function Dashboard() {
         </div>
 
         {/* Top Services Column */}
-        <div className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm flex flex-col">
+        <div className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm flex flex-col animate-slide-up delay-150">
           <div className="px-5 py-4 border-b border-apple-divider-soft">
             <h3 className="font-display font-semibold text-[16px] text-apple-ink">Dịch Vụ Hàng Đầu</h3>
           </div>

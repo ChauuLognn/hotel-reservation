@@ -1,6 +1,6 @@
 import { Plus, Trash2, UserPlus } from 'lucide-react';
-import { formatVND, formatDateTime } from '@shared/utils/format';
-import { BookingRoom, GuestItem, ServiceItem } from '../hooks/useBookingDetail';
+import { formatVND, formatDateTime } from '@utils/format';
+import { BookingRoom, GuestItem, ServiceItem } from '@hooks/useBookingDetail';
 
 interface RoomStaySectionProps {
   bookingRoom: BookingRoom;

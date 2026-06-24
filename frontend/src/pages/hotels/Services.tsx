@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Coffee } from 'lucide-react';
-import Layout from '@layout/Layout';
-import serviceApi from '@features/services/serviceApi';
-import { formatVND } from '@shared/utils/format';
-import { useToast } from '@context/ToastContext';
-import { useConfirm } from '@context/ConfirmContext';
-import Button from '@shared/ui/Button';
-import SearchBox from '@shared/ui/SearchBox';
-import Modal from '@shared/ui/Modal';
-import StatCard from '@shared/ui/StatCard';
+import Layout from '@layouts/Layout';
+import serviceApi from '@services/serviceApi';
+import { formatVND } from '@utils/format';
+import { useToast } from '@contexts/ToastContext';
+import { useConfirm } from '@contexts/ConfirmContext';
+import Button from '@components/ui/Button';
+import SearchBox from '@components/ui/SearchBox';
+import Modal from '@components/ui/Modal';
+import StatCard from '@components/ui/StatCard';
 
 interface ServiceItem {
   name: string;
@@ -131,7 +131,7 @@ export default function Services() {
       </div>
 
       {/* Main Table Card */}
-      <div className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm">
+      <div className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm animate-slide-up">
         <div className="px-5 py-4 border-b border-apple-divider-soft flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 select-none">
           <h3 className="font-display font-semibold text-[16px] text-apple-ink">Danh Sách Dịch Vụ</h3>
           <div className="flex gap-3 w-full sm:w-auto">

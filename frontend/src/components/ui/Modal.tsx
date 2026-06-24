@@ -14,18 +14,18 @@ export default function Modal({ open, onClose, title, footer, children, maxWidth
 
   return (
     <div
-      className="fixed inset-0 bg-apple-surface-black/40 backdrop-blur-[4px] flex items-center justify-center z-[1000] p-4 transition-opacity duration-200"
+      className="fixed inset-0 bg-apple-surface-black/40 backdrop-blur-[4px] flex items-center justify-center z-[1000] p-4 animate-fade-in"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden w-full transition-all duration-200 scale-100 flex flex-col max-h-[90vh]"
+        className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden w-full animate-scale-in flex flex-col max-h-[90vh]"
         style={{ maxWidth }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-apple-divider-soft">
           <h3 className="font-display font-semibold text-lg text-apple-ink">{title}</h3>
           <button
-            className="w-8 h-8 rounded-full flex items-center justify-center text-apple-ink-muted-80 hover:bg-apple-divider-soft active-scale transition-all"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-apple-ink-muted-80 hover:bg-apple-divider-soft active-scale transition-all duration-200"
             onClick={onClose}
           >
             ✕

@@ -10,9 +10,9 @@ interface SearchBoxProps {
 export default function SearchBox({ value, onChange, placeholder = 'Tìm kiếm...', className = '' }: SearchBoxProps) {
   return (
     <div className={`relative flex items-center ${className}`}>
-      <Search size={16} className="absolute left-4 text-apple-ink-muted-48 pointer-events-none" />
+      <Search size={16} className="absolute left-4 text-apple-ink-muted-48 pointer-events-none transition-colors duration-200" />
       <input
-        className="w-full bg-apple-canvas text-apple-ink text-[15px] hairline-border rounded-full pl-10 pr-4 py-2 h-11 focus:outline-none focus:border-apple-primary focus:ring-2 focus:ring-apple-primary/10 transition-all"
+        className="w-full bg-apple-canvas text-apple-ink text-[15px] hairline-border rounded-full pl-10 pr-4 py-2 h-11 placeholder:text-apple-ink-muted-48/60 focus:outline-none focus:border-apple-primary focus:ring-2 focus:ring-apple-primary/10 transition-all duration-200"
         placeholder={placeholder}
         value={value}
         onChange={e => onChange(e.target.value)}

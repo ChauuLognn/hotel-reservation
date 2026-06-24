@@ -1,7 +1,7 @@
 import { Clock } from 'lucide-react';
-import { formatDateTime } from '@shared/utils/format';
-import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
-import { StatusHistoryItem } from '../hooks/useBookingDetail';
+import { formatDateTime } from '@utils/format';
+import { RESERVATION_STATUS } from '@constants/statusMaps';
+import { StatusHistoryItem } from '@hooks/useBookingDetail';
 
 interface StatusHistoryCardProps {
   statusHistory: StatusHistoryItem[];

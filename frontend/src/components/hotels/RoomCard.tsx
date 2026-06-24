@@ -1,6 +1,6 @@
-import { Room } from '../hooks/useRoomSearch';
-import Button from '@shared/ui/Button';
-import { formatVND } from '@shared/utils/format';
+import { Room } from '@hooks/useRoomSearch';
+import Button from '@components/ui/Button';
+import { formatVND } from '@utils/format';
 
 interface RoomCardProps {
   room: Room;

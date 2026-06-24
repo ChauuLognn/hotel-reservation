@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import authApi from './authApi';
-import Button from '@shared/ui/Button';
+import authApi from '@services/authApi';
+import Button from '@components/ui/Button';
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -48,7 +48,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-apple-canvas-parchment flex items-center justify-center p-4">
-      <div className="bg-white rounded-apple-lg border border-apple-hairline shadow-sm overflow-hidden max-w-[960px] w-full grid grid-cols-1 md:grid-cols-2">
+      <div className="bg-white rounded-apple-lg border border-apple-hairline shadow-sm overflow-hidden max-w-[960px] w-full grid grid-cols-1 md:grid-cols-2 animate-slide-up">
         
         {/* Left Side: Editorial Banner */}
         <div className="bg-apple-surface-black text-white p-12 flex flex-col justify-center items-center text-center select-none">
@@ -57,7 +57,7 @@ export default function ForgotPassword() {
           <p className="text-apple-body-muted text-[14px] leading-relaxed max-w-xs">
             Nhập thông tin tài khoản và số CCCD/CMND của bạn để thiết lập mật khẩu mới.
           </p>
-          <div className="flex gap-4 mt-8 text-lg opacity-75">
+          <div className="flex gap-4 mt-8 text-lg opacity-75 animate-subtle-float">
             <span title="An toàn">🛡️</span>
             <span title="Nhanh chóng">⚡</span>
             <span title="Bảo mật">🔐</span>

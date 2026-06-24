@@ -1,7 +1,7 @@
 import React from 'react';
 import { DollarSign } from 'lucide-react';
-import { formatVND } from '@shared/utils/format';
-import { BookingBill } from '../hooks/useBookingDetail';
+import { formatVND } from '@utils/format';
+import { BookingBill } from '@hooks/useBookingDetail';
 
 interface BillSummaryCardProps {
   bill: BookingBill;

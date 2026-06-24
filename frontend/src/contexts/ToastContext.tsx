@@ -53,7 +53,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex items-center gap-3 px-5 py-3.5 rounded-apple-md text-white text-[14px] font-medium shadow-md transition-all duration-300 ${getBgColor(
+            className={`pointer-events-auto flex items-center gap-3 px-5 py-3.5 rounded-apple-md text-white text-[14px] font-medium shadow-md animate-slide-in-right ${getBgColor(
               toast.type
             )} min-w-[280px] max-w-sm`}
           >

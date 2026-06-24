@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, User } from 'lucide-react';
-import { formatDate } from '@shared/utils/format';
-import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
-import Layout from '@layout/Layout';
-import reservationApi from '@features/reservations/reservationApi';
-import SearchBox from '@shared/ui/SearchBox';
+import { formatDate } from '@utils/format';
+import { RESERVATION_STATUS } from '@constants/statusMaps';
+import Layout from '@layouts/Layout';
+import reservationApi from '@services/reservationApi';
+import SearchBox from '@components/ui/SearchBox';
 
 interface RegisteredGuest {
   guestName: string;

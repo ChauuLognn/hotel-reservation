@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
-import Layout from '@layout/Layout';
-import { formatDate, formatVND } from '@shared/utils/format';
-import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
-import Button from '@shared/ui/Button';
+import Layout from '@layouts/Layout';
+import { formatDate, formatVND } from '@utils/format';
+import { RESERVATION_STATUS } from '@constants/statusMaps';
+import Button from '@components/ui/Button';
 
 // Extracted Custom Hook & Components
-import { useBookingDetail } from './hooks/useBookingDetail';
-import BillSummaryCard from './components/BillSummaryCard';
-import StatusHistoryCard from './components/StatusHistoryCard';
-import AddGuestModal from './components/AddGuestModal';
-import AddServiceModal from './components/AddServiceModal';
-import RoomStaySection from './components/RoomStaySection';
+import { useBookingDetail } from '@hooks/useBookingDetail';
+import BillSummaryCard from '@components/bookings/BillSummaryCard';
+import StatusHistoryCard from '@components/bookings/StatusHistoryCard';
+import AddGuestModal from '@components/bookings/AddGuestModal';
+import AddServiceModal from '@components/bookings/AddServiceModal';
+import RoomStaySection from '@components/bookings/RoomStaySection';
 
 export default function BookingDetail() {
   const { resId } = useParams<{ resId: string }>();

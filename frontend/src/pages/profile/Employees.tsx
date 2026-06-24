@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, UserPlus, Key } from 'lucide-react';
-import Layout from '@layout/Layout';
-import userApi from './userApi';
-import { ROLE_BADGE } from '@shared/constants/statusMaps';
-import { ROLE_LABELS, ROLE_IDS } from '@shared/constants/roleConstants';
-import { useAuth } from '@app/AuthContext';
-import { useToast } from '@context/ToastContext';
-import { useConfirm } from '@context/ConfirmContext';
-import Button from '@shared/ui/Button';
-import Modal from '@shared/ui/Modal';
-import SearchBox from '@shared/ui/SearchBox';
-import StatCard from '@shared/ui/StatCard';
+import Layout from '@layouts/Layout';
+import userApi from '@services/userApi';
+import { ROLE_BADGE } from '@constants/statusMaps';
+import { ROLE_LABELS, ROLE_IDS } from '@constants/roleConstants';
+import { useAuth } from '@contexts/AuthContext';
+import { useToast } from '@contexts/ToastContext';
+import { useConfirm } from '@contexts/ConfirmContext';
+import Button from '@components/ui/Button';
+import Modal from '@components/ui/Modal';
+import SearchBox from '@components/ui/SearchBox';
+import StatCard from '@components/ui/StatCard';
 
 interface Employee {
   id: number;
@@ -311,7 +311,7 @@ export default function Employees() {
       {/* Tabs */}
       <div className="flex border-b border-apple-divider-soft mb-6 gap-6">
         <button
-          className={`pb-3 text-[16px] font-sans font-medium transition-all ${
+          className={`pb-3 text-[16px] font-sans font-medium transition-all duration-200 ${
             tab === 'employees'
               ? 'border-b-2 border-apple-primary text-apple-primary'
               : 'text-apple-ink-muted-48 hover:text-apple-ink'
@@ -340,7 +340,7 @@ export default function Employees() {
 
       {/* Employees CRUD tab */}
       {tab === 'employees' && (
-        <div className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden">
+        <div className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden animate-slide-up">
           <div className="p-6 border-b border-apple-divider-soft flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-apple-ink">Danh Sách Hồ Sơ Nhân Viên</h3>
@@ -451,7 +451,7 @@ export default function Employees() {
 
       {/* User Accounts CRUD tab */}
       {tab === 'accounts' && (
-        <div className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden">
+        <div className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden animate-slide-up">
           <div className="p-6 border-b border-apple-divider-soft flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-apple-ink">Danh Sách Tài Khoản Đăng Nhập</h3>

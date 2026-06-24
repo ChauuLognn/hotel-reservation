@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react';
-import { useAuth } from '@app/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Home, Calendar, LogOut, Menu, X } from 'lucide-react';
-import Button from '@shared/ui/Button';
+import Button from '@components/ui/Button';
 
 interface CustomerLayoutProps {
   children: ReactNode;
@@ -76,7 +76,7 @@ export default function CustomerLayout({ children, activeSection, onSectionChang
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-11 bg-apple-surface-black/95 z-[990] flex flex-col p-6 text-[16px] text-white">
+        <div className="md:hidden fixed inset-0 top-11 bg-apple-surface-black/95 z-[990] flex flex-col p-6 text-[16px] text-white animate-fade-in">
           <div className="flex flex-col gap-6">
             {menuItems.map((item) => (
               <button
@@ -138,7 +138,7 @@ export default function CustomerLayout({ children, activeSection, onSectionChang
       </div>
 
       {/* Main Page Canvas */}
-      <main className="flex-grow">
+      <main className="flex-grow animate-fade-in">
         {children}
       </main>
 

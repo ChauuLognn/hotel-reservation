@@ -1,4 +1,4 @@
-import axiosClient from '@shared/api/axiosClient';
+import axiosClient from '@services/axiosClient';
 
 const guestApi = {
   getAll: () => axiosClient.get('/api/guests'),

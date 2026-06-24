@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import authApi from './authApi';
-import Button from '@shared/ui/Button';
+import authApi from '@services/authApi';
+import Button from '@components/ui/Button';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -43,6 +43,22 @@ export default function Register() {
       return;
     }
 
+    if (form.password.length < 6) {
+      setError('Mật khẩu phải có ít nhất 6 ký tự!');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setError('Email không đúng định dạng!');
+      return;
+    }
+
+    if (form.identityNum.length < 9 || form.identityNum.length > 12) {
+      setError('Số CMND/CCCD phải từ 9 đến 12 ký tự!');
+      return;
+    }
+
     setLoading(true);
     try {
       await authApi.register(form);
@@ -51,7 +67,14 @@ export default function Register() {
         navigate('/login');
       }, 2500);
     } catch (err: any) {
-      const msg = err?.response?.data?.message || err?.message || 'Đăng ký thất bại, vui lòng thử lại!';
+      let msg = err?.response?.data?.message || err?.message || 'Đăng ký thất bại, vui lòng thử lại!';
+      const details = err?.response?.data?.data;
+      if (details && typeof details === 'object') {
+        const errorMsgs = Object.values(details).filter(Boolean);
+        if (errorMsgs.length > 0) {
+          msg = `${msg}: ${errorMsgs.join(', ')}`;
+        }
+      }
       setError(msg);
     } finally {
       setLoading(false);
@@ -60,16 +83,16 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-apple-canvas-parchment flex items-center justify-center p-4">
-      <div className="bg-white rounded-apple-lg border border-apple-hairline shadow-sm overflow-hidden max-w-[1000px] w-full grid grid-cols-1 md:grid-cols-5">
+      <div className="bg-white rounded-apple-lg border border-apple-hairline shadow-sm overflow-hidden max-w-[1000px] w-full grid grid-cols-1 md:grid-cols-5 animate-slide-up">
         
         {/* Left Side Banner: 2 columns */}
         <div className="md:col-span-2 bg-apple-surface-black text-white p-10 flex flex-col justify-center items-center text-center select-none">
           <div className="text-[52px] mb-4">🏨</div>
-          <h1 className="font-display font-semibold text-2xl tracking-apple-tight mb-3">Hotel Haven</h1>
+          <h1 className="font-display font-semibold text-2xl tracking-apple-tight mb-3 text-white">Hotel Haven</h1>
           <p className="text-apple-body-muted text-[14px] leading-relaxed max-w-xs">
             Tạo tài khoản để đặt phòng nhanh chóng, trải nghiệm dịch vụ tiện nghi sang trọng bậc nhất.
           </p>
-          <div className="flex gap-4 mt-6 text-lg opacity-75">
+          <div className="flex gap-4 mt-6 text-lg opacity-75 animate-subtle-float">
             <span title="Dịch vụ tốt">✨</span>
             <span title="Bảo mật">🛡️</span>
             <span title="Chất lượng cao">⭐</span>

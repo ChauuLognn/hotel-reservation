@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import roomApi from '@features/rooms/roomApi';
-import { getTodayString, getTomorrowString } from '@shared/utils/date';
-import { useToast } from '@context/ToastContext';
+import roomApi from '@services/roomApi';
+import { getTodayString, getTomorrowString } from '@utils/date';
+import { useToast } from '@contexts/ToastContext';
 
 export interface Room {
   id: number;

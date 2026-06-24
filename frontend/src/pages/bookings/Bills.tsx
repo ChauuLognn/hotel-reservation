@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DollarSign, Eye, ArrowRight } from 'lucide-react';
-import Layout from '@layout/Layout';
-import reservationApi from '@features/reservations/reservationApi';
-import billApi from '@features/billing/billApi';
-import roomApi from '@features/rooms/roomApi';
-import { formatVND, formatDate } from '@shared/utils/format';
-import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
-import { useToast } from '@context/ToastContext';
-import { useConfirm } from '@context/ConfirmContext';
-import Button from '@shared/ui/Button';
-import Modal from '@shared/ui/Modal';
-import SearchBox from '@shared/ui/SearchBox';
-import StatCard from '@shared/ui/StatCard';
+import Layout from '@layouts/Layout';
+import reservationApi from '@services/reservationApi';
+import billApi from '@services/billApi';
+import roomApi from '@services/roomApi';
+import { formatVND, formatDate } from '@utils/format';
+import { RESERVATION_STATUS } from '@constants/statusMaps';
+import { useToast } from '@contexts/ToastContext';
+import { useConfirm } from '@contexts/ConfirmContext';
+import Button from '@components/ui/Button';
+import Modal from '@components/ui/Modal';
+import SearchBox from '@components/ui/SearchBox';
+import StatCard from '@components/ui/StatCard';
 
 interface RoomBillItem {
   reason: 'ROOM_CHARGE' | 'SERVICE' | 'REFUND' | string;
@@ -189,7 +189,7 @@ export default function Bills() {
       </div>
 
       {/* Table Section */}
-      <div className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden">
+      <div className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden animate-slide-up">
         <div className="p-6 border-b border-apple-divider-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-apple-ink">Hóa Đơn Theo Phiếu Đặt Phòng</h3>

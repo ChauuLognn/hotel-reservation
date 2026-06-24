@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, HelpCircle, Star, Sparkles, MapPin } from 'lucide-react';
-import { useAuth } from '@app/AuthContext';
-import reservationApi from '@features/reservations/reservationApi';
-import userApi from '@features/employees/userApi';
-import guestApi from '@features/guests/guestApi';
-import { formatVND, formatDate } from '@shared/utils/format';
-import { getTodayString } from '@shared/utils/date';
-import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
-import { useToast } from '@context/ToastContext';
-import CustomerLayout from '@layout/CustomerLayout';
-import Button from '@shared/ui/Button';
-import Badge from '@shared/ui/Badge';
+import { useAuth } from '@contexts/AuthContext';
+import reservationApi from '@services/reservationApi';
+import userApi from '@services/userApi';
+import guestApi from '@services/guestApi';
+import { formatVND, formatDate } from '@utils/format';
+import { getTodayString } from '@utils/date';
+import { RESERVATION_STATUS } from '@constants/statusMaps';
+import { useToast } from '@contexts/ToastContext';
+import CustomerLayout from '@layouts/CustomerLayout';
+import Button from '@components/ui/Button';
+import Badge from '@components/ui/Badge';
 
-import { useRoomSearch, Room } from './hooks/useRoomSearch';
-import { useBookings } from './hooks/useBookings';
-import RoomCard from './components/RoomCard';
-import BookingModal from './components/BookingModal';
+import { useRoomSearch, Room } from '@hooks/useRoomSearch';
+import { useBookings } from '@hooks/useBookings';
+import RoomCard from '@components/hotels/RoomCard';
+import BookingModal from '@components/bookings/BookingModal';
 
 interface GuestForm {
   firstName: string;
@@ -183,6 +183,8 @@ export default function UserHome() {
     <CustomerLayout activeSection={section} onSectionChange={setSection}>
       {section === 'home' && (
         <section className="bg-apple-surface-tile-1 text-white py-24 px-6 select-none relative overflow-hidden">
+          {/* Atmospheric depth overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,102,204,0.15)_0%,transparent_70%)] pointer-events-none" />
           <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
             <span className="text-[12px] font-semibold text-apple-primary-on-dark uppercase tracking-widest mb-3 flex items-center gap-1.5">
               <Sparkles size={14} /> Luxury Collection 2026
@@ -333,7 +335,7 @@ export default function UserHome() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {MOCK_REVIEWS.map((rev) => (
-                <div key={rev.id} className="bg-apple-canvas-parchment rounded-apple-lg p-6 flex flex-col justify-between select-none">
+                <div key={rev.id} className="bg-apple-canvas-parchment rounded-apple-lg p-6 flex flex-col justify-between select-none apple-card-hover">
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3">
                       <div className="flex text-yellow-500">

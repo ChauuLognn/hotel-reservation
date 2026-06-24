@@ -1,4 +1,4 @@
-import axiosClient from '@shared/api/axiosClient';
+import axiosClient from '@services/axiosClient';
 
 const authApi = {
   login: (data: any) => axiosClient.post('/api/auth/login', data),

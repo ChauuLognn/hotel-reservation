@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Button from '@shared/ui/Button';
-import Modal from '@shared/ui/Modal';
-import { formatVND } from '@shared/utils/format';
-import { ServiceInfo } from '../hooks/useBookingDetail';
+import Button from '@components/ui/Button';
+import Modal from '@components/ui/Modal';
+import { formatVND } from '@utils/format';
+import { ServiceInfo } from '@hooks/useBookingDetail';
 
 interface AddServiceModalProps {
   open: boolean;

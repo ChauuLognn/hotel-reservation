@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import authApi from '@features/auth/authApi';
+import authApi from '@services/authApi';
 
 export interface User {
   token: string;

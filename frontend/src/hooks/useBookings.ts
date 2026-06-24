@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import reservationApi from '@features/reservations/reservationApi';
-import { useAuth } from '@app/AuthContext';
-import { useToast } from '@context/ToastContext';
-import { useConfirm } from '@context/ConfirmContext';
+import reservationApi from '@services/reservationApi';
+import { useAuth } from '@contexts/AuthContext';
+import { useToast } from '@contexts/ToastContext';
+import { useConfirm } from '@contexts/ConfirmContext';
 
 export interface Booking {
   resId: string;

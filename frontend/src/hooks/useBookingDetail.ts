@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import reservationApi from '@features/reservations/reservationApi';
-import guestApi from '@features/guests/guestApi';
-import roomApi from '@features/rooms/roomApi';
-import serviceApi from '@features/services/serviceApi';
-import billApi from '@features/billing/billApi';
-import { useToast } from '@context/ToastContext';
-import { useConfirm } from '@context/ConfirmContext';
+import reservationApi from '@services/reservationApi';
+import guestApi from '@services/guestApi';
+import roomApi from '@services/roomApi';
+import serviceApi from '@services/serviceApi';
+import billApi from '@services/billApi';
+import { useToast } from '@contexts/ToastContext';
+import { useConfirm } from '@contexts/ConfirmContext';
 
 export interface GuestItem {
   guestId: number;

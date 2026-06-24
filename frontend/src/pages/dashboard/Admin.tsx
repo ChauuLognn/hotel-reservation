@@ -1,6 +1,6 @@
-import Layout from '@layout/Layout';
+import Layout from '@layouts/Layout';
 import { Shield, Key } from 'lucide-react';
-import { useAuth } from '@app/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
 
 export default function Admin() {
   const { user } = useAuth();
@@ -8,7 +8,7 @@ export default function Admin() {
 
   return (
     <Layout title="Quản Trị Hệ Thống">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
         
         {/* System Info */}
         <div className="bg-white rounded-apple-lg border border-apple-hairline p-6 shadow-sm flex flex-col">

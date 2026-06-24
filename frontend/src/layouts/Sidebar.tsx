@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, Home, Calendar, ClipboardList,
   Coffee, DollarSign, UserPlus, Shield, LogOut
 } from 'lucide-react';
-import { useAuth } from '@app/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
 
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Trang Chủ' },
@@ -33,7 +33,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
         {navItems
           .filter(({ path }) => {
             if (['/users', '/admin'].includes(path)) {
@@ -47,10 +47,10 @@ export default function Sidebar() {
               to={path}
               end={path === '/'}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-apple-sm text-[14px] font-medium transition-all duration-150 active-scale ${
+                `flex items-center gap-3 px-4 py-2.5 rounded-apple-sm text-[14px] font-medium transition-all duration-200 active-scale ${
                   isActive
-                    ? 'bg-apple-primary text-white shadow-sm'
-                    : 'text-apple-body-muted hover:bg-white/5 hover:text-white'
+                    ? 'bg-apple-primary text-white shadow-[0_1px_8px_rgba(0,102,204,0.3)]'
+                    : 'text-apple-body-muted hover:bg-white/[0.06] hover:text-white'
                 }`
               }
             >
@@ -71,7 +71,7 @@ export default function Sidebar() {
         </div>
         <button
           onClick={logout}
-          className="w-8 h-8 rounded-apple-sm flex items-center justify-center bg-white/5 hover:bg-white/10 text-white/80 active-scale transition-all"
+          className="w-8 h-8 rounded-apple-sm flex items-center justify-center bg-white/5 hover:bg-white/10 text-white/80 active-scale transition-all duration-200"
           title="Đăng xuất"
         >
           <LogOut size={16} />

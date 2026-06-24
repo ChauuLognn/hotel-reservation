@@ -1,4 +1,4 @@
-import axiosClient from '@shared/api/axiosClient';
+import axiosClient from '@services/axiosClient';
 
 const reservationApi = {
   getAll: (signal?: AbortSignal) => axiosClient.get<any[]>('/api/reservations/all', { signal }),

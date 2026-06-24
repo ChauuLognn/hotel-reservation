@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import Modal from '@shared/ui/Modal';
-import Button from '@shared/ui/Button';
+import Modal from '@components/ui/Modal';
+import Button from '@components/ui/Button';
 
 interface ConfirmOptions {
   title?: string;
@@ -77,7 +77,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
         title={state.title}
         footer={footer}
       >
-        <p className="text-apple-ink-muted-80 text-[15px]">{state.message}</p>
+        <p className="text-apple-ink-muted-80 text-[15px] leading-relaxed">{state.message}</p>
       </Modal>
     </ConfirmContext.Provider>
   );

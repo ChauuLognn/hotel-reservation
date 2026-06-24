@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
-@config "../tailwind.config.js";
+@config "../../tailwind.config.js";
 
 @layer base {
   body {
@@ -42,9 +42,108 @@
   .hairline-border {
     border: 1px solid #e0e0e0;
   }
+
+  /* Fade in animation */
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out both;
+  }
+
+  /* Slide up animation */
+  .animate-slide-up {
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Slide in from right — for toasts */
+  .animate-slide-in-right {
+    animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Scale in — for modals */
+  .animate-scale-in {
+    animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Subtle float — for decorative elements */
+  .animate-subtle-float {
+    animation: subtleFloat 4s ease-in-out infinite;
+  }
+
+  /* Shimmer skeleton loading */
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      #f5f5f7 25%,
+      #ebebed 37%,
+      #f5f5f7 63%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+
+  /* Staggered animation delay utilities */
+  .delay-75 { animation-delay: 75ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+
+  /* Apple-style card hover */
+  .apple-card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+  .apple-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Smooth row hover for tables */
+  .apple-row-hover {
+    @apply transition-colors duration-150 ease-out;
+  }
 }
 
-/* Custom scrollbars */
+/* ── Keyframes ─────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes subtleFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Spin animation for loading icons */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin-custom {
+  animation: spin 0.8s linear infinite;
+}
+
+/* ── Custom scrollbars ─────────────────────────────────── */
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -58,12 +157,4 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #7a7a7a;
-}
-
-/* Spin animation for loading icons */
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-.animate-spin-custom {
-  animation: spin 0.8s linear infinite;
 }

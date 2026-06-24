@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Home, Key, Wrench, Edit2, Trash2, Eye } from 'lucide-react';
-import Layout from '@layout/Layout';
-import roomApi from '@features/rooms/roomApi';
-import { formatVND } from '@shared/utils/format';
-import { ROOM_STATUS } from '@shared/constants/statusMaps';
-import { useAuth } from '@app/AuthContext';
-import { useToast } from '@context/ToastContext';
-import { useConfirm } from '@context/ConfirmContext';
-import Button from '@shared/ui/Button';
-import Badge from '@shared/ui/Badge';
-import SearchBox from '@shared/ui/SearchBox';
-import Modal from '@shared/ui/Modal';
-import StatCard from '@shared/ui/StatCard';
+import Layout from '@layouts/Layout';
+import roomApi from '@services/roomApi';
+import { formatVND } from '@utils/format';
+import { ROOM_STATUS } from '@constants/statusMaps';
+import { useAuth } from '@contexts/AuthContext';
+import { useToast } from '@contexts/ToastContext';
+import { useConfirm } from '@contexts/ConfirmContext';
+import Button from '@components/ui/Button';
+import Badge from '@components/ui/Badge';
+import SearchBox from '@components/ui/SearchBox';
+import Modal from '@components/ui/Modal';
+import StatCard from '@components/ui/StatCard';
 
 interface Room {
   id: number;
@@ -312,7 +312,7 @@ export default function Rooms() {
 
       {/* Rooms Tab */}
       {tab === 'rooms' && (
-        <div className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm">
+        <div className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm animate-slide-up">
           <div className="px-5 py-4 border-b border-apple-divider-soft flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 select-none">
             <h3 className="font-display font-semibold text-[16px] text-apple-ink">Tất Cả Phòng</h3>
             <div className="flex gap-3 w-full sm:w-auto">
@@ -401,7 +401,7 @@ export default function Rooms() {
 
       {/* Room Types Tab */}
       {tab === 'types' && (
-        <div className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm">
+        <div className="bg-white rounded-apple-lg border border-apple-hairline overflow-hidden shadow-sm animate-slide-up">
           <div className="px-5 py-4 border-b border-apple-divider-soft flex justify-between items-center select-none">
             <h3 className="font-display font-semibold text-[16px] text-apple-ink">Danh Mục Loại Phòng</h3>
             {isManager && (

@@ -1,24 +1,24 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './app/AuthContext';
-import { ToastProvider } from './context/ToastContext';
-import { ConfirmProvider } from './context/ConfirmContext';
+import { AuthProvider, useAuth } from '@contexts/AuthContext';
+import { ToastProvider } from '@contexts/ToastContext';
+import { ConfirmProvider } from '@contexts/ConfirmContext';
 
 // Pages
-import Login from './features/auth/Login';
-import Register from './features/auth/Register';
-import ForgotPassword from './features/auth/ForgotPassword';
-import Dashboard from './features/dashboard/Dashboard';
-import Guests from './features/guests/Guests';
-import Rooms from './features/rooms/Rooms';
-import Reservations from './features/reservations/Reservations';
-import ReservationGuests from './features/reservations/ReservationGuests';
-import Services from './features/services/Services';
-import Bills from './features/billing/Bills';
-import Employees from './features/employees/Employees';
-import Admin from './features/dashboard/Admin';
-import BookingDetail from './features/reservations/BookingDetail';
-import UserHome from './features/customer-portal/UserHome';
+import Login from '@pages/auth/Login';
+import Register from '@pages/auth/Register';
+import ForgotPassword from '@pages/auth/ForgotPassword';
+import Dashboard from '@pages/dashboard/Dashboard';
+import Guests from '@pages/profile/Guests';
+import Rooms from '@pages/hotels/Rooms';
+import Reservations from '@pages/bookings/Reservations';
+import ReservationGuests from '@pages/bookings/ReservationGuests';
+import Services from '@pages/hotels/Services';
+import Bills from '@pages/bookings/Bills';
+import Employees from '@pages/profile/Employees';
+import Admin from '@pages/dashboard/Admin';
+import BookingDetail from '@pages/bookings/BookingDetail';
+import UserHome from '@pages/hotels/UserHome';
 
 interface RouteProps {
   children: React.ReactNode;

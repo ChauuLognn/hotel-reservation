@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User as UserIcon, Shield, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '@app/AuthContext';
-import { useToast } from '@context/ToastContext';
-import Button from '@shared/ui/Button';
+import { useAuth } from '@contexts/AuthContext';
+import { useToast } from '@contexts/ToastContext';
+import Button from '@components/ui/Button';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -57,16 +57,16 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-apple-canvas-parchment flex items-center justify-center p-4">
-      <div className="bg-white rounded-apple-lg border border-apple-hairline shadow-sm overflow-hidden max-w-[960px] w-full grid grid-cols-1 md:grid-cols-2">
+      <div className="bg-white rounded-apple-lg border border-apple-hairline shadow-sm overflow-hidden max-w-[960px] w-full grid grid-cols-1 md:grid-cols-2 animate-slide-up">
         
         {/* Left Side: Editorial Banner */}
         <div className="bg-apple-surface-black text-white p-12 flex flex-col justify-center items-center text-center select-none">
           <div className="text-[52px] mb-4">🏨</div>
-          <h1 className="font-display font-semibold text-3xl tracking-apple-tight mb-3">Hotel Haven</h1>
+          <h1 className="font-display font-semibold text-3xl tracking-apple-tight mb-3 text-white">Hotel Haven</h1>
           <p className="text-apple-body-muted text-[15px] max-w-xs leading-relaxed">
             Hệ thống quản lý khách sạn thông minh. Trải nghiệm dịch vụ đẳng cấp với công nghệ hiện đại.
           </p>
-          <div className="flex gap-4 mt-8 text-lg opacity-75">
+          <div className="flex gap-4 mt-8 text-lg opacity-75 animate-subtle-float">
             <span title="Chất lượng cao">⭐</span>
             <span title="Bảo mật">🛡️</span>
             <span title="Dịch vụ tốt">✨</span>

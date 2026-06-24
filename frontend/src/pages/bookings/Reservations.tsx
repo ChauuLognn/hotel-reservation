@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Eye, Plus, Trash2, UserPlus } from 'lucide-react';
-import Layout from '@layout/Layout';
-import reservationApi from '@features/reservations/reservationApi';
-import guestApi from '@features/guests/guestApi';
-import roomApi from '@features/rooms/roomApi';
-import { formatVND, formatDate } from '@shared/utils/format';
-import { RESERVATION_STATUS } from '@shared/constants/statusMaps';
-import { useToast } from '@context/ToastContext';
-import Button from '@shared/ui/Button';
-import Modal from '@shared/ui/Modal';
-import SearchBox from '@shared/ui/SearchBox';
-import StatCard from '@shared/ui/StatCard';
+import Layout from '@layouts/Layout';
+import reservationApi from '@services/reservationApi';
+import guestApi from '@services/guestApi';
+import roomApi from '@services/roomApi';
+import { formatVND, formatDate } from '@utils/format';
+import { RESERVATION_STATUS } from '@constants/statusMaps';
+import { useToast } from '@contexts/ToastContext';
+import Button from '@components/ui/Button';
+import Modal from '@components/ui/Modal';
+import SearchBox from '@components/ui/SearchBox';
+import StatCard from '@components/ui/StatCard';
 
 interface Guest {
   id: number;
@@ -258,7 +258,7 @@ export default function Reservations() {
       </div>
 
       {/* Table Section */}
-      <div className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden">
+      <div className="bg-apple-canvas rounded-apple-lg border border-apple-hairline overflow-hidden animate-slide-up">
         <div className="p-6 border-b border-apple-divider-soft flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-apple-ink">Danh Sách Đặt Phòng</h3>

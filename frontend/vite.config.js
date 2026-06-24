@@ -15,11 +15,16 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@shared':     path.resolve(import.meta.dirname, 'src/shared'),
-      '@features':   path.resolve(import.meta.dirname, 'src/features'),
-      '@context':    path.resolve(import.meta.dirname, 'src/context'),
-      '@layout':     path.resolve(import.meta.dirname, 'src/layout'),
-      '@app':        path.resolve(import.meta.dirname, 'src/app'),
+      '@pages':      path.resolve(import.meta.dirname, 'src/pages'),
+      '@components': path.resolve(import.meta.dirname, 'src/components'),
+      '@layouts':    path.resolve(import.meta.dirname, 'src/layouts'),
+      '@services':   path.resolve(import.meta.dirname, 'src/services'),
+      '@hooks':      path.resolve(import.meta.dirname, 'src/hooks'),
+      '@contexts':   path.resolve(import.meta.dirname, 'src/contexts'),
+      '@utils':      path.resolve(import.meta.dirname, 'src/utils'),
+      '@constants':  path.resolve(import.meta.dirname, 'src/constants'),
+      '@assets':     path.resolve(import.meta.dirname, 'src/assets'),
+      '@styles':     path.resolve(import.meta.dirname, 'src/styles'),
     }
   },
   server: {

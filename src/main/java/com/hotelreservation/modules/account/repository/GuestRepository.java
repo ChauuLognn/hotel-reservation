@@ -14,13 +14,13 @@ import com.hotelreservation.modules.account.entity.Guest;
 
 @Repository
 public interface GuestRepository extends JpaRepository<Guest, Integer>{
-    @Query(value = "SELECT * FROM guest WHERE id = :id", nativeQuery = true)
+    @Query("SELECT g FROM Guest g WHERE g.id = :id")
     Optional<Guest> findGuestById(@Param("id") Integer id);
 
-    @Query(value="select * from guest where identityNum = :identityNum", nativeQuery=true)
-    Optional<Guest> findGuestByIdentityNum(@Param("identityNum") String IdentityNum);
+    @Query("SELECT g FROM Guest g WHERE g.identityNum = :identityNum")
+    Optional<Guest> findGuestByIdentityNum(@Param("identityNum") String identityNum);
     
-    @Query(value = "SELECT * FROM guest", nativeQuery = true)
+    @Query("SELECT g FROM Guest g")
     List<Guest> takeAll();
 
     @Modifying
@@ -59,6 +59,6 @@ public interface GuestRepository extends JpaRepository<Guest, Integer>{
     @Query(value = "DELETE FROM guest WHERE id = :id", nativeQuery = true)
     void deleteGuest(@Param("id") Integer id);
 
-    @Query(value = "SELECT * FROM guest WHERE phone = :phone", nativeQuery = true)
+    @Query("SELECT g FROM Guest g WHERE g.phone = :phone")
     Optional<Guest> findGuestByPhone(@Param("phone") String phone);
 }

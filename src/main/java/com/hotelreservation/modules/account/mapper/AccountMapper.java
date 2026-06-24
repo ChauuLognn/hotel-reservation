@@ -19,7 +19,7 @@ public class AccountMapper {
         dto.setPhone(e.getPhone());
         dto.setAddress(e.getAddress());
         if (e.getRole() != null) {
-            dto.setRole(e.getRole().getName().name());
+            dto.setRole(e.getRole().getName() != null ? e.getRole().getName().name() : null);
             dto.setSalary(e.getRole().getSalary());
         }
         return dto;

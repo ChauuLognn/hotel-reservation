@@ -1,7 +1,7 @@
 import React from 'react';
-import { Room } from '../hooks/useRoomSearch';
-import Button from '@shared/ui/Button';
-import { formatVND, formatDate } from '@shared/utils/format';
+import { Room } from '@hooks/useRoomSearch';
+import Button from '@components/ui/Button';
+import { formatVND, formatDate } from '@utils/format';
 
 interface GuestForm {
   firstName: string;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Button from '@shared/ui/Button';
-import Modal from '@shared/ui/Modal';
+import Button from '@components/ui/Button';
+import Modal from '@components/ui/Modal';
 
 interface AddGuestModalProps {
   open: boolean;
