@@ -15,7 +15,7 @@ import Badge from '@components/ui/Badge';
 
 import { useRoomSearch, Room } from '@hooks/useRoomSearch';
 import { useBookings } from '@hooks/useBookings';
-import RoomCard from '@components/hotels/RoomCard';
+import RoomCard from '@components/ui/RoomCard';
 import BookingModal from '@components/bookings/BookingModal';
 
 interface GuestForm {

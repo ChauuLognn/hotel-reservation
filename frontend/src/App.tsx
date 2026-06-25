@@ -9,16 +9,16 @@ import Login from '@pages/auth/Login';
 import Register from '@pages/auth/Register';
 import ForgotPassword from '@pages/auth/ForgotPassword';
 import Dashboard from '@pages/dashboard/Dashboard';
-import Guests from '@pages/profile/Guests';
-import Rooms from '@pages/hotels/Rooms';
+import Guests from '@pages/guests/Guests';
+import Rooms from '@pages/rooms/Rooms';
 import Reservations from '@pages/bookings/Reservations';
 import ReservationGuests from '@pages/bookings/ReservationGuests';
-import Services from '@pages/hotels/Services';
+import Services from '@pages/rooms/Services';
 import Bills from '@pages/bookings/Bills';
-import Employees from '@pages/profile/Employees';
+import Employees from '@pages/guests/Employees';
 import Admin from '@pages/dashboard/Admin';
 import BookingDetail from '@pages/bookings/BookingDetail';
-import UserHome from '@pages/hotels/UserHome';
+import UserHome from '@pages/customer/UserHome';
 
 interface RouteProps {
   children: React.ReactNode;
