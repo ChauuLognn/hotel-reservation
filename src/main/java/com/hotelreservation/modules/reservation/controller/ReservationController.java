@@ -13,7 +13,6 @@ import static com.hotelreservation.modules.reservation.dto.ReservationRequests.*
 import static com.hotelreservation.modules.reservation.dto.ReservationResponses.*;
 import com.hotelreservation.modules.reservation.service.ReservationService;
 import com.hotelreservation.modules.account.repository.UserRepository;
-import com.hotelreservation.modules.reservation.repository.ReservationRepository;
 
 import jakarta.validation.Valid;
 import com.hotelreservation.modules.hotelservice.dto.HotelserviceResponses.ReservationServiceResponse;
@@ -25,8 +24,6 @@ public class ReservationController {
 
     @Autowired private ReservationService resDomain;
     @Autowired private UserRepository userRepository;
-    @Autowired private ReservationRepository reservationRepository;
-
     // ─── Reservation ──────────────────────────────────────────────────────────
 
     @GetMapping("/api/reservations")

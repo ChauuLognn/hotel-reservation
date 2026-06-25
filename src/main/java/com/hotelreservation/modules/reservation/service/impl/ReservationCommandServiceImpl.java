@@ -7,7 +7,6 @@ import com.hotelreservation.modules.account.repository.GuestRepository;
 import com.hotelreservation.modules.account.repository.UserRepository;
 import com.hotelreservation.modules.hotelservice.dto.HotelserviceRequests.AddReservationServiceRequest;
 import com.hotelreservation.modules.hotelservice.entity.HotelService;
-import com.hotelreservation.modules.hotelservice.entity.UsedService;
 import com.hotelreservation.modules.hotelservice.repository.HotelServiceRepository;
 import com.hotelreservation.modules.hotelservice.repository.UsedServiceRepository;
 import com.hotelreservation.modules.reservation.dto.ReservationRequests.CreateReservationRequest;

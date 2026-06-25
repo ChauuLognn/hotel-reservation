@@ -15,10 +15,7 @@ import com.hotelreservation.modules.reservation.repository.ReservationRepository
 import com.hotelreservation.modules.reservation.repository.ReservationRoomRepository;
 import com.hotelreservation.modules.reservation.repository.ReservationStatusHistoryRepository;
 import com.hotelreservation.modules.reservation.service.ReservationStatusService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +25,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import jakarta.annotation.PostConstruct;
 
 @Service
 @Transactional
 @SuppressWarnings("null")
 public class ReservationStatusServiceImpl implements ReservationStatusService {
-
-    private static final Logger log = LoggerFactory.getLogger(ReservationStatusServiceImpl.class);
 
     @Autowired private ReservationRepository resRepo;
     @Autowired private ReservationRoomRepository rrRepo;

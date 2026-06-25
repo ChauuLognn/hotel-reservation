@@ -1,10 +1,7 @@
 package com.hotelreservation;
 
-import static com.hotelreservation.modules.billing.dto.BillingResponses.*;
 import com.hotelreservation.modules.billing.repository.BillRepository;
 import com.hotelreservation.modules.billing.service.impl.BillServiceImpl;
-import com.hotelreservation.modules.reservation.entity.Reservation;
-import com.hotelreservation.modules.reservation.entity.ReservationRoom;
 import com.hotelreservation.modules.reservation.repository.ReservationGuestRepository;
 import com.hotelreservation.modules.reservation.repository.ReservationRoomRepository;
 import org.junit.jupiter.api.Test;
@@ -13,10 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

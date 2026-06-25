@@ -1,7 +1,6 @@
 package com.hotelreservation;
 
 import com.hotelreservation.common.enums.ReservationStatus;
-import com.hotelreservation.modules.reservation.entity.Reservation;
 import com.hotelreservation.modules.reservation.entity.ReservationRoom;
 import com.hotelreservation.modules.reservation.entity.ReservationStatusHistory;
 import com.hotelreservation.modules.reservation.repository.ReservationGuestRepository;

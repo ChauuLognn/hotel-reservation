@@ -86,6 +86,6 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ApiResponse<Object>> error(HttpStatus status, String message) {
-        return ResponseEntity.status(status).body(ApiResponse.error(message));
+        return ResponseEntity.status((org.springframework.http.HttpStatusCode) status).body(ApiResponse.error(message));
     }
 }
