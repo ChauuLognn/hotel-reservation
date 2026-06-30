@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.hotelreservation.modules.reservation.repository.ReservationRepository;
-import com.hotelreservation.modules.reservation.service.ReservationService;
-import com.hotelreservation.modules.reservation.dto.ReservationRequests.ChangeStatusRequest;
+import com.hotelreservation.reservation.repository.ReservationRepository;
+import com.hotelreservation.reservation.service.ReservationService;
+import com.hotelreservation.reservation.dto.ReservationRequests.ChangeStatusRequest;
 import com.hotelreservation.common.enums.ReservationStatus;
 
 /**

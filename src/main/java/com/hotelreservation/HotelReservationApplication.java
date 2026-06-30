@@ -13,8 +13,8 @@ import java.util.List;
 
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = {"com.hotelreservation"})
-@EntityScan(basePackages = {"com.hotelreservation.modules"})
-@EnableJpaRepositories(basePackages = {"com.hotelreservation.modules"})
+@EntityScan(basePackages = {"com.hotelreservation"})
+@EnableJpaRepositories(basePackages = {"com.hotelreservation"})
 public class HotelReservationApplication {
 
 	public static void main(String[] args) {

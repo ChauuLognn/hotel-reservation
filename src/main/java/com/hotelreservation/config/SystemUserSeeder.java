@@ -8,12 +8,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.hotelreservation.common.enums.RoleName;
-import com.hotelreservation.modules.account.entity.Emp;
-import com.hotelreservation.modules.account.entity.Role;
-import com.hotelreservation.modules.account.entity.User;
-import com.hotelreservation.modules.account.repository.EmpRepository;
-import com.hotelreservation.modules.account.repository.RoleRepository;
-import com.hotelreservation.modules.account.repository.UserRepository;
+import com.hotelreservation.account.entity.Emp;
+import com.hotelreservation.account.entity.Role;
+import com.hotelreservation.account.entity.User;
+import com.hotelreservation.account.repository.EmpRepository;
+import com.hotelreservation.account.repository.RoleRepository;
+import com.hotelreservation.account.repository.UserRepository;
 
 import java.util.UUID;
 

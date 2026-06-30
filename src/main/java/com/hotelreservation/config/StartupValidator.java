@@ -6,7 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import org.springframework.context.annotation.Profile;
-import com.hotelreservation.modules.account.repository.UserRepository;
+import com.hotelreservation.account.repository.UserRepository;
 
 import org.springframework.core.annotation.Order;
 

@@ -1,9 +1,9 @@
 package com.hotelreservation;
 
-import com.hotelreservation.modules.billing.repository.BillRepository;
-import com.hotelreservation.modules.billing.service.impl.BillServiceImpl;
-import com.hotelreservation.modules.reservation.repository.ReservationGuestRepository;
-import com.hotelreservation.modules.reservation.repository.ReservationRoomRepository;
+import com.hotelreservation.billing.repository.BillRepository;
+import com.hotelreservation.billing.service.BillServiceImpl;
+import com.hotelreservation.reservation.repository.ReservationGuestRepository;
+import com.hotelreservation.reservation.repository.ReservationRoomRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

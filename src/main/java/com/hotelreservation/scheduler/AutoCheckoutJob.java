@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.hotelreservation.modules.reservation.entity.ReservationRoom;
-import com.hotelreservation.modules.reservation.entity.ReservationGuest;
-import com.hotelreservation.modules.reservation.repository.ReservationGuestRepository;
-import com.hotelreservation.modules.reservation.repository.ReservationRoomRepository;
-import com.hotelreservation.modules.reservation.repository.ReservationStatusHistoryRepository;
-import com.hotelreservation.modules.reservation.service.ReservationService;
+import com.hotelreservation.reservation.entity.ReservationRoom;
+import com.hotelreservation.reservation.entity.ReservationGuest;
+import com.hotelreservation.reservation.repository.ReservationGuestRepository;
+import com.hotelreservation.reservation.repository.ReservationRoomRepository;
+import com.hotelreservation.reservation.repository.ReservationStatusHistoryRepository;
+import com.hotelreservation.reservation.service.ReservationService;
 
 
 // task tự động checkOut cho khách khi đến giờ resId.checkOutTime 

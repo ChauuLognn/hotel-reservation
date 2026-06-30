@@ -20,8 +20,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import com.hotelreservation.modules.account.service.CustomUserDetailsService;
-import com.hotelreservation.security.filter.JwtAuthenticationFilter;
+import com.hotelreservation.account.service.CustomUserDetailsService;
+import com.hotelreservation.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity

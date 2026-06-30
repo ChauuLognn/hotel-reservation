@@ -7,6 +7,7 @@ const API_PROXY = {
     target: 'http://localhost:8081',
     changeOrigin: true,
     secure: false,
+    rewrite: (url) => url.replace(/^\/hotel_reservation_premium/, ''),
   },
 }
 

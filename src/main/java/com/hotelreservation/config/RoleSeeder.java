@@ -5,8 +5,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.hotelreservation.common.enums.RoleName;
-import com.hotelreservation.modules.account.entity.Role;
-import com.hotelreservation.modules.account.repository.RoleRepository;
+import com.hotelreservation.account.entity.Role;
+import com.hotelreservation.account.repository.RoleRepository;
 
 import org.springframework.core.annotation.Order;
 
