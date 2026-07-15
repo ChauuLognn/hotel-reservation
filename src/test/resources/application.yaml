@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;NON_KEYWORDS=USER
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  sql:
+    init:
+      mode: never
+
+jwt:
+  secret: test_jwt_secret_key_2024_at_least_256_bits_for_hs256_test_purposes_only
+  expiration: 86400000
+
+system-user-id: 9
+
